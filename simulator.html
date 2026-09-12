@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — What-If Simulator</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root{
+      --bg:#f6f8f4;
+      --paper:#ffffff;
+
+      --ink:#102019;
+      --text:#34443c;
+      --muted:#7a8980;
+      --line:#dce3dd;
+
+      --green:#175f45;
+      --green2:#238761;
+      --green-soft:#e6f4ea;
+
+      --lime:#c9f454;
+      --lime-soft:#effbd0;
+
+      --orange:#ff7545;
+      --orange-soft:#fff0e9;
+
+      --blue:#2b6de8;
+      --blue2:#1f5dcc;
+      --blue-soft:#eaf1ff;
+
+      --amber:#d99220;
+      --amber-soft:#fff6df;
+
+      --sidebar:236px;
+
+      --shadow:0 24px 60px rgba(20,48,36,.06);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:"DM Sans",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    button,
+    input{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:var(--sidebar) minmax(0,1fr);
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar{
+      position:fixed;
+      inset:0 auto 0 0;
+
+      width:var(--sidebar);
+      min-height:100vh;
+
+      padding:24px 18px 20px;
+
+      display:flex;
+      flex-direction:column;
+
+      background:#fbfcfa;
+      border-right:1px solid var(--line);
+
+      z-index:100;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:0 8px;
+    }
+
+    .brand-mark{
+      width:38px;
+      height:38px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:11px;
+
+      background:var(--ink);
+      color:white;
+
+      font-family:"Manrope",sans-serif;
+      font-weight:800;
+    }
+
+    .brand-name{
+      font-family:"Manrope",sans-serif;
+      font-size:17px;
+      font-weight:800;
+      letter-spacing:-.04em;
+    }
+
+    .brand-name span{
+      color:var(--green2);
+    }
+
+    .factory-switch{
+      margin-top:28px;
+      padding:14px 13px;
+
+      background:white;
+
+      border:1px solid var(--line);
+      border-radius:14px;
+    }
+
+    .factory-switch small{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .factory-switch strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .factory-meta{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .factory-dot{
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+    }
+
+    .nav-group{
+      margin-top:26px;
+    }
+
+    .nav-label{
+      padding:0 10px;
+
+      color:#9aa69f;
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .nav-list{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+
+      margin-top:8px;
+    }
+
+    .nav-item{
+      position:relative;
+
+      min-height:42px;
+
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 11px;
+
+      border-radius:10px;
+
+      color:#58665e;
+
+      font-size:10px;
+      font-weight:600;
+
+      transition:.18s ease;
+    }
+
+    .nav-item:hover{
+      background:#f0f4ef;
+      color:var(--ink);
+    }
+
+    .nav-icon{
+      width:23px;
+      height:23px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:7px;
+
+      background:#f0f3ef;
+      color:#6c7971;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .nav-item.leak .nav-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .nav-item.root .nav-icon{
+      background:var(--amber-soft);
+      color:var(--amber);
+    }
+
+    .nav-item.solution .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .nav-item.simulator .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .nav-item.active{
+      background:#f1f5ff;
+      color:var(--ink);
+      font-weight:700;
+    }
+
+    .nav-item.active::before{
+      content:"";
+
+      position:absolute;
+
+      left:-18px;
+      top:9px;
+      bottom:9px;
+
+      width:3px;
+
+      background:var(--blue);
+
+      border-radius:0 4px 4px 0;
+    }
+
+    .nav-item.active .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+
+      padding-top:18px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .confidence-box{
+      padding:13px;
+
+      border-radius:12px;
+
+      background:#f2f6f2;
+    }
+
+    .confidence-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .confidence-top span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .confidence-top strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:12px;
+    }
+
+    .confidence-line{
+      height:5px;
+
+      margin-top:9px;
+
+      overflow:hidden;
+
+      border-radius:100px;
+
+      background:#e0e7e1;
+    }
+
+    .confidence-fill{
+      width:82%;
+      height:100%;
+
+      border-radius:100px;
+
+      background:var(--green2);
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding:15px 5px 0;
+    }
+
+    .avatar{
+      width:34px;
+      height:34px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:50%;
+
+      background:#dfe9e1;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .profile strong{
+      display:block;
+      font-size:9px;
+    }
+
+    .profile span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    .topbar{
+      height:69px;
+
+      position:sticky;
+      top:0;
+
+      z-index:80;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:0 34px;
+
+      border-bottom:1px solid var(--line);
+
+      background:rgba(246,248,244,.91);
+      backdrop-filter:blur(16px);
+    }
+
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .back-btn{
+      height:35px;
+
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:0 11px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:800;
+
+      transition:.18s ease;
+    }
+
+    .back-btn:hover{
+      background:var(--blue-soft);
+      color:var(--blue);
+
+      border-color:#c4d3f4;
+      transform:translateX(-2px);
+    }
+
+    .breadcrumb{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .breadcrumb strong{
+      color:var(--ink);
+    }
+
+    .simulation-status{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:7px 10px;
+
+      border:1px solid var(--line);
+      border-radius:100px;
+
+      background:white;
+
+      color:var(--blue);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .status-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:var(--blue);
+    }
+
+    .mobile-menu{
+      display:none;
+
+      width:35px;
+      height:35px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+    }
+
+    .sidebar-overlay{
+      display:none;
+    }
+
+    /* =========================
+       CONTENT
+    ========================= */
+
+    .content{
+      width:min(1280px,calc(100% - 64px));
+
+      margin:auto;
+
+      padding:40px 0 70px;
+    }
+
+    .page-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+
+      gap:30px;
+
+      margin-bottom:29px;
+    }
+
+    .eyebrow{
+      color:var(--blue);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .page-head h1{
+      max-width:800px;
+
+      margin-top:9px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(38px,4.5vw,56px);
+      line-height:.98;
+
+      letter-spacing:-.055em;
+    }
+
+    .page-head p{
+      max-width:720px;
+
+      margin-top:13px;
+
+      color:var(--text);
+
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .scenario-state{
+      min-width:205px;
+
+      text-align:right;
+    }
+
+    .scenario-state span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .scenario-state strong{
+      display:block;
+
+      margin-top:5px;
+
+      color:var(--blue);
+
+      font-family:"Manrope",sans-serif;
+      font-size:32px;
+
+      letter-spacing:-.045em;
+    }
+
+    .scenario-state small{
+      display:block;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .surface{
+      background:white;
+
+      border:1px solid var(--line);
+      border-radius:22px;
+
+      box-shadow:var(--shadow);
+    }
+
+    /* =========================
+       SCENARIO FLOW
+    ========================= */
+
+    .scenario-flow{
+      padding:31px;
+    }
+
+    .section-kicker{
+      color:var(--blue);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .section-title{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:24px;
+
+      letter-spacing:-.035em;
+    }
+
+    .section-text{
+      max-width:700px;
+
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:10px;
+      line-height:1.6;
+    }
+
+    .flow{
+      display:grid;
+
+      grid-template-columns:
+        minmax(190px,.75fr)
+        70px
+        minmax(260px,1.1fr)
+        70px
+        minmax(190px,.75fr);
+
+      gap:10px;
+
+      align-items:center;
+
+      margin-top:35px;
+    }
+
+    .flow-node{
+      min-height:205px;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+
+      padding:23px;
+
+      border:1px solid var(--line);
+      border-radius:18px;
+
+      background:#fafbf9;
+    }
+
+    .flow-node span{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .flow-number{
+      margin-top:11px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:43px;
+      line-height:.95;
+
+      letter-spacing:-.055em;
+    }
+
+    .flow-unit{
+      margin-top:7px;
+
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .flow-node.before{
+      border-color:#e3d7d0;
+      background:#fffaf7;
+    }
+
+    .flow-node.before .flow-number{
+      color:#9e563c;
+    }
+
+    .flow-node.after{
+      background:#f5faf6;
+      border-color:#c9dfcf;
+    }
+
+    .flow-node.after .flow-number{
+      color:var(--green);
+    }
+
+    .change-node{
+      min-height:255px;
+
+      position:relative;
+      overflow:hidden;
+
+      padding:25px;
+
+      border:1px solid #c8d5f5;
+      border-radius:19px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #f7faff 0%,
+          #f0f5ff 100%
+        );
+    }
+
+    .change-node::after{
+      content:"";
+
+      position:absolute;
+
+      width:180px;
+      height:180px;
+
+      right:-85px;
+      top:-85px;
+
+      border-radius:50%;
+
+      background:rgba(43,109,232,.08);
+    }
+
+    .change-label{
+      color:var(--blue);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .change-node h3{
+      max-width:320px;
+
+      margin-top:9px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:21px;
+      line-height:1.15;
+
+      letter-spacing:-.04em;
+    }
+
+    .change-node p{
+      max-width:350px;
+
+      margin-top:8px;
+
+      color:#5b6b7f;
+
+      font-size:9px;
+      line-height:1.6;
+    }
+
+    .change-saving{
+      display:flex;
+      align-items:flex-end;
+
+      gap:7px;
+
+      margin-top:20px;
+    }
+
+    .change-saving strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:37px;
+      line-height:1;
+
+      letter-spacing:-.05em;
+    }
+
+    .change-saving span{
+      padding-bottom:4px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .connector{
+      position:relative;
+
+      height:1px;
+
+      background:#c9d4cc;
+    }
+
+    .connector::after{
+      content:"";
+
+      position:absolute;
+
+      right:0;
+      top:50%;
+
+      width:7px;
+      height:7px;
+
+      border-top:1px solid #97a59c;
+      border-right:1px solid #97a59c;
+
+      transform:
+        translateY(-50%)
+        rotate(45deg);
+    }
+
+    /* =========================
+       CONTROL + RESULT
+    ========================= */
+
+    .sim-grid{
+      display:grid;
+
+      grid-template-columns:minmax(0,1.15fr) minmax(300px,.65fr);
+
+      gap:23px;
+
+      margin-top:24px;
+    }
+
+    .controls{
+      padding:30px;
+    }
+
+    .control-list{
+      margin-top:25px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .control-row{
+      padding:20px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .control-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:20px;
+    }
+
+    .control-copy strong{
+      display:block;
+
+      font-size:10px;
+    }
+
+    .control-copy span{
+      display:block;
+
+      margin-top:4px;
+
+      color:var(--muted);
+
+      font-size:8px;
+      line-height:1.5;
+    }
+
+    .control-value{
+      min-width:100px;
+
+      text-align:right;
+
+      color:var(--blue);
+
+      font-family:"Manrope",sans-serif;
+      font-size:16px;
+      font-weight:700;
+    }
+
+    input[type="range"]{
+      width:100%;
+      height:5px;
+
+      margin-top:17px;
+
+      appearance:none;
+      -webkit-appearance:none;
+
+      border-radius:100px;
+
+      background:#e8ece8;
+
+      outline:none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb{
+      appearance:none;
+      -webkit-appearance:none;
+
+      width:18px;
+      height:18px;
+
+      border:4px solid white;
+      border-radius:50%;
+
+      background:var(--blue);
+
+      box-shadow:
+        0 0 0 1px #aac0ef,
+        0 3px 8px rgba(43,109,232,.22);
+
+      cursor:pointer;
+    }
+
+    .range-labels{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      margin-top:7px;
+
+      color:#9aa59e;
+
+      font-size:7px;
+    }
+
+    /* RESULT */
+
+    .result{
+      overflow:hidden;
+    }
+
+    .result-top{
+      padding:27px 25px;
+
+      border-bottom:1px solid var(--line);
+
+      background:
+        linear-gradient(
+          145deg,
+          #f4f8ff 0%,
+          #ffffff 100%
+        );
+    }
+
+    .result-label{
+      color:var(--blue);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .result-top h3{
+      margin-top:8px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:24px;
+
+      letter-spacing:-.04em;
+    }
+
+    .result-top p{
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.6;
+    }
+
+    .result-metrics{
+      padding:4px 25px;
+    }
+
+    .result-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:15px;
+
+      padding:15px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .result-row span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .result-row strong{
+      text-align:right;
+
+      font-family:"Manrope",sans-serif;
+      font-size:14px;
+    }
+
+    .result-row strong.green{
+      color:var(--green);
+    }
+
+    .result-row strong.blue{
+      color:var(--blue);
+    }
+
+    .impact-box{
+      margin:18px 25px 0;
+
+      padding:18px;
+
+      border-radius:14px;
+
+      background:var(--green-soft);
+    }
+
+    .impact-box span{
+      color:var(--green);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .impact-box strong{
+      display:block;
+
+      margin-top:7px;
+
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:28px;
+      letter-spacing:-.045em;
+    }
+
+    .impact-box p{
+      margin-top:5px;
+
+      color:#537061;
+
+      font-size:8px;
+      line-height:1.6;
+    }
+
+    .result-action{
+      padding:19px 25px 24px;
+    }
+
+    .primary-btn{
+      width:100%;
+      height:46px;
+
+      border:0;
+      border-radius:10px;
+
+      background:var(--ink);
+      color:white;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    /* =========================
+       COMPARISON STRIP
+    ========================= */
+
+    .comparison{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+
+      margin-top:24px;
+
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .comparison-item{
+      padding:19px 17px;
+    }
+
+    .comparison-item + .comparison-item{
+      border-left:1px solid var(--line);
+    }
+
+    .comparison-item span{
+      color:var(--muted);
+
+      font-size:7px;
+    }
+
+    .comparison-item strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:16px;
+    }
+
+    .comparison-item strong.green{
+      color:var(--green);
+    }
+
+    /* =========================
+       NOTE
+    ========================= */
+
+    .note-panel{
+      margin-top:24px;
+
+      padding:25px 28px;
+
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+
+      gap:30px;
+    }
+
+    .note-copy{
+      max-width:760px;
+    }
+
+    .note-copy h3{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:18px;
+
+      letter-spacing:-.03em;
+    }
+
+    .note-copy p{
+      margin-top:7px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.65;
+    }
+
+    .save-state{
+      min-width:160px;
+
+      padding:14px;
+
+      border-radius:13px;
+
+      background:#f5f7f4;
+    }
+
+    .save-state span{
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .save-state strong{
+      display:block;
+
+      margin-top:4px;
+
+      color:var(--green);
+
+      font-size:10px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width:1120px){
+
+      .flow{
+        grid-template-columns:1fr;
+      }
+
+      .connector{
+        width:1px;
+        height:30px;
+
+        margin:auto;
+      }
+
+      .connector::after{
+        right:auto;
+        left:50%;
+        top:auto;
+        bottom:0;
+
+        transform:
+          translateX(-50%)
+          rotate(135deg);
+      }
+
+      .sim-grid{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+    @media(max-width:900px){
+
+      :root{
+        --sidebar:0px;
+      }
+
+      .app{
+        display:block;
+      }
+
+      .sidebar{
+        width:236px;
+
+        transform:translateX(-100%);
+
+        transition:.25s ease;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      .sidebar-overlay{
+        display:block;
+
+        position:fixed;
+        inset:0;
+
+        z-index:90;
+
+        background:rgba(16,32,25,.15);
+
+        opacity:0;
+        pointer-events:none;
+
+        transition:.2s ease;
+      }
+
+      .sidebar-overlay.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      .main{
+        grid-column:auto;
+      }
+
+      .mobile-menu{
+        display:grid;
+        place-items:center;
+      }
+
+    }
+
+    @media(max-width:760px){
+
+      .topbar{
+        padding:0 15px;
+      }
+
+      .breadcrumb,
+      .simulation-status{
+        display:none;
+      }
+
+      .back-btn span{
+        display:none;
+      }
+
+      .content{
+        width:calc(100% - 24px);
+
+        padding-top:28px;
+      }
+
+      .page-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .scenario-state{
+        text-align:left;
+      }
+
+      .scenario-flow,
+      .controls{
+        padding:23px 18px;
+      }
+
+      .comparison{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .comparison-item:nth-child(3){
+        border-left:0;
+        border-top:1px solid var(--line);
+      }
+
+      .comparison-item:nth-child(4){
+        border-top:1px solid var(--line);
+      }
+
+      .note-panel{
+        flex-direction:column;
+
+        padding:22px 18px;
+      }
+
+      .save-state{
+        width:100%;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashboard.html" class="brand">
+
+      <div class="brand-mark">
+        C
+      </div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+
+    </a>
+
+
+    <div class="factory-switch">
+
+      <small>
+        Current Factory
+      </small>
+
+      <strong>
+        <span class="sidebar-factory-name">Apex Components Pvt. Ltd.</span>
+      </strong>
+
+      <div class="factory-meta">
+
+        <span class="factory-dot"></span>
+
+        Automotive · Gujarat
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Overview
+      </div>
+
+      <div class="nav-list">
+
+        <a href="dashboard.html" class="nav-item">
+          <div class="nav-icon">O</div>
+          Carbon Overview
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Investigate
+      </div>
+
+      <div class="nav-list">
+
+        <a href="factory-data.html" class="nav-item">
+          <div class="nav-icon">D</div>
+          Factory Data
+        </a>
+
+        <a href="leak-detector.html" class="nav-item leak">
+          <div class="nav-icon">!</div>
+          Leak Detector
+        </a>
+
+        <a href="root-cause.html" class="nav-item root">
+          <div class="nav-icon">R</div>
+          Root Cause
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Act
+      </div>
+
+      <div class="nav-list">
+
+        <a href="solutions.html" class="nav-item solution">
+          <div class="nav-icon">S</div>
+          Circular Solutions
+        </a>
+
+        <a href="simulator.html" class="nav-item simulator active">
+          <div class="nav-icon">W</div>
+          What-If Simulator
+        </a>
+
+        <a href="roadmap.html" class="nav-item solution">
+          <div class="nav-icon">→</div>
+          Action Roadmap
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="confidence-box">
+
+        <div class="confidence-top">
+          <span>Data confidence</span>
+          <strong>82%</strong>
+        </div>
+
+        <div class="confidence-line">
+          <div class="confidence-fill"></div>
+        </div>
+
+      </div>
+
+
+      <div class="profile">
+
+        <div class="avatar">
+          PP
+        </div>
+
+        <div>
+          <strong>Prince</strong>
+          <span>Carbon Workspace</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="toggleSidebar()"
+  ></div>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()"
+        >
+          ☰
+        </button>
+
+
+        <a
+          href="solutions.html"
+          class="back-btn"
+        >
+          ←
+
+          <span>
+            Back to Solutions
+          </span>
+        </a>
+
+
+        <div class="breadcrumb">
+
+          Workspace
+
+          <span>›</span>
+
+          Circular Solutions
+
+          <span>›</span>
+
+          <strong>
+            What-If Simulator
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="simulation-status">
+
+        <span class="status-dot"></span>
+
+        Live scenario
+
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <!-- HEADER -->
+
+      <section class="page-head">
+
+        <div>
+
+          <div class="eyebrow">
+            What-If Scenario Engine
+          </div>
+
+          <h1>
+            Test the change before you commit to it.
+          </h1>
+
+          <p>
+            Adjust implementation assumptions and Carbon Core
+            recalculates the expected carbon reduction, future
+            footprint and estimated investment in real time.
+          </p>
+
+        </div>
+
+
+        <div class="scenario-state">
+
+          <span>
+            Selected Scenario
+          </span>
+
+          <strong id="scenarioSavingHead">
+            -74
+          </strong>
+
+          <small>
+            tCO₂e / year
+          </small>
+
+        </div>
+
+      </section>
+
+
+      <!-- SCENARIO FLOW -->
+
+      <section class="surface scenario-flow">
+
+        <div class="section-kicker">
+          Scenario Impact
+        </div>
+
+        <h2 class="section-title">
+          Baseline → change → future footprint.
+        </h2>
+
+        <p class="section-text">
+          The simulator starts from the current factory baseline and
+          applies only the carbon saving estimated for the selected intervention.
+        </p>
+
+
+        <div class="flow">
+
+          <!-- BEFORE -->
+
+          <div class="flow-node before">
+
+            <span>
+              Current Baseline
+            </span>
+
+            <div
+              class="flow-number"
+              id="baselineDisplay"
+            >
+              1,150
+            </div>
+
+            <div class="flow-unit">
+              tCO₂e / year
+            </div>
+
+          </div>
+
+
+          <div class="connector"></div>
+
+
+          <!-- CHANGE -->
+
+          <div class="change-node">
+
+            <div class="change-label">
+              Selected Change
+            </div>
+
+            <h3 id="solutionTitle">
+              Compressor Optimization & Leak Remediation
+            </h3>
+
+            <p id="solutionDescription">
+              Repair leakage, reduce unnecessary pressure
+              and optimize compressor sequencing.
+            </p>
+
+
+            <div class="change-saving">
+
+              <strong id="savingDisplay">
+                -74
+              </strong>
+
+              <span>
+                tCO₂e/year
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="connector"></div>
+
+
+          <!-- AFTER -->
+
+          <div class="flow-node after">
+
+            <span>
+              Future Footprint
+            </span>
+
+            <div
+              class="flow-number"
+              id="futureDisplay"
+            >
+              1,076
+            </div>
+
+            <div class="flow-unit">
+              tCO₂e / year
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- CONTROLS -->
+
+      <div class="sim-grid">
+
+        <section class="surface controls">
+
+          <div class="section-kicker">
+            Scenario Controls
+          </div>
+
+          <h2 class="section-title">
+            Change the assumptions.
+          </h2>
+
+          <p class="section-text">
+            Move the sliders to test a conservative or aggressive
+            implementation scenario.
+          </p>
+
+
+          <div class="control-list">
+
+            <!-- IMPLEMENTATION -->
+
+            <div class="control-row">
+
+              <div class="control-head">
+
+                <div class="control-copy">
+
+                  <strong>
+                    Implementation Level
+                  </strong>
+
+                  <span>
+                    Percentage of the recommended intervention implemented.
+                  </span>
+
+                </div>
+
+                <div
+                  class="control-value"
+                  id="implementationValue"
+                >
+                  100%
+                </div>
+
+              </div>
+
+
+              <input
+                type="range"
+                id="implementationRange"
+                min="20"
+                max="100"
+                step="5"
+                value="100"
+                oninput="updateScenario()"
+              />
+
+
+              <div class="range-labels">
+                <span>20%</span>
+                <span>100%</span>
+              </div>
+
+            </div>
+
+
+            <!-- PERFORMANCE -->
+
+            <div class="control-row">
+
+              <div class="control-head">
+
+                <div class="control-copy">
+
+                  <strong>
+                    Expected Performance
+                  </strong>
+
+                  <span>
+                    How much of the estimated technical saving is achieved.
+                  </span>
+
+                </div>
+
+                <div
+                  class="control-value"
+                  id="performanceValue"
+                >
+                  100%
+                </div>
+
+              </div>
+
+
+              <input
+                type="range"
+                id="performanceRange"
+                min="60"
+                max="110"
+                step="5"
+                value="100"
+                oninput="updateScenario()"
+              />
+
+
+              <div class="range-labels">
+                <span>Conservative</span>
+                <span>Optimistic</span>
+              </div>
+
+            </div>
+
+
+            <!-- COST -->
+
+            <div class="control-row">
+
+              <div class="control-head">
+
+                <div class="control-copy">
+
+                  <strong>
+                    Cost Variation
+                  </strong>
+
+                  <span>
+                    Adjust estimated implementation cost for local conditions.
+                  </span>
+
+                </div>
+
+                <div
+                  class="control-value"
+                  id="costVariationValue"
+                >
+                  0%
+                </div>
+
+              </div>
+
+
+              <input
+                type="range"
+                id="costRange"
+                min="-20"
+                max="40"
+                step="5"
+                value="0"
+                oninput="updateScenario()"
+              />
+
+
+              <div class="range-labels">
+                <span>-20%</span>
+                <span>+40%</span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- RESULTS -->
+
+        <aside class="surface result">
+
+          <div class="result-top">
+
+            <div class="result-label">
+              Scenario Result
+            </div>
+
+            <h3>
+              What changes if you act?
+            </h3>
+
+            <p>
+              Carbon and investment update instantly
+              based on your current assumptions.
+            </p>
+
+          </div>
+
+
+          <div class="result-metrics">
+
+            <div class="result-row">
+
+              <span>
+                Annual CO₂ saving
+              </span>
+
+              <strong
+                class="green"
+                id="resultSaving"
+              >
+                74 tCO₂e
+              </strong>
+
+            </div>
+
+
+            <div class="result-row">
+
+              <span>
+                Carbon reduction
+              </span>
+
+              <strong
+                class="green"
+                id="resultReduction"
+              >
+                6.4%
+              </strong>
+
+            </div>
+
+
+            <div class="result-row">
+
+              <span>
+                New footprint
+              </span>
+
+              <strong
+                class="blue"
+                id="resultFuture"
+              >
+                1,076 tCO₂e
+              </strong>
+
+            </div>
+
+
+            <div class="result-row">
+
+              <span>
+                Estimated investment
+              </span>
+
+              <strong id="resultCost">
+                ₹1.60L
+              </strong>
+
+            </div>
+
+
+            <div class="result-row">
+
+              <span>
+                Confidence
+              </span>
+
+              <strong id="resultConfidence">
+                88%
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="impact-box">
+
+            <span>
+              Avoided Carbon
+            </span>
+
+            <strong id="impactSaving">
+              74 tCO₂e
+            </strong>
+
+            <p>
+              This saving is deducted from the current
+              factory baseline for this scenario only.
+            </p>
+
+          </div>
+
+
+          <div style="margin-top:20px; padding:14px; background:#f4f7f4; border-radius:14px; border:1px solid var(--line);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted);">
+                Baseline vs Projected Footprint
+              </span>
+            </div>
+            <div style="position:relative; height:140px;">
+              <canvas id="scenarioChart"></canvas>
+            </div>
+          </div>
+
+          <div class="result-action">
+
+            <button
+              class="primary-btn"
+              onclick="addToRoadmap()"
+            >
+              Add Scenario to Roadmap →
+            </button>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+
+      <!-- COMPARISON -->
+
+      <section class="comparison">
+
+        <div class="comparison-item">
+
+          <span>
+            Current Baseline
+          </span>
+
+          <strong id="compareBaseline">
+            1,150 tCO₂e
+          </strong>
+
+        </div>
+
+
+        <div class="comparison-item">
+
+          <span>
+            Scenario Footprint
+          </span>
+
+          <strong id="compareFuture">
+            1,076 tCO₂e
+          </strong>
+
+        </div>
+
+
+        <div class="comparison-item">
+
+          <span>
+            Avoided Carbon
+          </span>
+
+          <strong
+            class="green"
+            id="compareSaving"
+          >
+            74 tCO₂e
+          </strong>
+
+        </div>
+
+
+        <div class="comparison-item">
+
+          <span>
+            Investment
+          </span>
+
+          <strong id="compareCost">
+            ₹1.60L
+          </strong>
+
+        </div>
+
+      </section>
+
+
+      <!-- NOTE -->
+
+      <section class="surface note-panel">
+
+        <div class="note-copy">
+
+          <div class="section-kicker">
+            Scenario Guardrail
+          </div>
+
+          <h3>
+            Simulation does not overwrite your baseline.
+          </h3>
+
+          <p>
+            This page creates a decision-support scenario only.
+            The original factory activity data and deterministic
+            baseline remain unchanged until a real implementation is
+            verified and recorded.
+          </p>
+
+        </div>
+
+
+        <div class="save-state">
+
+          <span>
+            Scenario state
+          </span>
+
+          <strong>
+            Ready for roadmap
+          </strong>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="api.js"></script>
+<script>
+  let activeRecommendation = null;
+  let allRecommendations = [];
+  let baseline = 1150;
+  let scenarioChartInstance = null;
+
+  function toggleSidebar(){
+    const sb = document.getElementById("sidebar");
+    if (sb) sb.classList.toggle("open");
+    const sbo = document.getElementById("sidebarOverlay");
+    if (sbo) sbo.classList.toggle("show");
+  }
+
+  function updateScenarioChart(baseVal, futureVal) {
+    const ctx = document.getElementById("scenarioChart");
+    if (!ctx) return;
+
+    if (scenarioChartInstance) {
+      scenarioChartInstance.data.datasets[0].data = [Math.round(baseVal), Math.round(futureVal)];
+      scenarioChartInstance.update();
+      return;
+    }
+
+    scenarioChartInstance = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Current Baseline", "Projected Footprint"],
+        datasets: [{
+          data: [Math.round(baseVal), Math.round(futureVal)],
+          backgroundColor: ["#ff7b45", "#238761"],
+          borderRadius: 8,
+          barThickness: 32
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (item) => `${item.parsed.y.toLocaleString("en-IN")} tCO₂e/yr`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: "DM Sans", size: 10, weight: 600 }, color: "#58665e" }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: "#eef2ee" },
+            ticks: { font: { family: "DM Sans", size: 9 }, color: "#7a8980" }
+          }
+        }
+      }
+    });
+  }
+
+  function updateScenario(){
+    if (!activeRecommendation) return;
+
+    const implementation = Number(document.getElementById("implementationRange").value);
+    const performance = Number(document.getElementById("performanceRange").value);
+    const costVariation = Number(document.getElementById("costRange").value);
+
+    document.getElementById("implementationValue").textContent = implementation + "%";
+    document.getElementById("performanceValue").textContent = performance + "%";
+    document.getElementById("costVariationValue").textContent = (costVariation > 0 ? "+" : "") + costVariation + "%";
+
+    const savingFactor = (implementation / 100) * (performance / 100);
+    let saving = activeRecommendation.carbon_saving_tco2e * savingFactor;
+    saving = Math.min(saving, baseline);
+
+    const future = Math.max(0, baseline - saving);
+    const reduction = baseline > 0 ? (saving / baseline) * 100 : 0;
+    const cost = activeRecommendation.estimated_cost_inr_lakhs * (implementation / 100) * (1 + costVariation / 100);
+
+    const roundedSaving = Math.round(saving);
+    const roundedFuture = Math.round(future);
+
+    // Flow displays
+    const sd = document.getElementById("savingDisplay");
+    if (sd) sd.textContent = "-" + roundedSaving;
+
+    const fd = document.getElementById("futureDisplay");
+    if (fd) fd.textContent = roundedFuture.toLocaleString("en-IN");
+
+    const ssh = document.getElementById("scenarioSavingHead");
+    if (ssh) ssh.textContent = "-" + roundedSaving;
+
+    // Result displays
+    const rs = document.getElementById("resultSaving");
+    if (rs) rs.textContent = roundedSaving.toLocaleString("en-IN") + " tCO₂e";
+
+    const rr = document.getElementById("resultReduction");
+    if (rr) rr.textContent = reduction.toFixed(1) + "%";
+
+    const rf = document.getElementById("resultFuture");
+    if (rf) rf.textContent = roundedFuture.toLocaleString("en-IN") + " tCO₂e";
+
+    const rc = document.getElementById("resultCost");
+    if (rc) rc.textContent = "₹" + cost.toFixed(2) + "L";
+
+    const is = document.getElementById("impactSaving");
+    if (is) is.textContent = roundedSaving.toLocaleString("en-IN") + " tCO₂e";
+
+    // Strip
+    const cf = document.getElementById("compareFuture");
+    if (cf) cf.textContent = roundedFuture.toLocaleString("en-IN") + " tCO₂e";
+
+    const cs = document.getElementById("compareSaving");
+    if (cs) cs.textContent = roundedSaving.toLocaleString("en-IN") + " tCO₂e";
+
+    const cc = document.getElementById("compareCost");
+    if (cc) cc.textContent = "₹" + cost.toFixed(2) + "L";
+
+    // Chart
+    updateScenarioChart(baseline, future);
+
+    // Save temporary state
+    const scenario = {
+      recommendation_id: activeRecommendation.id,
+      recommendation_code: activeRecommendation.code,
+      title: activeRecommendation.title,
+      baseline: Math.round(baseline),
+      saving: roundedSaving,
+      future: roundedFuture,
+      reduction: Number(reduction.toFixed(1)),
+      cost: Number(cost.toFixed(2)),
+      confidence: activeRecommendation.confidence_pct,
+      implementation: implementation,
+      performance: performance,
+      costVariation: costVariation
+    };
+    localStorage.setItem("carbonScenario", JSON.stringify(scenario));
+  }
+
+  async function addToRoadmap(){
+    const token = getAuthToken();
+    const factoryId = getActiveFactoryId();
+    if (!token || !factoryId) {
+      window.location.href = "roadmap.html";
+      return;
+    }
+
+    const implementation = Number(document.getElementById("implementationRange").value);
+    const performance = Number(document.getElementById("performanceRange").value);
+    const costVariation = Number(document.getElementById("costRange").value);
+
+    try {
+      const res = await apiFetch(`/api/factories/${factoryId}/scenarios`, {
+        method: "POST",
+        body: JSON.stringify({
+          recommendation_id: activeRecommendation ? activeRecommendation.id : null,
+          recommendation_code: activeRecommendation ? activeRecommendation.code : null,
+          implementation_percent: implementation,
+          performance_percent: performance,
+          cost_variation_percent: costVariation,
+          title: activeRecommendation ? `${activeRecommendation.title} (${implementation}%)` : "Custom Scenario"
+        })
+      });
+
+      if (res && res.id) {
+        localStorage.setItem("selectedScenarioId", res.id);
+      }
+    } catch (e) {
+      console.warn("Could not persist scenario to database, proceeding with local scenario:", e);
+    }
+
+    window.location.href = "roadmap.html";
+  }
+
+  async function initSimulator() {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const factoryId = getActiveFactoryId();
+    if (!factoryId) {
+      window.location.href = "factory-setup.html";
+      return;
+    }
+
+    try {
+      // 1. Fetch summary to get authoritative baseline
+      const summary = await apiFetch(`/api/factories/${factoryId}/emissions/summary`);
+      if (!summary.has_calculation) {
+        renderEmptyState(document.querySelector(".content"), "No carbon calculation available yet. Please complete data entry in Factory Data.");
+        return;
+      }
+
+      baseline = summary.total_carbon_tco2e || 1150.0;
+      document.getElementById("baselineDisplay").textContent = Math.round(baseline).toLocaleString("en-IN");
+      document.getElementById("compareBaseline").textContent = Math.round(baseline).toLocaleString("en-IN") + " tCO₂e";
+
+      // 2. Fetch recommendations
+      const recs = await apiFetch(`/api/factories/${factoryId}/recommendations`);
+      if (!recs || recs.length === 0) {
+        renderEmptyState(document.querySelector(".content"), "No recommendations available to simulate. Please complete baseline calculation.");
+        return;
+      }
+      allRecommendations = recs;
+
+      // Select recommendation
+      const params = new URLSearchParams(window.location.search);
+      const urlCode = params.get("solution") || localStorage.getItem("selectedSolution");
+      const urlId = params.get("id") || localStorage.getItem("selectedRecommendationId");
+
+      if (urlId) {
+        activeRecommendation = recs.find(r => String(r.id) === String(urlId));
+      }
+      if (!activeRecommendation && urlCode) {
+        activeRecommendation = recs.find(r => r.code === urlCode);
+      }
+      if (!activeRecommendation) {
+        activeRecommendation = recs[0];
+      }
+
+      // Update titles
+      document.getElementById("solutionTitle").textContent = activeRecommendation.title;
+      document.getElementById("solutionDescription").textContent = activeRecommendation.description;
+      document.getElementById("resultConfidence").textContent = activeRecommendation.confidence_pct + "%";
+
+      updateScenario();
+    } catch (err) {
+      console.error("Failed to initialize simulator:", err);
+      renderEmptyState(document.querySelector(".content"), "Failed to load simulation data. Please check connection.");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", initSimulator);
+  loadSidebarFactory();
+</script>
+
+</body>
+</html>

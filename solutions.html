@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — Circular Solutions</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root{
+      --bg:#f6f8f4;
+      --paper:#ffffff;
+
+      --ink:#102019;
+      --text:#34443c;
+      --muted:#7a8980;
+      --line:#dce3dd;
+
+      --green:#175f45;
+      --green2:#238761;
+      --green-soft:#e6f4ea;
+
+      --lime:#c9f454;
+      --lime-soft:#effbd0;
+
+      --orange:#ff7545;
+      --orange-soft:#fff0e9;
+
+      --amber:#d99220;
+      --amber-soft:#fff6df;
+
+      --blue:#2b6de8;
+      --blue-soft:#eaf1ff;
+
+      --purple:#725bd8;
+      --purple-soft:#f0edff;
+
+      --sidebar:236px;
+
+      --shadow:
+        0 24px 60px rgba(20,48,36,.06);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:"DM Sans",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button{
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:var(--sidebar) minmax(0,1fr);
+    }
+
+    /* ========================
+       SIDEBAR
+    ======================== */
+
+    .sidebar{
+      position:fixed;
+      inset:0 auto 0 0;
+
+      width:var(--sidebar);
+      min-height:100vh;
+
+      padding:24px 18px 20px;
+
+      display:flex;
+      flex-direction:column;
+
+      background:#fbfcfa;
+      border-right:1px solid var(--line);
+
+      z-index:100;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:0 8px;
+    }
+
+    .brand-mark{
+      width:38px;
+      height:38px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:11px;
+
+      background:var(--ink);
+      color:white;
+
+      font-family:"Manrope",sans-serif;
+      font-weight:800;
+    }
+
+    .brand-name{
+      font-family:"Manrope",sans-serif;
+      font-size:17px;
+      font-weight:800;
+      letter-spacing:-.04em;
+    }
+
+    .brand-name span{
+      color:var(--green2);
+    }
+
+    .factory-switch{
+      margin-top:28px;
+      padding:14px 13px;
+
+      border:1px solid var(--line);
+      border-radius:14px;
+
+      background:white;
+    }
+
+    .factory-switch small{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .factory-switch strong{
+      display:block;
+      margin-top:5px;
+
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .factory-meta{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .factory-dot{
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+      background:var(--lime);
+    }
+
+    .nav-group{
+      margin-top:26px;
+    }
+
+    .nav-label{
+      padding:0 10px;
+
+      color:#9aa69f;
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .nav-list{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+
+      margin-top:8px;
+    }
+
+    .nav-item{
+      position:relative;
+
+      min-height:42px;
+
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 11px;
+
+      border-radius:10px;
+
+      color:#58665e;
+
+      font-size:10px;
+      font-weight:600;
+
+      transition:.18s ease;
+    }
+
+    .nav-item:hover{
+      background:#f0f4ef;
+      color:var(--ink);
+    }
+
+    .nav-icon{
+      width:23px;
+      height:23px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:7px;
+
+      background:#f0f3ef;
+      color:#6c7971;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .nav-item.leak .nav-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .nav-item.root .nav-icon{
+      background:var(--amber-soft);
+      color:var(--amber);
+    }
+
+    .nav-item.solution .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .nav-item.simulator .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .nav-item.active{
+      background:#eef7f1;
+      color:var(--ink);
+      font-weight:700;
+    }
+
+    .nav-item.active::before{
+      content:"";
+
+      position:absolute;
+
+      left:-18px;
+      top:9px;
+      bottom:9px;
+
+      width:3px;
+
+      border-radius:0 4px 4px 0;
+
+      background:var(--green);
+    }
+
+    .nav-item.active .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+      padding-top:18px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .confidence-box{
+      padding:13px;
+
+      border-radius:12px;
+
+      background:#f2f6f2;
+    }
+
+    .confidence-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .confidence-top span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .confidence-top strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:12px;
+    }
+
+    .confidence-line{
+      height:5px;
+
+      margin-top:9px;
+
+      overflow:hidden;
+      border-radius:100px;
+
+      background:#e0e7e1;
+    }
+
+    .confidence-fill{
+      width:82%;
+      height:100%;
+
+      background:var(--green2);
+      border-radius:100px;
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding:15px 5px 0;
+    }
+
+    .avatar{
+      width:34px;
+      height:34px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:50%;
+
+      background:#dfe9e1;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .profile strong{
+      display:block;
+      font-size:9px;
+    }
+
+    .profile span{
+      display:block;
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    /* ========================
+       MAIN
+    ======================== */
+
+    .main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    .topbar{
+      height:69px;
+
+      position:sticky;
+      top:0;
+      z-index:80;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:0 34px;
+
+      border-bottom:1px solid var(--line);
+
+      background:rgba(246,248,244,.91);
+      backdrop-filter:blur(16px);
+    }
+
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .back-btn{
+      height:35px;
+
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:0 11px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:800;
+
+      transition:.18s ease;
+    }
+
+    .back-btn:hover{
+      background:var(--green-soft);
+      color:var(--green);
+
+      border-color:#bdd1c4;
+      transform:translateX(-2px);
+    }
+
+    .breadcrumb{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .breadcrumb strong{
+      color:var(--ink);
+    }
+
+    .match-status{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:7px 10px;
+
+      border:1px solid var(--line);
+      border-radius:100px;
+
+      background:white;
+
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .status-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+      background:var(--lime);
+    }
+
+    .mobile-menu{
+      display:none;
+
+      width:35px;
+      height:35px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+    }
+
+    .sidebar-overlay{
+      display:none;
+    }
+
+    /* ========================
+       CONTENT
+    ======================== */
+
+    .content{
+      width:min(1280px,calc(100% - 64px));
+
+      margin:auto;
+      padding:40px 0 70px;
+    }
+
+    .page-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+
+      gap:30px;
+
+      margin-bottom:28px;
+    }
+
+    .eyebrow{
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .page-head h1{
+      max-width:800px;
+
+      margin-top:9px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(38px,4.5vw,56px);
+      line-height:.98;
+
+      letter-spacing:-.055em;
+    }
+
+    .page-head p{
+      max-width:720px;
+
+      margin-top:13px;
+
+      color:var(--text);
+
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .match-summary{
+      min-width:205px;
+
+      text-align:right;
+    }
+
+    .match-summary span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .match-summary strong{
+      display:block;
+
+      margin-top:5px;
+
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:33px;
+
+      letter-spacing:-.045em;
+    }
+
+    .match-summary small{
+      display:block;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .surface{
+      border:1px solid var(--line);
+      border-radius:22px;
+
+      background:white;
+
+      box-shadow:var(--shadow);
+    }
+
+    /* ========================
+       BEST NEXT MOVE
+    ======================== */
+
+    .best-move{
+      position:relative;
+
+      overflow:hidden;
+
+      display:grid;
+      grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);
+    }
+
+    .best-move::after{
+      content:"";
+
+      position:absolute;
+
+      width:370px;
+      height:370px;
+
+      right:-180px;
+      top:-200px;
+
+      border-radius:50%;
+
+      background:rgba(201,244,84,.22);
+      pointer-events:none;
+    }
+
+    .move-main{
+      padding:34px 34px 32px;
+    }
+
+    .best-label{
+      width:max-content;
+
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:6px 9px;
+
+      border-radius:100px;
+
+      background:var(--lime-soft);
+      color:var(--green);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .best-label-dot{
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+
+      background:var(--green);
+    }
+
+    .move-main h2{
+      max-width:650px;
+
+      margin-top:17px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(29px,3vw,40px);
+      line-height:1.05;
+
+      letter-spacing:-.05em;
+    }
+
+    .move-description{
+      max-width:660px;
+
+      margin-top:12px;
+
+      color:var(--text);
+
+      font-size:11px;
+      line-height:1.7;
+    }
+
+    .cause-path{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+
+      gap:7px;
+
+      margin-top:21px;
+    }
+
+    .cause-path span{
+      padding:6px 8px;
+
+      border-radius:100px;
+
+      background:#f4f6f3;
+
+      color:#5d6b62;
+
+      font-size:7px;
+      font-weight:700;
+    }
+
+    .cause-path b{
+      color:#9aa69f;
+      font-size:8px;
+    }
+
+    .reason{
+      max-width:680px;
+
+      margin-top:25px;
+
+      padding:17px 18px;
+
+      border-left:3px solid var(--green);
+      border-radius:0 13px 13px 0;
+
+      background:#f4f8f4;
+    }
+
+    .reason span{
+      color:var(--green);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .reason p{
+      margin-top:6px;
+
+      color:#53675c;
+
+      font-size:9px;
+      line-height:1.65;
+    }
+
+    .move-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      margin-top:25px;
+    }
+
+    .primary-btn,
+    .secondary-btn{
+      height:45px;
+
+      padding:0 17px;
+
+      border-radius:10px;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .primary-btn{
+      border:0;
+
+      background:var(--green);
+      color:white;
+    }
+
+    .primary-btn:hover{
+      background:#124d38;
+    }
+
+    .secondary-btn{
+      border:1px solid var(--line);
+
+      background:white;
+      color:var(--text);
+    }
+
+    /* RIGHT SCORE */
+
+    .move-score{
+      position:relative;
+      z-index:2;
+
+      padding:32px 29px;
+
+      border-left:1px solid var(--line);
+
+      background:#fbfdf9;
+    }
+
+    .score-label{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .score-number{
+      display:flex;
+      align-items:flex-end;
+      gap:7px;
+
+      margin-top:8px;
+    }
+
+    .score-number strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:53px;
+      line-height:.95;
+
+      letter-spacing:-.06em;
+    }
+
+    .score-number span{
+      padding-bottom:5px;
+
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .score-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:15px;
+
+      padding:14px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .score-row:first-of-type{
+      margin-top:21px;
+      border-top:1px solid var(--line);
+    }
+
+    .score-row span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .score-row strong{
+      text-align:right;
+
+      font-family:"Manrope",sans-serif;
+      font-size:13px;
+    }
+
+    .score-row .saving{
+      color:var(--green);
+    }
+
+    .confidence-meter{
+      margin-top:21px;
+    }
+
+    .confidence-meter-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:20px;
+    }
+
+    .confidence-meter-head span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .confidence-meter-head strong{
+      color:var(--green);
+      font-size:9px;
+    }
+
+    .confidence-track{
+      height:6px;
+
+      margin-top:8px;
+
+      overflow:hidden;
+
+      border-radius:100px;
+
+      background:#e5ebe6;
+    }
+
+    .confidence-track div{
+      width:88%;
+      height:100%;
+
+      border-radius:100px;
+
+      background:var(--green2);
+    }
+
+    /* ========================
+       COMPARISON
+    ======================== */
+
+    .comparison{
+      margin-top:24px;
+
+      padding:30px;
+    }
+
+    .section-kicker{
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .section-title{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:24px;
+
+      letter-spacing:-.035em;
+    }
+
+    .section-text{
+      max-width:680px;
+
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:10px;
+      line-height:1.6;
+    }
+
+    .comparison-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+
+      gap:20px;
+    }
+
+    .compare-note{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .solution-list{
+      margin-top:22px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .solution-row{
+      min-height:98px;
+
+      display:grid;
+
+      grid-template-columns:42px minmax(0,1fr) 110px 105px 100px 115px;
+
+      gap:17px;
+
+      align-items:center;
+
+      border-bottom:1px solid var(--line);
+
+      transition:.18s ease;
+    }
+
+    .solution-row:hover{
+      background:#fbfcfa;
+    }
+
+    .solution-rank{
+      width:31px;
+      height:31px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:9px;
+
+      background:#f2f5f2;
+
+      color:#6c7971;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .solution-row.best .solution-rank{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .solution-name strong{
+      display:block;
+
+      font-size:10px;
+    }
+
+    .solution-name span{
+      display:block;
+
+      margin-top:4px;
+
+      color:var(--muted);
+
+      font-size:7px;
+      line-height:1.5;
+    }
+
+    .mini-metric strong{
+      display:block;
+
+      font-family:"Manrope",sans-serif;
+      font-size:13px;
+    }
+
+    .mini-metric strong.green{
+      color:var(--green);
+    }
+
+    .mini-metric span{
+      display:block;
+
+      margin-top:3px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .select-btn{
+      height:32px;
+
+      border:1px solid var(--line);
+      border-radius:8px;
+
+      background:white;
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .select-btn:hover{
+      background:var(--green-soft);
+    }
+
+    /* ========================
+       LOGIC STRIP
+    ======================== */
+
+    .logic{
+      margin-top:24px;
+
+      display:grid;
+
+      grid-template-columns:repeat(5,1fr);
+
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .logic-item{
+      position:relative;
+
+      padding:20px 17px;
+    }
+
+    .logic-item + .logic-item{
+      border-left:1px solid var(--line);
+    }
+
+    .logic-number{
+      color:#a0aba4;
+
+      font-family:"Manrope",sans-serif;
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .logic-item strong{
+      display:block;
+
+      margin-top:6px;
+
+      font-size:9px;
+    }
+
+    .logic-item p{
+      margin-top:4px;
+
+      color:var(--muted);
+
+      font-size:7px;
+      line-height:1.5;
+    }
+
+    .logic-item.active{
+      background:#f5faf6;
+    }
+
+    .logic-item.active .logic-number,
+    .logic-item.active strong{
+      color:var(--green);
+    }
+
+    /* ========================
+       INFO FOOTER
+    ======================== */
+
+    .explain{
+      margin-top:24px;
+
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:23px;
+    }
+
+    .explain-panel{
+      padding:25px 27px;
+    }
+
+    .explain-panel h3{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:18px;
+
+      letter-spacing:-.03em;
+    }
+
+    .explain-panel p{
+      margin-top:8px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.65;
+    }
+
+    .formula{
+      margin-top:17px;
+
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+
+      gap:7px;
+    }
+
+    .formula span{
+      padding:7px 9px;
+
+      border:1px solid var(--line);
+      border-radius:8px;
+
+      background:#fafbf9;
+
+      color:#536158;
+
+      font-size:7px;
+      font-weight:700;
+    }
+
+    .formula b{
+      color:var(--green);
+    }
+
+    .guardrail{
+      padding:17px;
+
+      margin-top:17px;
+
+      border-radius:12px;
+
+      background:#f6f8f5;
+    }
+
+    .guardrail strong{
+      display:block;
+
+      color:var(--green);
+
+      font-size:8px;
+    }
+
+    .guardrail p{
+      margin-top:4px;
+    }
+
+    /* ========================
+       RESPONSIVE
+    ======================== */
+
+    @media(max-width:1100px){
+
+      .best-move{
+        grid-template-columns:1fr;
+      }
+
+      .move-score{
+        border-left:0;
+        border-top:1px solid var(--line);
+      }
+
+      .solution-row{
+        grid-template-columns:38px minmax(0,1fr) 100px 100px;
+      }
+
+      .solution-row .mini-metric:nth-of-type(3){
+        display:none;
+      }
+
+      .select-btn{
+        grid-column:auto;
+      }
+
+    }
+
+    @media(max-width:900px){
+
+      :root{
+        --sidebar:0px;
+      }
+
+      .app{
+        display:block;
+      }
+
+      .sidebar{
+        width:236px;
+
+        transform:translateX(-100%);
+        transition:.25s ease;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      .sidebar-overlay{
+        display:block;
+
+        position:fixed;
+        inset:0;
+
+        z-index:90;
+
+        background:rgba(16,32,25,.15);
+
+        opacity:0;
+        pointer-events:none;
+
+        transition:.2s ease;
+      }
+
+      .sidebar-overlay.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      .main{
+        grid-column:auto;
+      }
+
+      .mobile-menu{
+        display:grid;
+        place-items:center;
+      }
+
+    }
+
+    @media(max-width:760px){
+
+      .topbar{
+        padding:0 15px;
+      }
+
+      .breadcrumb,
+      .match-status{
+        display:none;
+      }
+
+      .back-btn span{
+        display:none;
+      }
+
+      .content{
+        width:calc(100% - 24px);
+        padding-top:28px;
+      }
+
+      .page-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .match-summary{
+        text-align:left;
+      }
+
+      .move-main,
+      .move-score,
+      .comparison,
+      .explain-panel{
+        padding:23px 18px;
+      }
+
+      .move-actions{
+        flex-direction:column;
+      }
+
+      .primary-btn,
+      .secondary-btn{
+        width:100%;
+      }
+
+      .comparison-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .solution-row{
+        grid-template-columns:35px 1fr;
+
+        gap:9px;
+
+        padding:15px 0;
+      }
+
+      .mini-metric,
+      .select-btn{
+        grid-column:2;
+      }
+
+      .select-btn{
+        width:100%;
+      }
+
+      .logic{
+        grid-template-columns:1fr;
+      }
+
+      .logic-item + .logic-item{
+        border-left:0;
+        border-top:1px solid var(--line);
+      }
+
+      .explain{
+        grid-template-columns:1fr;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashboard.html" class="brand">
+
+      <div class="brand-mark">
+        C
+      </div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+
+    </a>
+
+
+    <div class="factory-switch">
+
+      <small>
+        Current Factory
+      </small>
+
+      <strong>
+        <span class="sidebar-factory-name">Apex Components Pvt. Ltd.</span>
+      </strong>
+
+      <div class="factory-meta">
+
+        <span class="factory-dot"></span>
+
+        Automotive · Gujarat
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Overview
+      </div>
+
+      <div class="nav-list">
+
+        <a href="dashboard.html" class="nav-item">
+
+          <div class="nav-icon">
+            O
+          </div>
+
+          Carbon Overview
+
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Investigate
+      </div>
+
+      <div class="nav-list">
+
+        <a href="factory-data.html" class="nav-item">
+
+          <div class="nav-icon">
+            D
+          </div>
+
+          Factory Data
+
+        </a>
+
+
+        <a href="leak-detector.html" class="nav-item leak">
+
+          <div class="nav-icon">
+            !
+          </div>
+
+          Leak Detector
+
+        </a>
+
+
+        <a href="root-cause.html" class="nav-item root">
+
+          <div class="nav-icon">
+            R
+          </div>
+
+          Root Cause
+
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Act
+      </div>
+
+      <div class="nav-list">
+
+        <a href="solutions.html" class="nav-item solution active">
+
+          <div class="nav-icon">
+            S
+          </div>
+
+          Circular Solutions
+
+        </a>
+
+
+        <a href="simulator.html" class="nav-item simulator">
+
+          <div class="nav-icon">
+            W
+          </div>
+
+          What-If Simulator
+
+        </a>
+
+
+        <a href="roadmap.html" class="nav-item solution">
+
+          <div class="nav-icon">
+            →
+          </div>
+
+          Action Roadmap
+
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="confidence-box">
+
+        <div class="confidence-top">
+
+          <span>
+            Data confidence
+          </span>
+
+          <strong>
+            82%
+          </strong>
+
+        </div>
+
+
+        <div class="confidence-line">
+          <div class="confidence-fill"></div>
+        </div>
+
+      </div>
+
+
+      <div class="profile">
+
+        <div class="avatar">
+          PP
+        </div>
+
+        <div>
+
+          <strong>
+            Prince
+          </strong>
+
+          <span>
+            Carbon Workspace
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="toggleSidebar()"
+  ></div>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()"
+        >
+          ☰
+        </button>
+
+
+        <a
+          href="root-cause.html"
+          class="back-btn"
+        >
+          ←
+
+          <span>
+            Back to Root Cause
+          </span>
+        </a>
+
+
+        <div class="breadcrumb">
+
+          Workspace
+
+          <span>›</span>
+
+          Root Cause
+
+          <span>›</span>
+
+          <strong>
+            Circular Solutions
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="match-status">
+
+        <span class="status-dot"></span>
+
+        4 interventions matched
+
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <!-- HEADER -->
+
+      <section class="page-head">
+
+        <div>
+
+          <div class="eyebrow">
+            Circular Alternative Engine
+          </div>
+
+          <h1>
+            Don't just find the problem. Decide what to change first.
+          </h1>
+
+          <p>
+            Carbon Core matches the identified root cause with
+            practical circular interventions and ranks them using
+            carbon impact, feasibility, cost, disruption and data confidence.
+          </p>
+
+        </div>
+
+
+        <div class="match-summary">
+
+          <span>
+            Best Action Confidence
+          </span>
+
+          <strong id="headerConfidence">
+            88%
+          </strong>
+
+          <small>
+            ranked intervention
+          </small>
+
+        </div>
+
+      </section>
+
+
+      <!-- BEST NEXT MOVE -->
+
+      <section class="surface best-move">
+
+        <div class="move-main">
+
+          <div class="best-label">
+
+            <span class="best-label-dot"></span>
+
+            Best Next Move
+
+          </div>
+
+
+          <h2 id="bestTitle">
+            Compressor Optimization & Leak Remediation
+          </h2>
+
+
+          <p
+            class="move-description"
+            id="bestDescription"
+          >
+            Repair compressed-air leaks, lower operating pressure
+            where technically feasible, and optimize compressor
+            sequencing to remove avoidable electricity demand.
+          </p>
+
+
+          <div class="cause-path">
+
+            <span>
+              Energy Hotspot
+            </span>
+
+            <b>→</b>
+
+            <span id="pathProcess">
+              Compressed Air
+            </span>
+
+            <b>→</b>
+
+            <span id="pathCause">
+              28% Leakage
+            </span>
+
+            <b>→</b>
+
+            <span id="pathSolution">
+              Leak Remediation
+            </span>
+
+          </div>
+
+
+          <div class="reason">
+
+            <span>
+              Why Carbon Core ranks this first
+            </span>
+
+            <p id="whyFirst">
+              It targets a confirmed avoidable loss, requires relatively
+              low implementation effort, and can reduce carbon without
+              reducing factory output. The signal is supported by strong
+              operational evidence.
+            </p>
+
+          </div>
+
+
+          <div class="move-actions">
+
+            <button
+              class="primary-btn"
+              onclick="simulateSelected()"
+            >
+              Simulate This Change →
+            </button>
+
+
+            <button
+              class="secondary-btn"
+              onclick="scrollToAlternatives()"
+            >
+              Compare Alternatives
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- SCORE -->
+
+        <div class="move-score">
+
+          <div class="score-label">
+            Estimated Annual Saving
+          </div>
+
+
+          <div class="score-number">
+
+            <strong id="savingValue">
+              74
+            </strong>
+
+            <span>
+              tCO₂e / year
+            </span>
+
+          </div>
+
+
+          <div class="score-row">
+
+            <span>
+              Implementation Cost
+            </span>
+
+            <strong id="costValue">
+              ₹1.6L
+            </strong>
+
+          </div>
+
+
+          <div class="score-row">
+
+            <span>
+              Estimated Payback
+            </span>
+
+            <strong id="paybackValue">
+              3.4 months
+            </strong>
+
+          </div>
+
+
+          <div class="score-row">
+
+            <span>
+              Implementation Effort
+            </span>
+
+            <strong id="effortValue">
+              Low
+            </strong>
+
+          </div>
+
+
+          <div class="score-row">
+
+            <span>
+              Carbon Reduction
+            </span>
+
+            <strong
+              class="saving"
+              id="reductionValue"
+            >
+              -6.4%
+            </strong>
+
+          </div>
+
+
+          <div class="confidence-meter">
+
+            <div class="confidence-meter-head">
+
+              <span>
+                Recommendation confidence
+              </span>
+
+              <strong id="confidenceValue">
+                88%
+              </strong>
+
+            </div>
+
+            <div class="confidence-track">
+
+              <div id="confidenceFill"></div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- COMPARISON -->
+
+      <section
+        class="surface comparison"
+        id="alternatives"
+      >
+
+        <div class="comparison-head">
+
+          <div>
+
+            <div class="section-kicker">
+              Intervention Comparison
+            </div>
+
+            <h2 class="section-title">
+              Other actions Carbon Core considered.
+            </h2>
+
+            <p class="section-text">
+              Solutions are ranked using estimated carbon impact,
+              circular value, implementation feasibility, confidence,
+              cost and production disruption.
+            </p>
+
+          </div>
+
+          <div class="compare-note">
+            Select any action to simulate it.
+          </div>
+
+        </div>
+
+
+        <div class="solution-list">
+
+          <!-- 1 -->
+
+          <div class="solution-row best">
+
+            <div class="solution-rank">
+              01
+            </div>
+
+
+            <div class="solution-name">
+
+              <strong>
+                Compressor Optimization & Leak Remediation
+              </strong>
+
+              <span>
+                Repair leaks · lower pressure · optimize sequencing
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong class="green">
+                74 tCO₂e
+              </strong>
+
+              <span>
+                annual saving
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong>
+                ₹1.6L
+              </strong>
+
+              <span>
+                estimated cost
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong>
+                88%
+              </strong>
+
+              <span>
+                confidence
+              </span>
+
+            </div>
+
+
+            <button
+              class="select-btn"
+              onclick="selectSolution('compressor')"
+            >
+              Selected
+            </button>
+
+          </div>
+
+
+          <!-- 2 -->
+
+          <div class="solution-row">
+
+            <div class="solution-rank">
+              02
+            </div>
+
+
+            <div class="solution-name">
+
+              <strong>
+                Increase Recycled Aluminium Share
+              </strong>
+
+              <span>
+                Substitute virgin aluminium with higher recycled-content feedstock
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong class="green">
+                105 tCO₂e
+              </strong>
+
+              <span>
+                annual saving
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong>
+                ₹3.8L
+              </strong>
+
+              <span>
+                estimated cost
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong>
+                82%
+              </strong>
+
+              <span>
+                confidence
+              </span>
+
+            </div>
+
+
+            <button
+              class="select-btn"
+              onclick="selectSolution('aluminium')"
+            >
+              Select
+            </button>
+
+          </div>
+
+
+          <!-- 3 -->
+
+          <div class="solution-row">
+
+            <div class="solution-rank">
+              03
+            </div>
+
+
+            <div class="solution-name">
+
+              <strong>
+                Waste Heat Recovery
+              </strong>
+
+              <span>
+                Recover useful process heat from thermal operations
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong class="green">
+                62 tCO₂e
+              </strong>
+
+              <span>
+                annual saving
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong>
+                ₹6.2L
+              </strong>
+
+              <span>
+                estimated cost
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong>
+                76%
+              </strong>
+
+              <span>
+                confidence
+              </span>
+
+            </div>
+
+
+            <button
+              class="select-btn"
+              onclick="selectSolution('heat')"
+            >
+              Select
+            </button>
+
+          </div>
+
+
+          <!-- 4 -->
+
+          <div class="solution-row">
+
+            <div class="solution-rank">
+              04
+            </div>
+
+
+            <div class="solution-name">
+
+              <strong>
+                Renewable Electricity Transition
+              </strong>
+
+              <span>
+                Replace part of purchased grid electricity with renewable supply
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong class="green">
+                92 tCO₂e
+              </strong>
+
+              <span>
+                annual saving
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong>
+                ₹8.5L
+              </strong>
+
+              <span>
+                estimated cost
+              </span>
+
+            </div>
+
+
+            <div class="mini-metric">
+
+              <strong>
+                71%
+              </strong>
+
+              <span>
+                confidence
+              </span>
+
+            </div>
+
+
+            <button
+              class="select-btn"
+              onclick="selectSolution('renewable')"
+            >
+              Select
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- LOGIC -->
+
+      <section class="logic">
+
+        <div class="logic-item">
+
+          <div class="logic-number">
+            01
+          </div>
+
+          <strong>
+            Detect
+          </strong>
+
+          <p>
+            Identify the largest emission source.
+          </p>
+
+        </div>
+
+
+        <div class="logic-item">
+
+          <div class="logic-number">
+            02
+          </div>
+
+          <strong>
+            Trace
+          </strong>
+
+          <p>
+            Follow emissions into the process layer.
+          </p>
+
+        </div>
+
+
+        <div class="logic-item">
+
+          <div class="logic-number">
+            03
+          </div>
+
+          <strong>
+            Explain
+          </strong>
+
+          <p>
+            Isolate the operational root cause.
+          </p>
+
+        </div>
+
+
+        <div class="logic-item active">
+
+          <div class="logic-number">
+            04
+          </div>
+
+          <strong>
+            Match
+          </strong>
+
+          <p>
+            Find circular interventions relevant to that cause.
+          </p>
+
+        </div>
+
+
+        <div class="logic-item">
+
+          <div class="logic-number">
+            05
+          </div>
+
+          <strong>
+            Simulate
+          </strong>
+
+          <p>
+            Test carbon and cost impact before action.
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- EXPLANATION -->
+
+      <div class="explain">
+
+        <section class="surface explain-panel">
+
+          <div class="section-kicker">
+            Ranking Logic
+          </div>
+
+          <h3>
+            Why isn't the biggest CO₂ saving always ranked first?
+          </h3>
+
+          <p>
+            Carbon Core considers whether an intervention is practical,
+            affordable and sufficiently supported by the available
+            evidence — not just its theoretical carbon saving.
+          </p>
+
+
+          <div class="formula">
+
+            <span>
+              Carbon Impact
+            </span>
+
+            <b>×</b>
+
+            <span>
+              Circular Value
+            </span>
+
+            <b>×</b>
+
+            <span>
+              Feasibility
+            </span>
+
+            <b>×</b>
+
+            <span>
+              Confidence
+            </span>
+
+            <b>÷</b>
+
+            <span>
+              Cost + Disruption
+            </span>
+
+          </div>
+
+        </section>
+
+
+        <section class="surface explain-panel">
+
+          <div class="section-kicker">
+            Responsible Recommendation
+          </div>
+
+          <h3>
+            Carbon numbers and AI are kept separate.
+          </h3>
+
+          <p>
+            Carbon calculations remain based on physical activity
+            and configured emission factors. AI is used for interpretation,
+            intervention matching and ranking.
+          </p>
+
+
+          <div class="guardrail">
+
+            <strong>
+              Guardrail
+            </strong>
+
+            <p>
+              Estimated cost, payback and savings are decision-support
+              values for the prototype and should be validated before
+              real-world implementation.
+            </p>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script src="api.js"></script>
+<script>
+  let activeSolutions = [];
+  let selectedSolutionCode = "compressor";
+
+  function toggleSidebar(){
+    const sb = document.getElementById("sidebar");
+    if (sb) sb.classList.toggle("open");
+    const sbo = document.getElementById("sidebarOverlay");
+    if (sbo) sbo.classList.toggle("show");
+  }
+
+  function renderSolutionDetail(rec) {
+    if (!rec) return;
+    const titleEl = document.getElementById("bestTitle");
+    if (titleEl) titleEl.textContent = rec.title;
+
+    const descEl = document.getElementById("bestDescription");
+    if (descEl) descEl.textContent = rec.description;
+
+    const procEl = document.getElementById("pathProcess");
+    if (procEl) procEl.textContent = rec.target_process || "Energy Hotspot";
+
+    const causeEl = document.getElementById("pathCause");
+    if (causeEl) causeEl.textContent = rec.root_cause || "Operational Inefficiency";
+
+    const solEl = document.getElementById("pathSolution");
+    if (solEl) solEl.textContent = rec.category || rec.title;
+
+    const whyEl = document.getElementById("whyFirst");
+    if (whyEl) whyEl.textContent = rec.justification || "It targets a confirmed avoidable loss, requires relatively low implementation effort, and can reduce carbon without reducing factory output.";
+
+    const saveEl = document.getElementById("savingValue");
+    if (saveEl) saveEl.textContent = Math.round(rec.carbon_saving_tco2e);
+
+    const costEl = document.getElementById("costValue");
+    if (costEl) costEl.textContent = "₹" + rec.estimated_cost_inr_lakhs + "L";
+
+    const paybackEl = document.getElementById("paybackValue");
+    if (paybackEl) paybackEl.textContent = rec.payback_months + " months";
+
+    const effortEl = document.getElementById("effortValue");
+    if (effortEl) effortEl.textContent = rec.effort_level;
+
+    const redEl = document.getElementById("reductionValue");
+    if (redEl) redEl.textContent = "-" + rec.reduction_pct + "%";
+
+    const confEl = document.getElementById("confidenceValue");
+    if (confEl) confEl.textContent = rec.confidence_pct + "%";
+
+    const headerConf = document.getElementById("headerConfidence");
+    if (headerConf) headerConf.textContent = rec.confidence_pct + "%";
+
+    const confFill = document.getElementById("confidenceFill");
+    if (confFill) confFill.style.width = rec.confidence_pct + "%";
+  }
+
+  function selectSolution(codeOrId) {
+    const rec = activeSolutions.find(r => r.code === codeOrId || String(r.id) === String(codeOrId)) || activeSolutions[0];
+    if (!rec) return;
+
+    selectedSolutionCode = rec.code;
+    renderSolutionDetail(rec);
+
+    localStorage.setItem("selectedRecommendationId", rec.id);
+    localStorage.setItem("selectedSolution", rec.code);
+
+    const rows = document.querySelectorAll(".solution-row");
+    rows.forEach(row => {
+      const rowCode = row.getAttribute("data-code");
+      const btn = row.querySelector(".select-btn");
+      if (rowCode === rec.code) {
+        row.classList.add("best");
+        if (btn) btn.textContent = "Selected";
+      } else {
+        row.classList.remove("best");
+        if (btn) btn.textContent = "Select";
+      }
+    });
+  }
+
+  function simulateSelected() {
+    const rec = activeSolutions.find(r => r.code === selectedSolutionCode) || activeSolutions[0];
+    if (rec) {
+      localStorage.setItem("selectedRecommendationId", rec.id);
+      localStorage.setItem("selectedSolution", rec.code);
+      window.location.href = `simulator.html?solution=${encodeURIComponent(rec.code)}&id=${rec.id}`;
+    } else {
+      window.location.href = "simulator.html";
+    }
+  }
+
+  function scrollToAlternatives() {
+    const alt = document.getElementById("alternatives");
+    if (alt) alt.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function loadSolutions() {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const factoryId = getActiveFactoryId();
+    if (!factoryId) {
+      window.location.href = "factory-setup.html";
+      return;
+    }
+
+    try {
+      const recs = await apiFetch(`/api/factories/${factoryId}/recommendations`);
+      if (!recs || recs.length === 0) {
+        renderEmptyState(document.querySelector(".content"), "No circular solutions available yet. Please complete data entry to generate solutions.");
+        return;
+      }
+
+      activeSolutions = recs;
+
+      const matchStrong = document.querySelector(".match-summary strong");
+      if (matchStrong) {
+        matchStrong.textContent = `${recs.length} Actions`;
+      }
+
+      const listContainer = document.querySelector(".solution-list");
+      if (listContainer) {
+        listContainer.innerHTML = recs.map((r, idx) => `
+          <div class="solution-row ${idx === 0 ? 'best' : ''}" data-code="${r.code}">
+            <div class="solution-rank">0${idx + 1}</div>
+            <div class="solution-name">
+              <strong>${r.title}</strong>
+              <span>${r.description}</span>
+            </div>
+            <div class="mini-metric">
+              <strong class="green">${Math.round(r.carbon_saving_tco2e)} tCO₂e</strong>
+              <span>annual saving</span>
+            </div>
+            <div class="mini-metric">
+              <strong>₹${r.estimated_cost_inr_lakhs}L</strong>
+              <span>estimated cost</span>
+            </div>
+            <div class="mini-metric">
+              <strong>${r.confidence_pct}%</strong>
+              <span>confidence</span>
+            </div>
+            <button class="select-btn" onclick="selectSolution('${r.code}')">
+              ${idx === 0 ? 'Selected' : 'Select'}
+            </button>
+          </div>
+        `).join("");
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const urlSol = params.get("solution") || localStorage.getItem("selectedSolution");
+      if (urlSol && recs.some(r => r.code === urlSol)) {
+        selectSolution(urlSol);
+      } else {
+        selectSolution(recs[0].code);
+      }
+    } catch (err) {
+      console.error("Failed to load recommendations:", err);
+      renderEmptyState(document.querySelector(".content"), "Failed to load solutions. Please ensure baseline calculation is complete.");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", loadSolutions);
+  loadSidebarFactory();
+</script>
+
+</body>
+</html>

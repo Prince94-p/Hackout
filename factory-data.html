@@ -1,0 +1,3558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — Factory Data</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root{
+      --bg:#f6f8f4;
+      --paper:#ffffff;
+
+      --ink:#102019;
+      --text:#34443c;
+      --muted:#7a8980;
+      --line:#dce3dd;
+
+      --green:#175f45;
+      --green2:#238761;
+      --green-soft:#e6f4ea;
+
+      --lime:#c9f454;
+
+      --orange:#ff7545;
+      --orange-soft:#fff0e9;
+
+      --blue:#2b6de8;
+      --blue-soft:#eaf1ff;
+
+      --purple:#725bd8;
+      --purple-soft:#f0edff;
+
+      --sidebar:236px;
+
+      --shadow:
+        0 24px 60px rgba(20,48,36,.06);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:"DM Sans",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    button,
+    input,
+    select,
+    textarea{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    /* =========================
+       APP
+    ========================= */
+
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:var(--sidebar) minmax(0,1fr);
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar{
+      min-height:100vh;
+
+      position:fixed;
+      inset:0 auto 0 0;
+
+      width:var(--sidebar);
+
+      padding:24px 18px 20px;
+
+      display:flex;
+      flex-direction:column;
+
+      background:#fbfcfa;
+
+      border-right:1px solid var(--line);
+
+      z-index:100;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 8px;
+    }
+
+    .brand-mark{
+      width:38px;
+      height:38px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:11px;
+
+      background:var(--ink);
+      color:white;
+
+      font-family:"Manrope",sans-serif;
+      font-size:15px;
+      font-weight:800;
+    }
+
+    .brand-name{
+      font-family:"Manrope",sans-serif;
+      font-size:17px;
+      font-weight:800;
+
+      letter-spacing:-.04em;
+    }
+
+    .brand-name span{
+      color:var(--green2);
+    }
+
+    .factory-switch{
+      margin-top:28px;
+
+      padding:14px 13px;
+
+      border:1px solid var(--line);
+      border-radius:14px;
+
+      background:white;
+    }
+
+    .factory-switch small{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .factory-switch strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-size:11px;
+      line-height:1.35;
+    }
+
+    .factory-meta{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .factory-dot{
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+    }
+
+    .nav-group{
+      margin-top:26px;
+    }
+
+    .nav-label{
+      padding:0 10px;
+
+      color:#9aa69f;
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .nav-list{
+      display:flex;
+      flex-direction:column;
+
+      gap:3px;
+
+      margin-top:8px;
+    }
+
+    .nav-item{
+      position:relative;
+
+      min-height:42px;
+
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 11px;
+
+      border-radius:10px;
+
+      color:#58665e;
+
+      font-size:10px;
+      font-weight:600;
+
+      transition:.18s ease;
+    }
+
+    .nav-item:hover{
+      background:#f0f4ef;
+      color:var(--ink);
+    }
+
+    .nav-icon{
+      width:23px;
+      height:23px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:7px;
+
+      background:#f0f3ef;
+
+      color:#6c7971;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .nav-item.active{
+      background:#f2f6ff;
+      color:var(--ink);
+
+      font-weight:700;
+    }
+
+    .nav-item.active::before{
+      content:"";
+
+      position:absolute;
+
+      left:-18px;
+      top:9px;
+      bottom:9px;
+
+      width:3px;
+
+      border-radius:0 4px 4px 0;
+
+      background:var(--blue);
+    }
+
+    .nav-item.active .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .nav-item.leak .nav-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .nav-item.root .nav-icon{
+      background:#fff6df;
+      color:#d99220;
+    }
+
+    .nav-item.solution .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .nav-item.simulator .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+
+      padding-top:18px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .confidence-box{
+      padding:13px;
+
+      border-radius:12px;
+
+      background:#f2f6f2;
+    }
+
+    .confidence-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:12px;
+    }
+
+    .confidence-top span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .confidence-top strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:12px;
+    }
+
+    .confidence-line{
+      height:5px;
+
+      margin-top:9px;
+
+      overflow:hidden;
+
+      border-radius:100px;
+
+      background:#e0e7e1;
+    }
+
+    .confidence-fill{
+      width:82%;
+      height:100%;
+
+      border-radius:100px;
+
+      background:var(--green2);
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding:15px 5px 0;
+    }
+
+    .avatar{
+      width:34px;
+      height:34px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:50%;
+
+      background:#dfe9e1;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .profile strong{
+      display:block;
+      font-size:9px;
+    }
+
+    .profile span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    /* =========================
+       TOPBAR
+    ========================= */
+
+    .topbar{
+      height:69px;
+
+      position:sticky;
+      top:0;
+
+      z-index:80;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:0 34px;
+
+      border-bottom:1px solid var(--line);
+
+      background:rgba(246,248,244,.91);
+      backdrop-filter:blur(16px);
+    }
+
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+
+    .back-btn{
+      height:35px;
+
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:0 11px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:800;
+
+      transition:.18s ease;
+    }
+
+    .back-btn:hover{
+      border-color:#bdd1c4;
+
+      background:var(--green-soft);
+      color:var(--green);
+
+      transform:translateX(-2px);
+    }
+
+    .breadcrumb{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .breadcrumb strong{
+      color:var(--ink);
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .draft-state{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .draft-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+    }
+
+    .mobile-menu{
+      display:none;
+
+      width:35px;
+      height:35px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+    }
+
+    .sidebar-overlay{
+      display:none;
+    }
+
+    /* =========================
+       PAGE
+    ========================= */
+
+    .content{
+      width:min(
+        1280px,
+        calc(100% - 64px)
+      );
+
+      margin:auto;
+
+      padding:40px 0 70px;
+    }
+
+    .page-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+
+      gap:30px;
+
+      margin-bottom:28px;
+    }
+
+    .eyebrow{
+      color:var(--blue);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .page-head h1{
+      margin-top:9px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(
+        38px,
+        4.5vw,
+        54px
+      );
+
+      line-height:.99;
+
+      letter-spacing:-.055em;
+
+      font-weight:700;
+    }
+
+    .page-head p{
+      max-width:700px;
+
+      margin-top:12px;
+
+      color:var(--text);
+
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .completion{
+      text-align:right;
+    }
+
+    .completion span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:7px;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .completion strong{
+      display:block;
+
+      margin-top:4px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:30px;
+
+      letter-spacing:-.04em;
+    }
+
+    /* =========================
+       CATEGORY NAV
+    ========================= */
+
+    .category-nav{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+
+      gap:5px;
+
+      padding:6px;
+
+      margin-bottom:22px;
+
+      border:1px solid var(--line);
+      border-radius:15px;
+
+      background:white;
+    }
+
+    .category-tab{
+      min-height:54px;
+
+      border:0;
+      border-radius:10px;
+
+      background:transparent;
+
+      color:var(--muted);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.07em;
+
+      transition:.18s ease;
+    }
+
+    .category-tab span{
+      display:block;
+
+      margin-top:3px;
+
+      color:inherit;
+
+      font-size:7px;
+      font-weight:500;
+
+      text-transform:none;
+      letter-spacing:0;
+    }
+
+    .category-tab:hover{
+      background:#f6f8f5;
+
+      color:var(--ink);
+    }
+
+    .category-tab.active{
+      background:var(--ink);
+      color:white;
+    }
+
+    .category-tab.done{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    /* =========================
+       WORKSPACE
+    ========================= */
+
+    .workspace{
+      display:grid;
+
+      grid-template-columns:
+        minmax(0,1fr)
+        340px;
+
+      gap:22px;
+
+      align-items:start;
+    }
+
+    .editor,
+    .preview{
+      border:1px solid var(--line);
+      border-radius:22px;
+
+      background:white;
+
+      box-shadow:var(--shadow);
+    }
+
+    .editor{
+      min-height:610px;
+
+      padding:34px 36px;
+    }
+
+    .preview{
+      position:sticky;
+
+      top:92px;
+
+      overflow:hidden;
+    }
+
+    /* =========================
+       PANEL
+    ========================= */
+
+    .panel{
+      display:none;
+    }
+
+    .panel.active{
+      display:block;
+
+      animation:panelIn .24s ease;
+    }
+
+    @keyframes panelIn{
+      from{
+        opacity:0;
+        transform:translateY(5px);
+      }
+
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .panel-label{
+      color:var(--blue);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .panel h2{
+      margin-top:7px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:27px;
+      font-weight:700;
+
+      letter-spacing:-.04em;
+    }
+
+    .panel-intro{
+      max-width:650px;
+
+      margin-top:7px;
+
+      color:var(--muted);
+
+      font-size:11px;
+      line-height:1.65;
+    }
+
+    /* =========================
+       STREAM
+    ========================= */
+
+    .stream{
+      margin-top:27px;
+
+      padding-top:21px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .stream-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:18px;
+
+      margin-bottom:18px;
+    }
+
+    .stream-title{
+      display:flex;
+      align-items:center;
+      gap:11px;
+    }
+
+    .stream-icon{
+      width:35px;
+      height:35px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:10px;
+
+      background:var(--green-soft);
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .stream-icon.orange{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .stream-icon.blue{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .stream-icon.purple{
+      background:var(--purple-soft);
+      color:var(--purple);
+    }
+
+    .stream-title strong{
+      display:block;
+
+      font-size:12px;
+    }
+
+    .stream-title span{
+      display:block;
+
+      margin-top:3px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    /* =========================
+       FORM
+    ========================= */
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+
+      gap:16px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+    }
+
+    .field.full{
+      grid-column:1 / -1;
+    }
+
+    .field label{
+      color:#59675f;
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;
+
+      border:1px solid #d9e0da;
+      border-radius:10px;
+
+      outline:none;
+
+      background:#fafbf9;
+      color:var(--ink);
+
+      font-size:11px;
+
+      transition:.18s ease;
+    }
+
+    .field input,
+    .field select{
+      height:46px;
+      padding:0 13px;
+    }
+
+    .field textarea{
+      min-height:90px;
+      padding:13px;
+
+      resize:vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus{
+      background:white;
+
+      border-color:var(--blue);
+
+      box-shadow:
+        0 0 0 3px rgba(43,109,232,.06);
+    }
+
+    .unit-field{
+      display:grid;
+
+      grid-template-columns:
+        1fr 120px;
+
+      gap:8px;
+    }
+
+    .factor-note{
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .add-stream{
+      height:42px;
+
+      margin-top:21px;
+
+      padding:0 15px;
+
+      border:1px dashed #bcc8bf;
+      border-radius:10px;
+
+      background:transparent;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .add-stream:hover{
+      background:var(--green-soft);
+    }
+
+    /* =========================
+       FOOTER BUTTONS
+    ========================= */
+
+    .panel-footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:15px;
+
+      margin-top:31px;
+
+      padding-top:21px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .secondary-btn,
+    .primary-btn{
+      height:45px;
+
+      padding:0 17px;
+
+      border-radius:10px;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .secondary-btn{
+      border:1px solid var(--line);
+
+      background:white;
+      color:var(--text);
+    }
+
+    .primary-btn{
+      border:0;
+
+      background:var(--ink);
+      color:white;
+    }
+
+    .calculate-btn{
+      background:var(--green);
+    }
+
+    /* =========================
+       PREVIEW
+    ========================= */
+
+    .preview-top{
+      padding:23px 23px 18px;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .preview-status{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--blue);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .preview-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+    }
+
+    .preview-top h3{
+      margin-top:15px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:23px;
+      font-weight:700;
+
+      letter-spacing:-.04em;
+    }
+
+    .preview-top p{
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.55;
+    }
+
+    .carbon-number{
+      padding:25px 23px 20px;
+    }
+
+    .estimate-label{
+      display:block;
+
+      margin-bottom:8px;
+
+      color:var(--muted);
+
+      font-size:9px;
+    }
+
+    .carbon-value{
+      display:flex;
+      align-items:flex-end;
+      flex-wrap:wrap;
+
+      gap:7px;
+    }
+
+    .carbon-value-number{
+      font-family:"Manrope",sans-serif;
+
+      font-size:47px;
+      font-weight:700;
+
+      line-height:.92;
+
+      letter-spacing:-.055em;
+
+      font-variant-numeric:tabular-nums;
+    }
+
+    .carbon-value-unit{
+      padding-bottom:4px;
+
+      color:var(--text);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .breakdown{
+      padding:2px 23px 23px;
+    }
+
+    .breakdown-row{
+      margin-top:17px;
+    }
+
+    .breakdown-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:10px;
+
+      font-size:9px;
+    }
+
+    .breakdown-head span{
+      color:var(--muted);
+    }
+
+    .breakdown-head strong{
+      font-family:"Manrope",sans-serif;
+      font-size:10px;
+    }
+
+    .bar{
+      height:6px;
+
+      margin-top:8px;
+
+      overflow:hidden;
+
+      border-radius:100px;
+
+      background:#edf1ed;
+    }
+
+    .bar-fill{
+      height:100%;
+
+      border-radius:100px;
+
+      transition:width .35s ease;
+    }
+
+    .energy-bar{
+      background:var(--orange);
+    }
+
+    .material-bar{
+      background:var(--green2);
+    }
+
+    .waste-bar{
+      background:var(--blue);
+    }
+
+    .method{
+      margin:0 23px 22px;
+
+      padding:16px;
+
+      border-radius:13px;
+
+      background:#f6f8f5;
+    }
+
+    .method-label{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .formula{
+      margin-top:8px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:10px;
+      font-weight:700;
+
+      line-height:1.55;
+    }
+
+    .formula span{
+      color:var(--green);
+    }
+
+    .confidence{
+      padding:19px 23px;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:18px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .confidence span{
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .confidence strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:24px;
+
+      letter-spacing:-.04em;
+    }
+
+    /* =========================
+       REVIEW
+    ========================= */
+
+    .review-summary{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+
+      margin-top:27px;
+
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .review-metric{
+      padding:20px 16px;
+    }
+
+    .review-metric + .review-metric{
+      border-left:1px solid var(--line);
+    }
+
+    .review-metric span{
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .review-metric strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:19px;
+    }
+
+    .review-list{
+      margin-top:22px;
+    }
+
+    .review-row{
+      display:grid;
+
+      grid-template-columns:
+        150px 1fr auto;
+
+      align-items:center;
+
+      gap:18px;
+
+      padding:15px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .review-row span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .review-row strong{
+      font-size:10px;
+    }
+
+    .review-row button{
+      border:0;
+
+      background:none;
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .ready-box{
+      display:flex;
+      align-items:flex-start;
+
+      gap:12px;
+
+      margin-top:23px;
+
+      padding:17px;
+
+      border-radius:13px;
+
+      background:var(--green-soft);
+    }
+
+    .ready-icon{
+      width:30px;
+      height:30px;
+
+      flex-shrink:0;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:9px;
+
+      background:white;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .ready-box strong{
+      color:var(--green);
+
+      font-size:9px;
+    }
+
+    .ready-box p{
+      margin-top:4px;
+
+      color:#526c5f;
+
+      font-size:8px;
+      line-height:1.6;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width:1050px){
+
+      .workspace{
+        grid-template-columns:1fr;
+      }
+
+      .preview{
+        position:static;
+      }
+
+    }
+
+    @media(max-width:900px){
+
+      :root{
+        --sidebar:0px;
+      }
+
+      .app{
+        display:block;
+      }
+
+      .sidebar{
+        width:236px;
+
+        transform:translateX(-100%);
+
+        transition:.25s ease;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      .sidebar-overlay{
+        display:block;
+
+        position:fixed;
+        inset:0;
+
+        z-index:90;
+
+        background:rgba(16,32,25,.15);
+
+        opacity:0;
+
+        pointer-events:none;
+
+        transition:.2s ease;
+      }
+
+      .sidebar-overlay.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      .main{
+        grid-column:auto;
+      }
+
+      .mobile-menu{
+        display:grid;
+        place-items:center;
+      }
+
+    }
+
+    @media(max-width:720px){
+
+      .topbar{
+        padding:0 15px;
+      }
+
+      .breadcrumb,
+      .draft-state{
+        display:none;
+      }
+
+      .back-btn span{
+        display:none;
+      }
+
+      .content{
+        width:min(
+          100% - 24px,
+          1280px
+        );
+
+        padding-top:28px;
+      }
+
+      .page-head{
+        flex-direction:column;
+
+        align-items:flex-start;
+      }
+
+      .completion{
+        text-align:left;
+      }
+
+      .category-nav{
+        grid-template-columns:1fr;
+      }
+
+      .category-tab span{
+        display:none;
+      }
+
+      .editor{
+        padding:27px 19px;
+      }
+
+      .form-grid{
+        grid-template-columns:1fr;
+      }
+
+      .field.full{
+        grid-column:auto;
+      }
+
+      .unit-field{
+        grid-template-columns:1fr;
+      }
+
+      .panel-footer{
+        flex-direction:column-reverse;
+      }
+
+      .secondary-btn,
+      .primary-btn{
+        width:100%;
+      }
+
+      .review-summary{
+        grid-template-columns:1fr;
+      }
+
+      .review-metric + .review-metric{
+        border-left:0;
+        border-top:1px solid var(--line);
+      }
+
+      .review-row{
+        grid-template-columns:1fr;
+
+        gap:5px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- ================================
+       SIDEBAR
+  ================================= -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashboard.html" class="brand">
+
+      <div class="brand-mark">
+        C
+      </div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+
+    </a>
+
+
+    <div class="factory-switch">
+
+      <small>
+        Current Factory
+      </small>
+
+      <strong>
+        <span class="sidebar-factory-name">Apex Components Pvt. Ltd.</span>
+      </strong>
+
+      <div class="factory-meta">
+
+        <span class="factory-dot"></span>
+
+        Automotive · Gujarat
+
+      </div>
+
+    </div>
+
+
+    <!-- OVERVIEW -->
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Overview
+      </div>
+
+      <div class="nav-list">
+
+        <a href="dashboard.html" class="nav-item">
+
+          <div class="nav-icon">
+            O
+          </div>
+
+          Carbon Overview
+
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <!-- INVESTIGATE -->
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Investigate
+      </div>
+
+      <div class="nav-list">
+
+        <a href="factory-data.html" class="nav-item active">
+
+          <div class="nav-icon">
+            D
+          </div>
+
+          Factory Data
+
+        </a>
+
+
+        <a href="leak-detector.html" class="nav-item leak">
+
+          <div class="nav-icon">
+            !
+          </div>
+
+          Leak Detector
+
+        </a>
+
+
+        <a href="root-cause.html" class="nav-item root">
+
+          <div class="nav-icon">
+            R
+          </div>
+
+          Root Cause
+
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <!-- ACT -->
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Act
+      </div>
+
+      <div class="nav-list">
+
+        <a href="solutions.html" class="nav-item solution">
+
+          <div class="nav-icon">
+            S
+          </div>
+
+          Circular Solutions
+
+        </a>
+
+
+        <a href="simulator.html" class="nav-item simulator">
+
+          <div class="nav-icon">
+            W
+          </div>
+
+          What-If Simulator
+
+        </a>
+
+
+        <a href="roadmap.html" class="nav-item solution">
+
+          <div class="nav-icon">
+            →
+          </div>
+
+          Action Roadmap
+
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="confidence-box">
+
+        <div class="confidence-top">
+
+          <span>
+            Data confidence
+          </span>
+
+          <strong>
+            82%
+          </strong>
+
+        </div>
+
+        <div class="confidence-line">
+
+          <div class="confidence-fill"></div>
+
+        </div>
+
+      </div>
+
+
+      <div class="profile">
+
+        <div class="avatar">
+          PP
+        </div>
+
+        <div>
+
+          <strong>
+            Prince
+          </strong>
+
+          <span>
+            Carbon Workspace
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="toggleSidebar()"
+  ></div>
+
+
+  <!-- ================================
+       MAIN
+  ================================= -->
+
+  <main class="main">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()"
+        >
+          ☰
+        </button>
+
+        <a
+          href="dashboard.html"
+          class="back-btn"
+        >
+          ←
+
+          <span>
+            Back to Overview
+          </span>
+        </a>
+
+
+        <div class="breadcrumb">
+
+          Workspace
+
+          <span>›</span>
+
+          <strong>
+            Factory Data
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="top-actions">
+
+        <div class="draft-state">
+
+          <span class="draft-dot"></span>
+
+          Changes saved locally
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <!-- HEADER -->
+
+      <section class="page-head">
+
+        <div>
+
+          <div class="eyebrow">
+            Factory Activity Data
+          </div>
+
+          <h1>
+            Build the carbon baseline.
+          </h1>
+
+          <p>
+            Add the physical activity behind your factory.
+            Carbon Core converts energy, material, process
+            and waste data into an auditable baseline.
+          </p>
+
+        </div>
+
+
+        <div class="completion">
+
+          <span>
+            Data completed
+          </span>
+
+          <strong id="completionValue">
+            20%
+          </strong>
+
+        </div>
+
+      </section>
+
+
+      <!-- CATEGORY NAV -->
+
+      <div class="category-nav">
+
+        <button
+          class="category-tab active"
+          onclick="goToPanel(0)"
+        >
+          Energy
+
+          <span>
+            Electricity & fuels
+          </span>
+        </button>
+
+
+        <button
+          class="category-tab"
+          onclick="goToPanel(1)"
+        >
+          Materials
+
+          <span>
+            Raw inputs
+          </span>
+        </button>
+
+
+        <button
+          class="category-tab"
+          onclick="goToPanel(2)"
+        >
+          Processes
+
+          <span>
+            Equipment
+          </span>
+        </button>
+
+
+        <button
+          class="category-tab"
+          onclick="goToPanel(3)"
+        >
+          Waste
+
+          <span>
+            Waste streams
+          </span>
+        </button>
+
+
+        <button
+          class="category-tab"
+          onclick="goToPanel(4)"
+        >
+          Review
+
+          <span>
+            Calculate
+          </span>
+        </button>
+
+      </div>
+
+
+      <div class="workspace">
+
+        <!-- ============================
+             EDITOR
+        ============================= -->
+
+        <section class="editor">
+
+          <!-- ENERGY -->
+
+          <div class="panel active">
+
+            <div class="panel-label">
+              01 / Energy & Utilities
+            </div>
+
+            <h2>
+              What powers this factory?
+            </h2>
+
+            <p class="panel-intro">
+              Add electricity and fuels used across
+              production, utilities and support operations.
+            </p>
+
+
+            <div class="stream">
+
+              <div class="stream-head">
+
+                <div class="stream-title">
+
+                  <div class="stream-icon orange">
+                    E
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      Grid Electricity
+                    </strong>
+
+                    <span>
+                      Purchased electricity
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+                <div class="field">
+
+                  <label>
+                    Energy Source
+                  </label>
+
+                  <select>
+
+                    <option>
+                      Grid Electricity
+                    </option>
+
+                    <option>
+                      Solar Electricity
+                    </option>
+
+                    <option>
+                      Natural Gas
+                    </option>
+
+                    <option>
+                      Diesel
+                    </option>
+
+                    <option>
+                      LPG
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Annual Consumption
+                  </label>
+
+                  <div class="unit-field">
+
+                    <input
+                      type="number"
+                      id="energyAmount"
+                      value="1250000"
+                      oninput="calculatePreview()"
+                    />
+
+                    <select>
+
+                      <option>
+                        kWh/year
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Emission Factor
+                  </label>
+
+                  <input
+                    type="number"
+                    id="energyFactor"
+                    value="0.48"
+                    step="0.01"
+                    oninput="calculatePreview()"
+                  />
+
+                  <div class="factor-note">
+                    kgCO₂e per kWh
+                  </div>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Factor Source
+                  </label>
+
+                  <select>
+
+                    <option>
+                      Configured Grid Factor
+                    </option>
+
+                    <option>
+                      Government Dataset
+                    </option>
+
+                    <option>
+                      Company Specific Factor
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <button class="add-stream">
+              + Add another energy source
+            </button>
+
+
+            <div class="panel-footer">
+
+              <button class="secondary-btn">
+                Save Draft
+              </button>
+
+              <button
+                class="primary-btn"
+                onclick="goToPanel(1)"
+              >
+                Continue to Materials →
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- MATERIALS -->
+
+          <div class="panel">
+
+            <div class="panel-label">
+              02 / Material Inputs
+            </div>
+
+            <h2>
+              Which materials carry the carbon?
+            </h2>
+
+            <p class="panel-intro">
+              Record raw material use so Carbon Core can
+              estimate embodied emissions and circular
+              substitution opportunities.
+            </p>
+
+
+            <div class="stream">
+
+              <div class="stream-head">
+
+                <div class="stream-title">
+
+                  <div class="stream-icon">
+                    M
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      Aluminium Alloy 6061
+                    </strong>
+
+                    <span>
+                      Primary production material
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+                <div class="field">
+
+                  <label>
+                    Material Name
+                  </label>
+
+                  <input
+                    type="text"
+                    value="Virgin Aluminium Alloy 6061"
+                  />
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Annual Quantity
+                  </label>
+
+                  <div class="unit-field">
+
+                    <input
+                      type="number"
+                      id="materialAmount"
+                      value="50000"
+                      oninput="calculatePreview()"
+                    />
+
+                    <select>
+
+                      <option>
+                        kg/year
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Recycled Content
+                  </label>
+
+                  <div class="unit-field">
+
+                    <input
+                      type="number"
+                      id="materialRecycled"
+                      value="20"
+                    />
+
+                    <select>
+
+                      <option>
+                        %
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Emission Factor
+                  </label>
+
+                  <input
+                    type="number"
+                    id="materialFactor"
+                    value="8"
+                    step="0.1"
+                    oninput="calculatePreview()"
+                  />
+
+                  <div class="factor-note">
+                    kgCO₂e per kg material
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <button class="add-stream">
+              + Add another material
+            </button>
+
+
+            <div class="panel-footer">
+
+              <button
+                class="secondary-btn"
+                onclick="goToPanel(0)"
+              >
+                ← Energy
+              </button>
+
+              <button
+                class="primary-btn"
+                onclick="goToPanel(2)"
+              >
+                Continue to Processes →
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- PROCESSES -->
+
+          <div class="panel">
+
+            <div class="panel-label">
+              03 / Process Operations
+            </div>
+
+            <h2>
+              Where is activity happening?
+            </h2>
+
+            <p class="panel-intro">
+              Connect energy and material use to actual
+              production processes so Carbon Core can
+              investigate leak points.
+            </p>
+
+
+            <div class="stream">
+
+              <div class="stream-head">
+
+                <div class="stream-title">
+
+                  <div class="stream-icon purple">
+                    P
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      CNC Machining & Turning
+                    </strong>
+
+                    <span>
+                      Production process
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+                <div class="field">
+
+                  <label>
+                    Process Name
+                  </label>
+
+                  <input
+                    type="text"
+                    value="CNC Machining & Turning"
+                  />
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Equipment
+                  </label>
+
+                  <input
+                    type="text"
+                    value="8 × VMC 5-Axis Spindles"
+                  />
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Operating Hours
+                  </label>
+
+                  <div class="unit-field">
+
+                    <input
+                      type="number"
+                      value="6200"
+                    />
+
+                    <select>
+
+                      <option>
+                        hours/year
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Primary Energy Source
+                  </label>
+
+                  <select>
+
+                    <option>
+                      Grid Electricity
+                    </option>
+
+                    <option>
+                      Natural Gas
+                    </option>
+
+                    <option>
+                      Diesel
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <div class="field full">
+
+                  <label>
+                    Operational Notes
+                  </label>
+
+                  <textarea>High spindle idle runtime observed during tool changes and batch transition.</textarea>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="stream">
+
+              <div class="stream-head">
+
+                <div class="stream-title">
+
+                  <div class="stream-icon orange">
+                    !
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      Compressed Air System
+                    </strong>
+
+                    <span>
+                      Utility process
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+                <div class="field">
+
+                  <label>
+                    Operating Pressure
+                  </label>
+
+                  <div class="unit-field">
+
+                    <input
+                      type="number"
+                      id="airPressure"
+                      value="7.5"
+                    />
+
+                    <select>
+
+                      <option>
+                        bar
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Estimated Leakage
+                  </label>
+
+                  <div class="unit-field">
+
+                    <input
+                      type="number"
+                      id="airLeakage"
+                      value="28"
+                    />
+
+                    <select>
+
+                      <option>
+                        %
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Annual Energy Use
+                  </label>
+
+                  <div class="unit-field">
+
+                    <input
+                      type="number"
+                      id="airEnergy"
+                      value="337500"
+                    />
+
+                    <select>
+
+                      <option>
+                        kWh/year
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <button class="add-stream">
+              + Add another process
+            </button>
+
+
+            <div class="panel-footer">
+
+              <button
+                class="secondary-btn"
+                onclick="goToPanel(1)"
+              >
+                ← Materials
+              </button>
+
+              <button
+                class="primary-btn"
+                onclick="goToPanel(3)"
+              >
+                Continue to Waste →
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- WASTE -->
+
+          <div class="panel">
+
+            <div class="panel-label">
+              04 / Waste Streams
+            </div>
+
+            <h2>
+              What leaves the factory?
+            </h2>
+
+            <p class="panel-intro">
+              Record waste quantities and treatment routes
+              to identify disposal emissions and circular
+              recovery opportunities.
+            </p>
+
+
+            <div class="stream">
+
+              <div class="stream-head">
+
+                <div class="stream-title">
+
+                  <div class="stream-icon blue">
+                    W
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      Aluminium Machining Swarf
+                    </strong>
+
+                    <span>
+                      Metal waste stream
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+                <div class="field">
+
+                  <label>
+                    Waste Type
+                  </label>
+
+                  <input
+                    type="text"
+                    value="Aluminium Machining Swarf"
+                  />
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Annual Quantity
+                  </label>
+
+                  <div class="unit-field">
+
+                    <input
+                      type="number"
+                      id="wasteAmount"
+                      value="75000"
+                      oninput="calculatePreview()"
+                    />
+
+                    <select>
+
+                      <option>
+                        kg/year
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Treatment Method
+                  </label>
+
+                  <select>
+
+                    <option>
+                      Landfill / Disposal
+                    </option>
+
+                    <option>
+                      External Recycling
+                    </option>
+
+                    <option>
+                      Internal Reuse
+                    </option>
+
+                    <option>
+                      Incineration
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label>
+                    Emission Factor
+                  </label>
+
+                  <input
+                    type="number"
+                    id="wasteFactor"
+                    value="2"
+                    step="0.1"
+                    oninput="calculatePreview()"
+                  />
+
+                  <div class="factor-note">
+                    kgCO₂e per kg waste
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <button class="add-stream">
+              + Add another waste stream
+            </button>
+
+
+            <div class="panel-footer">
+
+              <button
+                class="secondary-btn"
+                onclick="goToPanel(2)"
+              >
+                ← Processes
+              </button>
+
+              <button
+                class="primary-btn"
+                onclick="goToPanel(4)"
+              >
+                Review Baseline →
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- REVIEW -->
+
+          <div class="panel">
+
+            <div class="panel-label">
+              05 / Baseline Review
+            </div>
+
+            <h2>
+              Your factory data is ready.
+            </h2>
+
+            <p class="panel-intro">
+              Review the activity model before Carbon Core
+              calculates and stores the carbon baseline.
+            </p>
+
+
+            <div class="review-summary">
+
+              <div class="review-metric">
+
+                <span>
+                  Estimated Baseline
+                </span>
+
+                <strong id="reviewBaseline">
+                  1,150 tCO₂e
+                </strong>
+
+              </div>
+
+
+              <div class="review-metric">
+
+                <span>
+                  Largest Category
+                </span>
+
+                <strong id="reviewLargest">
+                  Energy
+                </strong>
+
+              </div>
+
+
+              <div class="review-metric">
+
+                <span>
+                  Data Confidence
+                </span>
+
+                <strong>
+                  82%
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="review-list">
+
+              <div class="review-row">
+
+                <span>
+                  Energy
+                </span>
+
+                <strong id="reviewEnergy">
+                  600 tCO₂e/year
+                </strong>
+
+                <button onclick="goToPanel(0)">
+                  Edit
+                </button>
+
+              </div>
+
+
+              <div class="review-row">
+
+                <span>
+                  Materials
+                </span>
+
+                <strong id="reviewMaterial">
+                  400 tCO₂e/year
+                </strong>
+
+                <button onclick="goToPanel(1)">
+                  Edit
+                </button>
+
+              </div>
+
+
+              <div class="review-row">
+
+                <span>
+                  Processes
+                </span>
+
+                <strong>
+                  Linked operational drivers
+                </strong>
+
+                <button onclick="goToPanel(2)">
+                  Edit
+                </button>
+
+              </div>
+
+
+              <div class="review-row">
+
+                <span>
+                  Waste
+                </span>
+
+                <strong id="reviewWaste">
+                  150 tCO₂e/year
+                </strong>
+
+                <button onclick="goToPanel(3)">
+                  Edit
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div class="ready-box">
+
+              <div class="ready-icon">
+                ✓
+              </div>
+
+              <div>
+
+                <strong>
+                  Ready for Carbon Core analysis
+                </strong>
+
+                <p>
+                  Activity data will be multiplied by configured
+                  emission factors. Carbon Core will then identify
+                  high-emission categories and investigate process
+                  leak points.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="panel-footer">
+
+              <button
+                class="secondary-btn"
+                onclick="goToPanel(3)"
+              >
+                ← Waste
+              </button>
+
+              <button
+                class="primary-btn calculate-btn"
+                onclick="calculateBaseline()"
+              >
+                Calculate Carbon Baseline →
+              </button>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ============================
+             LIVE PREVIEW
+        ============================= -->
+
+        <aside class="preview">
+
+          <div class="preview-top">
+
+            <div class="preview-status">
+
+              <span class="preview-dot"></span>
+
+              Live Carbon Preview
+
+            </div>
+
+            <h3>
+              Estimated footprint
+            </h3>
+
+            <p>
+              Updates as activity data and emission
+              factors change.
+            </p>
+
+          </div>
+
+
+          <div class="carbon-number">
+
+            <span class="estimate-label">
+              Current estimate
+            </span>
+
+            <div class="carbon-value">
+
+              <strong
+                class="carbon-value-number"
+                id="totalCarbon"
+              >
+                1,150
+              </strong>
+
+              <span class="carbon-value-unit">
+                tCO₂e / year
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="breakdown">
+
+            <div class="breakdown-row">
+
+              <div class="breakdown-head">
+
+                <span>
+                  Energy
+                </span>
+
+                <strong id="energyPreview">
+                  600 t
+                </strong>
+
+              </div>
+
+              <div class="bar">
+
+                <div
+                  class="bar-fill energy-bar"
+                  id="energyBar"
+                ></div>
+
+              </div>
+
+            </div>
+
+
+            <div class="breakdown-row">
+
+              <div class="breakdown-head">
+
+                <span>
+                  Materials
+                </span>
+
+                <strong id="materialPreview">
+                  400 t
+                </strong>
+
+              </div>
+
+              <div class="bar">
+
+                <div
+                  class="bar-fill material-bar"
+                  id="materialBar"
+                ></div>
+
+              </div>
+
+            </div>
+
+
+            <div class="breakdown-row">
+
+              <div class="breakdown-head">
+
+                <span>
+                  Waste
+                </span>
+
+                <strong id="wastePreview">
+                  150 t
+                </strong>
+
+              </div>
+
+              <div class="bar">
+
+                <div
+                  class="bar-fill waste-bar"
+                  id="wasteBar"
+                ></div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="method">
+
+            <div class="method-label">
+              Calculation Method
+            </div>
+
+            <div class="formula">
+
+              Activity Data
+
+              <span>×</span>
+
+              Emission Factor
+
+              <span>=</span>
+
+              Carbon Emission
+
+            </div>
+
+          </div>
+
+
+          <div class="confidence">
+
+            <span>
+              Current confidence
+            </span>
+
+            <strong>
+              82%
+            </strong>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script src="api.js"></script>
+<script>
+
+  let currentPanel = 0;
+
+  const panels =
+    document.querySelectorAll(".panel");
+
+  const tabs =
+    document.querySelectorAll(".category-tab");
+
+
+  /* =========================
+     SIDEBAR
+  ========================= */
+
+  function toggleSidebar(){
+
+    document
+      .getElementById("sidebar")
+      .classList
+      .toggle("open");
+
+    document
+      .getElementById("sidebarOverlay")
+      .classList
+      .toggle("show");
+
+  }
+
+
+  /* =========================
+     PANEL NAVIGATION
+  ========================= */
+
+  function goToPanel(index){
+
+    currentPanel = index;
+
+    panels.forEach(
+      (panel,i)=>{
+
+        panel.classList.toggle(
+          "active",
+          i === index
+        );
+
+      }
+    );
+
+
+    tabs.forEach(
+      (tab,i)=>{
+
+        tab.classList.toggle(
+          "active",
+          i === index
+        );
+
+        tab.classList.toggle(
+          "done",
+          i < index
+        );
+
+      }
+    );
+
+
+    document.getElementById(
+      "completionValue"
+    ).textContent =
+      `${(index + 1) * 20}%`;
+
+
+    if(index === 4){
+      updateReview();
+    }
+
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }
+
+
+  /* =========================
+     GET NUMBER
+  ========================= */
+
+  function getNumber(id){
+
+    const value =
+      parseFloat(
+        document
+          .getElementById(id)
+          .value
+      );
+
+    if(
+      Number.isNaN(value) ||
+      value < 0
+    ){
+      return 0;
+    }
+
+    return value;
+
+  }
+
+
+  /* =========================
+     PREVIEW CALCULATION
+  ========================= */
+
+  function calculatePreview(){
+
+    const energy =
+      (
+        getNumber("energyAmount") *
+        getNumber("energyFactor")
+      ) / 1000;
+
+
+    const material =
+      (
+        getNumber("materialAmount") *
+        getNumber("materialFactor")
+      ) / 1000;
+
+
+    const waste =
+      (
+        getNumber("wasteAmount") *
+        getNumber("wasteFactor")
+      ) / 1000;
+
+
+    const total =
+      energy +
+      material +
+      waste;
+
+
+    document.getElementById(
+      "totalCarbon"
+    ).textContent =
+      Math.round(total)
+        .toLocaleString("en-IN");
+
+
+    document.getElementById(
+      "energyPreview"
+    ).textContent =
+      `${Math.round(energy).toLocaleString("en-IN")} t`;
+
+
+    document.getElementById(
+      "materialPreview"
+    ).textContent =
+      `${Math.round(material).toLocaleString("en-IN")} t`;
+
+
+    document.getElementById(
+      "wastePreview"
+    ).textContent =
+      `${Math.round(waste).toLocaleString("en-IN")} t`;
+
+
+    const maximum =
+      Math.max(
+        energy,
+        material,
+        waste,
+        1
+      );
+
+
+    setBar(
+      "energyBar",
+      energy,
+      maximum
+    );
+
+    setBar(
+      "materialBar",
+      material,
+      maximum
+    );
+
+    setBar(
+      "wasteBar",
+      waste,
+      maximum
+    );
+
+
+    updateReview(
+      energy,
+      material,
+      waste,
+      total
+    );
+
+  }
+
+
+  function setBar(
+    id,
+    value,
+    maximum
+  ){
+
+    const percentage =
+      Math.min(
+        100,
+        (value / maximum) * 100
+      );
+
+
+    document.getElementById(
+      id
+    ).style.width =
+      `${percentage}%`;
+
+  }
+
+
+  /* =========================
+     REVIEW
+  ========================= */
+
+  function updateReview(
+    energyValue,
+    materialValue,
+    wasteValue,
+    totalValue
+  ){
+
+    const energy =
+      energyValue ??
+      (
+        getNumber("energyAmount") *
+        getNumber("energyFactor")
+      ) / 1000;
+
+
+    const material =
+      materialValue ??
+      (
+        getNumber("materialAmount") *
+        getNumber("materialFactor")
+      ) / 1000;
+
+
+    const waste =
+      wasteValue ??
+      (
+        getNumber("wasteAmount") *
+        getNumber("wasteFactor")
+      ) / 1000;
+
+
+    const total =
+      totalValue ??
+      (
+        energy +
+        material +
+        waste
+      );
+
+
+    document.getElementById(
+      "reviewBaseline"
+    ).textContent =
+      `${Math.round(total).toLocaleString("en-IN")} tCO₂e`;
+
+
+    document.getElementById(
+      "reviewEnergy"
+    ).textContent =
+      `${Math.round(energy).toLocaleString("en-IN")} tCO₂e/year`;
+
+
+    document.getElementById(
+      "reviewMaterial"
+    ).textContent =
+      `${Math.round(material).toLocaleString("en-IN")} tCO₂e/year`;
+
+
+    document.getElementById(
+      "reviewWaste"
+    ).textContent =
+      `${Math.round(waste).toLocaleString("en-IN")} tCO₂e/year`;
+
+
+    const values = {
+      Energy:energy,
+      Materials:material,
+      Waste:waste
+    };
+
+
+    const largest =
+      Object.entries(values)
+        .sort(
+          (a,b)=>b[1]-a[1]
+        )[0][0];
+
+
+    document.getElementById(
+      "reviewLargest"
+    ).textContent =
+      largest;
+
+  }
+
+
+  /* =========================
+     CALCULATE BASELINE
+  ========================= */
+
+  async function calculateBaseline(){
+
+    const factoryId = getActiveFactoryId();
+    if(!factoryId){
+      window.location.href = "factory-setup.html";
+      return;
+    }
+
+    const energyAmount = getNumber("energyAmount");
+    const energyFactor = getNumber("energyFactor");
+    const materialAmount = getNumber("materialAmount");
+    const materialFactor = getNumber("materialFactor");
+    const materialRecycled = document.getElementById("materialRecycled") ? parseFloat(document.getElementById("materialRecycled").value) || 0 : 0;
+    const wasteAmount = getNumber("wasteAmount");
+    const wasteFactor = getNumber("wasteFactor");
+
+    const airPressure = document.getElementById("airPressure") ? parseFloat(document.getElementById("airPressure").value) || 0 : 0;
+    const airLeakage = document.getElementById("airLeakage") ? parseFloat(document.getElementById("airLeakage").value) || 0 : 0;
+    const airEnergy = document.getElementById("airEnergy") ? parseFloat(document.getElementById("airEnergy").value) || 0 : 0;
+
+    const payload = {
+      energy_sources: [
+        {
+          source_type: "Grid Electricity",
+          annual_consumption: energyAmount,
+          unit: "kWh/year",
+          emission_factor: energyFactor,
+          factor_source: "Configured Grid Factor"
+        }
+      ],
+      material_inputs: [
+        {
+          material_type: "Production Material",
+          annual_quantity: materialAmount,
+          unit: "kg/year",
+          recycled_content_percent: materialRecycled,
+          emission_factor: materialFactor
+        }
+      ],
+      processes: [
+        {
+          name: "CNC Machining & Turning",
+          equipment: "8 × VMC 5-Axis Spindles",
+          operating_hours: 6200,
+          primary_energy_source: "Grid Electricity",
+          operating_pressure_bar: 0,
+          estimated_leakage_percent: 0,
+          annual_energy_kwh: energyAmount > airEnergy ? (energyAmount - airEnergy) * 0.58 : 0,
+          notes: "Production process"
+        },
+        {
+          name: "Compressed Air System",
+          equipment: "Rotary Screw Compressors",
+          operating_hours: 7200,
+          primary_energy_source: "Grid Electricity",
+          operating_pressure_bar: airPressure,
+          estimated_leakage_percent: airLeakage,
+          annual_energy_kwh: airEnergy,
+          notes: "Utility air network"
+        }
+      ],
+      waste_streams: [
+        {
+          waste_type: "Production Waste",
+          annual_quantity: wasteAmount,
+          unit: "kg/year",
+          treatment_method: "Landfill / Disposal",
+          emission_factor: wasteFactor
+        }
+      ]
+    };
+
+    try {
+      await apiFetch(`/api/factories/${factoryId}/data`, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      const calc = await apiFetch(`/api/factories/${factoryId}/calculate`, {
+        method: "POST"
+      });
+
+      window.location.href = "dashboard.html";
+    } catch (err) {
+      alert("Error saving data and calculating baseline: " + (err.message || "Failed"));
+    }
+
+  }
+
+
+  // Load existing factory data or reset defaults if fresh real factory
+  window.addEventListener("DOMContentLoaded", async () => {
+    const factoryId = getActiveFactoryId();
+    if(!factoryId){
+      window.location.href = "factory-setup.html";
+      return;
+    }
+
+    try {
+      const factory = await apiFetch(`/api/factories/${factoryId}`);
+      const data = await apiFetch(`/api/factories/${factoryId}/data`);
+
+      if(!factory.is_demo && (!data.energy_sources || data.energy_sources.length === 0)){
+        document.getElementById("energyAmount").value = "";
+        document.getElementById("materialAmount").value = "";
+        if(document.getElementById("materialRecycled")) document.getElementById("materialRecycled").value = "0";
+        document.getElementById("wasteAmount").value = "";
+        if(document.getElementById("airLeakage")) document.getElementById("airLeakage").value = "";
+        if(document.getElementById("airPressure")) document.getElementById("airPressure").value = "";
+        if(document.getElementById("airEnergy")) document.getElementById("airEnergy").value = "";
+      } else if(data.energy_sources && data.energy_sources.length > 0){
+        const es = data.energy_sources[0];
+        document.getElementById("energyAmount").value = es.annual_consumption || "";
+        document.getElementById("energyFactor").value = es.emission_factor || "0.48";
+
+        if(data.material_inputs && data.material_inputs.length > 0){
+          const mi = data.material_inputs[0];
+          document.getElementById("materialAmount").value = mi.annual_quantity || "";
+          document.getElementById("materialFactor").value = mi.emission_factor || "8.0";
+          if(document.getElementById("materialRecycled")){
+            document.getElementById("materialRecycled").value = mi.recycled_content_percent || "0";
+          }
+        }
+
+        if(data.waste_streams && data.waste_streams.length > 0){
+          const ws = data.waste_streams[0];
+          document.getElementById("wasteAmount").value = ws.annual_quantity || "";
+          document.getElementById("wasteFactor").value = ws.emission_factor || "2.0";
+        }
+
+        const air = (data.processes || []).find(p => p.name && (p.name.toLowerCase().includes("air") || p.name.toLowerCase().includes("compress")));
+        if(air){
+          if(document.getElementById("airPressure")) document.getElementById("airPressure").value = air.operating_pressure_bar || "";
+          if(document.getElementById("airLeakage")) document.getElementById("airLeakage").value = air.estimated_leakage_percent || "";
+          if(document.getElementById("airEnergy")) document.getElementById("airEnergy").value = air.annual_energy_kwh || "";
+        }
+      }
+
+      calculatePreview();
+    } catch(err){
+      console.error("Failed to load factory data:", err);
+      calculatePreview();
+    }
+
+    // Update sidebar factory name
+    loadSidebarFactory();
+  });
+
+</script>
+
+</body>
+</html>

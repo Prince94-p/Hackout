@@ -1,0 +1,2325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — Root Cause</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root{
+      --bg:#f6f8f4;
+      --paper:#ffffff;
+
+      --ink:#102019;
+      --text:#34443c;
+      --muted:#7a8980;
+      --line:#dce3dd;
+
+      --green:#175f45;
+      --green2:#238761;
+      --green-soft:#e6f4ea;
+
+      --lime:#c9f454;
+
+      --orange:#ff7545;
+      --orange-soft:#fff0e9;
+
+      --amber:#d99220;
+      --amber-soft:#fff6df;
+
+      --blue:#2b6de8;
+      --blue-soft:#eaf1ff;
+
+      --sidebar:236px;
+
+      --shadow:
+        0 24px 60px rgba(20,48,36,.06);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:"DM Sans",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    button{
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .app{
+      min-height:100vh;
+
+      display:grid;
+
+      grid-template-columns:
+        var(--sidebar)
+        minmax(0,1fr);
+    }
+
+    /* =============================
+       SIDEBAR
+    ============================= */
+
+    .sidebar{
+      position:fixed;
+      inset:0 auto 0 0;
+
+      width:var(--sidebar);
+      min-height:100vh;
+
+      padding:24px 18px 20px;
+
+      display:flex;
+      flex-direction:column;
+
+      background:#fbfcfa;
+
+      border-right:1px solid var(--line);
+
+      z-index:100;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 8px;
+    }
+
+    .brand-mark{
+      width:38px;
+      height:38px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:11px;
+
+      background:var(--ink);
+      color:white;
+
+      font-family:"Manrope",sans-serif;
+      font-weight:800;
+    }
+
+    .brand-name{
+      font-family:"Manrope",sans-serif;
+
+      font-size:17px;
+      font-weight:800;
+
+      letter-spacing:-.04em;
+    }
+
+    .brand-name span{
+      color:var(--green2);
+    }
+
+    .factory-switch{
+      margin-top:28px;
+
+      padding:14px 13px;
+
+      border:1px solid var(--line);
+      border-radius:14px;
+
+      background:white;
+    }
+
+    .factory-switch small{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .factory-switch strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .factory-meta{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      margin-top:5px;
+
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .factory-dot{
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+    }
+
+    .nav-group{
+      margin-top:26px;
+    }
+
+    .nav-label{
+      padding:0 10px;
+
+      color:#9aa69f;
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .nav-list{
+      display:flex;
+      flex-direction:column;
+
+      gap:3px;
+
+      margin-top:8px;
+    }
+
+    .nav-item{
+      position:relative;
+
+      min-height:42px;
+
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 11px;
+
+      border-radius:10px;
+
+      color:#58665e;
+
+      font-size:10px;
+      font-weight:600;
+
+      transition:.18s ease;
+    }
+
+    .nav-item:hover{
+      background:#f0f4ef;
+      color:var(--ink);
+    }
+
+    .nav-icon{
+      width:23px;
+      height:23px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:7px;
+
+      background:#f0f3ef;
+      color:#6c7971;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .nav-item.leak .nav-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .nav-item.root .nav-icon{
+      background:var(--amber-soft);
+      color:var(--amber);
+    }
+
+    .nav-item.solution .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .nav-item.simulator .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .nav-item.active{
+      background:#fff9ec;
+      color:var(--ink);
+
+      font-weight:700;
+    }
+
+    .nav-item.active::before{
+      content:"";
+
+      position:absolute;
+
+      left:-18px;
+      top:9px;
+      bottom:9px;
+
+      width:3px;
+
+      border-radius:0 4px 4px 0;
+
+      background:var(--amber);
+    }
+
+    .nav-item.active .nav-icon{
+      background:var(--amber-soft);
+      color:var(--amber);
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+
+      padding-top:18px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .confidence-box{
+      padding:13px;
+
+      border-radius:12px;
+
+      background:#f2f6f2;
+    }
+
+    .confidence-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .confidence-top span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .confidence-top strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:12px;
+    }
+
+    .confidence-line{
+      height:5px;
+
+      margin-top:9px;
+
+      border-radius:100px;
+      overflow:hidden;
+
+      background:#e0e7e1;
+    }
+
+    .confidence-fill{
+      width:82%;
+      height:100%;
+
+      border-radius:100px;
+
+      background:var(--green2);
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding:15px 5px 0;
+    }
+
+    .avatar{
+      width:34px;
+      height:34px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:50%;
+
+      background:#dfe9e1;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .profile strong{
+      display:block;
+      font-size:9px;
+    }
+
+    .profile span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    /* =============================
+       MAIN
+    ============================= */
+
+    .main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    .topbar{
+      height:69px;
+
+      position:sticky;
+      top:0;
+
+      z-index:80;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:0 34px;
+
+      border-bottom:1px solid var(--line);
+
+      background:rgba(246,248,244,.91);
+      backdrop-filter:blur(16px);
+    }
+
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .back-btn{
+      height:35px;
+
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:0 11px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:800;
+
+      transition:.18s ease;
+    }
+
+    .back-btn:hover{
+      background:var(--orange-soft);
+      color:var(--orange);
+
+      border-color:#efc6b6;
+
+      transform:translateX(-2px);
+    }
+
+    .breadcrumb{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .breadcrumb strong{
+      color:var(--ink);
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:9px;
+    }
+
+    .analysis-status{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:7px 10px;
+
+      border:1px solid var(--line);
+      border-radius:100px;
+
+      background:white;
+
+      color:var(--amber);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .status-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:var(--amber);
+    }
+
+    .mobile-menu{
+      display:none;
+
+      width:35px;
+      height:35px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+    }
+
+    .sidebar-overlay{
+      display:none;
+    }
+
+    /* =============================
+       CONTENT
+    ============================= */
+
+    .content{
+      width:min(1280px,calc(100% - 64px));
+
+      margin:auto;
+
+      padding:40px 0 70px;
+    }
+
+    .page-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+
+      gap:30px;
+
+      margin-bottom:30px;
+    }
+
+    .eyebrow{
+      color:var(--amber);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .page-head h1{
+      max-width:790px;
+
+      margin-top:9px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(38px,4.5vw,56px);
+      line-height:.98;
+
+      letter-spacing:-.055em;
+    }
+
+    .page-head p{
+      max-width:720px;
+
+      margin-top:13px;
+
+      color:var(--text);
+
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .root-summary{
+      min-width:200px;
+      text-align:right;
+    }
+
+    .root-summary span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .root-summary strong{
+      display:block;
+
+      margin-top:4px;
+
+      color:var(--orange);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:32px;
+      letter-spacing:-.045em;
+    }
+
+    .root-summary small{
+      display:block;
+
+      margin-top:5px;
+
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .surface{
+      border:1px solid var(--line);
+      border-radius:22px;
+
+      background:white;
+
+      box-shadow:var(--shadow);
+    }
+
+    /* =============================
+       CAUSAL MAP
+    ============================= */
+
+    .causal-surface{
+      padding:31px;
+    }
+
+    .section-kicker{
+      color:var(--amber);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .section-title{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:24px;
+      letter-spacing:-.035em;
+    }
+
+    .section-text{
+      max-width:670px;
+
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:10px;
+      line-height:1.6;
+    }
+
+    .causal-map{
+      margin-top:38px;
+    }
+
+    .chain{
+      display:grid;
+
+      grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+      gap:34px;
+    }
+
+    .chain-node{
+      position:relative;
+
+      min-height:145px;
+
+      padding:18px;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+
+      border:1px solid var(--line);
+      border-radius:17px;
+
+      background:#fbfcfa;
+    }
+
+    .chain-node:not(:last-child)::after{
+      content:"";
+
+      position:absolute;
+
+      top:50%;
+      right:-35px;
+
+      width:34px;
+      height:1px;
+
+      background:#ccd6ce;
+    }
+
+    .chain-node:not(:last-child)::before{
+      content:"";
+
+      position:absolute;
+
+      z-index:2;
+
+      right:-35px;
+      top:calc(50% - 3px);
+
+      width:6px;
+      height:6px;
+
+      border-top:1px solid #99a69e;
+      border-right:1px solid #99a69e;
+
+      transform:rotate(45deg);
+    }
+
+    .chain-node span{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .chain-node strong{
+      display:block;
+
+      margin-top:7px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:17px;
+      line-height:1.25;
+
+      letter-spacing:-.03em;
+    }
+
+    .chain-node small{
+      display:block;
+
+      margin-top:8px;
+
+      color:var(--muted);
+
+      font-size:8px;
+      line-height:1.45;
+    }
+
+    .chain-node.source{
+      background:#fffaf7;
+      border-color:#f0c8b9;
+    }
+
+    .chain-node.signal{
+      background:#fffaf0;
+      border-color:#ecd29a;
+    }
+
+    .chain-node.cause{
+      background:#fff7ea;
+      border-color:#e6bd73;
+    }
+
+    .chain-node.root{
+      background:var(--ink);
+      border-color:var(--ink);
+
+      color:white;
+    }
+
+    .chain-node.root span,
+    .chain-node.root small{
+      color:#b8c4bd;
+    }
+
+    .cause-tag{
+      width:max-content;
+
+      margin-top:13px;
+
+      padding:5px 8px;
+
+      border-radius:100px;
+
+      background:var(--orange-soft);
+
+      color:var(--orange);
+
+      font-size:6px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .root .cause-tag{
+      background:rgba(201,244,84,.12);
+      color:var(--lime);
+    }
+
+    /* =============================
+       BRANCH INVESTIGATION
+    ============================= */
+
+    .branch-section{
+      margin-top:25px;
+
+      display:grid;
+
+      grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);
+
+      gap:23px;
+    }
+
+    .drivers{
+      padding:29px 30px;
+    }
+
+    .driver-list{
+      margin-top:22px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .driver{
+      display:grid;
+
+      grid-template-columns:42px minmax(0,1fr) 110px;
+
+      gap:16px;
+
+      align-items:center;
+
+      min-height:82px;
+
+      border-bottom:1px solid var(--line);
+
+      cursor:pointer;
+    }
+
+    .driver-index{
+      width:31px;
+      height:31px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:9px;
+
+      background:#f2f5f2;
+
+      color:#69766e;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .driver.active .driver-index{
+      background:var(--amber-soft);
+      color:var(--amber);
+    }
+
+    .driver-main strong{
+      display:block;
+
+      font-size:10px;
+    }
+
+    .driver-main p{
+      margin-top:4px;
+
+      color:var(--muted);
+
+      font-size:8px;
+      line-height:1.5;
+    }
+
+    .driver-score{
+      text-align:right;
+    }
+
+    .driver-score strong{
+      display:block;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:18px;
+      letter-spacing:-.035em;
+    }
+
+    .driver-score span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+
+      font-size:7px;
+    }
+
+    /* =============================
+       ROOT PANEL
+    ============================= */
+
+    .root-panel{
+      overflow:hidden;
+    }
+
+    .root-panel-head{
+      padding:26px 24px 22px;
+
+      background:linear-gradient(
+        135deg,
+        #fff7e8 0%,
+        #fffdf8 100%
+      );
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .root-panel-label{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--amber);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .root-panel-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:var(--amber);
+    }
+
+    .root-panel-head h3{
+      margin-top:10px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:24px;
+      line-height:1.15;
+
+      letter-spacing:-.04em;
+    }
+
+    .root-panel-head p{
+      margin-top:8px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.6;
+    }
+
+    .root-facts{
+      padding:7px 24px;
+    }
+
+    .fact-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:20px;
+
+      padding:14px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .fact-row span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .fact-row strong{
+      text-align:right;
+
+      font-family:"Manrope",sans-serif;
+      font-size:13px;
+    }
+
+    .fact-row strong.warning{
+      color:var(--orange);
+    }
+
+    .reason-box{
+      margin:17px 24px 0;
+
+      padding:16px;
+
+      border-radius:13px;
+
+      background:#fff7eb;
+    }
+
+    .reason-box span{
+      color:var(--amber);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .reason-box p{
+      margin-top:7px;
+
+      color:#675b45;
+
+      font-size:8px;
+      line-height:1.65;
+    }
+
+    .root-action{
+      padding:19px 24px 24px;
+    }
+
+    .primary-btn{
+      width:100%;
+      height:46px;
+
+      border:0;
+      border-radius:10px;
+
+      background:var(--green);
+      color:white;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .primary-btn:hover{
+      background:#124d38;
+    }
+
+    /* =============================
+       EVIDENCE
+    ============================= */
+
+    .evidence-surface{
+      margin-top:24px;
+
+      padding:29px 30px;
+    }
+
+    .evidence-layout{
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:34px;
+
+      margin-top:22px;
+    }
+
+    .calculation{
+      padding:20px;
+
+      border-radius:16px;
+
+      background:#f7f9f6;
+    }
+
+    .calc-label{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .equation{
+      margin-top:16px;
+
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+
+      gap:9px;
+    }
+
+    .equation-box{
+      padding:11px 12px;
+
+      border:1px solid var(--line);
+      border-radius:10px;
+
+      background:white;
+    }
+
+    .equation-box span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:6px;
+      font-weight:700;
+    }
+
+    .equation-box strong{
+      display:block;
+
+      margin-top:3px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:12px;
+    }
+
+    .symbol{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:18px;
+      font-weight:800;
+    }
+
+    .evidence-data{
+      border-top:1px solid var(--line);
+    }
+
+    .evidence-row{
+      display:grid;
+
+      grid-template-columns:1fr auto;
+
+      gap:20px;
+
+      padding:14px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .evidence-row span{
+      color:var(--muted);
+
+      font-size:8px;
+    }
+
+    .evidence-row strong{
+      font-family:"Manrope",sans-serif;
+
+      font-size:11px;
+    }
+
+    .evidence-row strong.good{
+      color:var(--green);
+    }
+
+    .audit-note{
+      margin-top:16px;
+
+      padding-top:15px;
+
+      border-top:1px solid var(--line);
+
+      color:var(--muted);
+
+      font-size:8px;
+      line-height:1.65;
+    }
+
+    /* =============================
+       RESPONSIVE
+    ============================= */
+
+    @media(max-width:1100px){
+
+      .chain{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .chain-node::after,
+      .chain-node::before{
+        display:none;
+      }
+
+      .branch-section{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+    @media(max-width:900px){
+
+      :root{
+        --sidebar:0px;
+      }
+
+      .app{
+        display:block;
+      }
+
+      .sidebar{
+        width:236px;
+
+        transform:translateX(-100%);
+
+        transition:.25s ease;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      .sidebar-overlay{
+        display:block;
+
+        position:fixed;
+        inset:0;
+
+        z-index:90;
+
+        background:rgba(16,32,25,.15);
+
+        opacity:0;
+        pointer-events:none;
+
+        transition:.2s ease;
+      }
+
+      .sidebar-overlay.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      .main{
+        grid-column:auto;
+      }
+
+      .mobile-menu{
+        display:grid;
+        place-items:center;
+      }
+
+    }
+
+    @media(max-width:760px){
+
+      .topbar{
+        padding:0 15px;
+      }
+
+      .breadcrumb,
+      .analysis-status{
+        display:none;
+      }
+
+      .back-btn span{
+        display:none;
+      }
+
+      .content{
+        width:calc(100% - 24px);
+
+        padding-top:28px;
+      }
+
+      .page-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .root-summary{
+        text-align:left;
+      }
+
+      .causal-surface,
+      .drivers,
+      .evidence-surface{
+        padding:24px 18px;
+      }
+
+      .chain{
+        grid-template-columns:1fr;
+      }
+
+      .driver{
+        grid-template-columns:38px 1fr;
+      }
+
+      .driver-score{
+        grid-column:2;
+
+        text-align:left;
+
+        padding-bottom:13px;
+      }
+
+      .evidence-layout{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- =============================
+       SIDEBAR
+  ============================== -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashboard.html" class="brand">
+
+      <div class="brand-mark">
+        C
+      </div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+
+    </a>
+
+
+    <div class="factory-switch">
+
+      <small>
+        Current Factory
+      </small>
+
+      <strong>
+        <span class="sidebar-factory-name">Apex Components Pvt. Ltd.</span>
+      </strong>
+
+      <div class="factory-meta">
+
+        <span class="factory-dot"></span>
+
+        Automotive · Gujarat
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Overview
+      </div>
+
+      <div class="nav-list">
+
+        <a
+          href="dashboard.html"
+          class="nav-item"
+        >
+          <div class="nav-icon">
+            O
+          </div>
+
+          Carbon Overview
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Investigate
+      </div>
+
+      <div class="nav-list">
+
+        <a
+          href="factory-data.html"
+          class="nav-item"
+        >
+          <div class="nav-icon">
+            D
+          </div>
+
+          Factory Data
+        </a>
+
+
+        <a
+          href="leak-detector.html"
+          class="nav-item leak"
+        >
+          <div class="nav-icon">
+            !
+          </div>
+
+          Leak Detector
+        </a>
+
+
+        <a
+          href="root-cause.html"
+          class="nav-item root active"
+        >
+          <div class="nav-icon">
+            R
+          </div>
+
+          Root Cause
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Act
+      </div>
+
+      <div class="nav-list">
+
+        <a
+          href="solutions.html"
+          class="nav-item solution"
+        >
+          <div class="nav-icon">
+            S
+          </div>
+
+          Circular Solutions
+        </a>
+
+
+        <a
+          href="simulator.html"
+          class="nav-item simulator"
+        >
+          <div class="nav-icon">
+            W
+          </div>
+
+          What-If Simulator
+        </a>
+
+
+        <a
+          href="roadmap.html"
+          class="nav-item solution"
+        >
+          <div class="nav-icon">
+            →
+          </div>
+
+          Action Roadmap
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="confidence-box">
+
+        <div class="confidence-top">
+
+          <span>
+            Data confidence
+          </span>
+
+          <strong>
+            82%
+          </strong>
+
+        </div>
+
+        <div class="confidence-line">
+          <div class="confidence-fill"></div>
+        </div>
+
+      </div>
+
+
+      <div class="profile">
+
+        <div class="avatar">
+          PP
+        </div>
+
+        <div>
+
+          <strong>
+            Prince
+          </strong>
+
+          <span>
+            Carbon Workspace
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="toggleSidebar()"
+  ></div>
+
+
+  <!-- =============================
+       MAIN
+  ============================== -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()"
+        >
+          ☰
+        </button>
+
+
+        <a
+          href="leak-detector.html"
+          class="back-btn"
+        >
+          ←
+
+          <span>
+            Back to Leak Detector
+          </span>
+        </a>
+
+
+        <div class="breadcrumb">
+
+          Workspace
+
+          <span>›</span>
+
+          Leak Detector
+
+          <span>›</span>
+
+          <strong>
+            Root Cause
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="top-actions">
+
+        <div class="analysis-status">
+
+          <span class="status-dot"></span>
+
+          Cause isolated
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <!-- PAGE HEADER -->
+
+      <section class="page-head">
+
+        <div>
+
+          <div class="eyebrow">
+            Root Cause Analysis
+          </div>
+
+          <h1>
+            High carbon is the symptom. Find what is causing it.
+          </h1>
+
+          <p>
+            Carbon Core connects the emission hotspot with operating
+            data to separate unavoidable process demand from avoidable
+            losses. The result is a traceable cause chain before any
+            recommendation is made.
+          </p>
+
+        </div>
+
+
+        <div class="root-summary">
+
+          <span>
+            Selected Process
+          </span>
+
+          <strong id="summaryProcess">
+            162
+          </strong>
+
+          <small id="summaryUnit">
+            tCO₂e · Compressed Air
+          </small>
+
+        </div>
+
+      </section>
+
+
+      <!-- CAUSAL CHAIN -->
+
+      <section class="surface causal-surface">
+
+        <div class="section-kicker">
+          Causal Carbon Graph
+        </div>
+
+        <h2 class="section-title">
+          Trace the signal back to its operational cause.
+        </h2>
+
+        <p class="section-text">
+          Carbon Core follows evidence from category contribution
+          through equipment behaviour until the strongest actionable
+          cause is reached.
+        </p>
+
+
+        <div class="causal-map">
+
+          <div class="chain">
+
+            <div class="chain-node source">
+
+              <span>
+                Carbon Hotspot
+              </span>
+
+              <strong>
+                Energy & Utilities
+              </strong>
+
+              <small>
+                600 tCO₂e / year · largest source
+              </small>
+
+              <div class="cause-tag">
+                52% of baseline
+              </div>
+
+            </div>
+
+
+            <div class="chain-node signal">
+
+              <span>
+                Process Signal
+              </span>
+
+              <strong id="chainProcess">
+                Compressed Air
+              </strong>
+
+              <small id="chainCarbon">
+                162 tCO₂e / year
+              </small>
+
+              <div class="cause-tag">
+                High avoidability
+              </div>
+
+            </div>
+
+
+            <div class="chain-node cause">
+
+              <span>
+                Abnormal Condition
+              </span>
+
+              <strong id="chainSignal">
+                28% leakage
+              </strong>
+
+              <small id="chainCondition">
+                7.5 bar operating pressure
+              </small>
+
+              <div class="cause-tag">
+                Loss confirmed
+              </div>
+
+            </div>
+
+
+            <div class="chain-node root">
+
+              <span>
+                Root Cause
+              </span>
+
+              <strong id="chainRoot">
+                Unmanaged Air Leakage
+              </strong>
+
+              <small id="chainRootText">
+                Network leakage combined with excess system pressure.
+              </small>
+
+              <div class="cause-tag">
+                Actionable
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- CAUSE DRIVERS -->
+
+      <div class="branch-section">
+
+        <section class="surface drivers">
+
+          <div class="section-kicker">
+            Cause Drivers
+          </div>
+
+          <h2 class="section-title">
+            What is strengthening the leak signal?
+          </h2>
+
+          <p class="section-text">
+            These operating observations are ranked by how strongly
+            they support the detected root cause.
+          </p>
+
+
+          <div class="driver-list">
+
+            <div class="driver active">
+
+              <div class="driver-index">
+                01
+              </div>
+
+              <div class="driver-main">
+
+                <strong>
+                  Pneumatic leakage
+                </strong>
+
+                <p>
+                  Estimated 28% air loss means compressor electricity
+                  is consumed without creating useful production output.
+                </p>
+
+              </div>
+
+              <div class="driver-score">
+
+                <strong>
+                  0.92
+                </strong>
+
+                <span>
+                  evidence strength
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="driver">
+
+              <div class="driver-index">
+                02
+              </div>
+
+              <div class="driver-main">
+
+                <strong>
+                  Excess operating pressure
+                </strong>
+
+                <p>
+                  Current operation at 7.5 bar is above the estimated
+                  process requirement of approximately 6.2 bar.
+                </p>
+
+              </div>
+
+              <div class="driver-score">
+
+                <strong>
+                  0.86
+                </strong>
+
+                <span>
+                  evidence strength
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="driver">
+
+              <div class="driver-index">
+                03
+              </div>
+
+              <div class="driver-main">
+
+                <strong>
+                  Continuous compressor loading
+                </strong>
+
+                <p>
+                  Compressor demand remains elevated during periods
+                  where production air requirement is lower.
+                </p>
+
+              </div>
+
+              <div class="driver-score">
+
+                <strong>
+                  0.74
+                </strong>
+
+                <span>
+                  evidence strength
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="driver">
+
+              <div class="driver-index">
+                04
+              </div>
+
+              <div class="driver-main">
+
+                <strong>
+                  No active leak maintenance cycle
+                </strong>
+
+                <p>
+                  No recent evidence of systematic ultrasonic leak
+                  detection or tagged repair verification is recorded.
+                </p>
+
+              </div>
+
+              <div class="driver-score">
+
+                <strong>
+                  0.68
+                </strong>
+
+                <span>
+                  evidence strength
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ROOT CAUSE PANEL -->
+
+        <aside class="surface root-panel">
+
+          <div class="root-panel-head">
+
+            <div class="root-panel-label">
+
+              <span class="root-panel-dot"></span>
+
+              Root Cause Isolated
+
+            </div>
+
+            <h3 id="rootPanelTitle">
+              Unmanaged compressed-air leakage.
+            </h3>
+
+            <p id="rootPanelDescription">
+              The strongest evidence indicates that the carbon loss
+              comes from air escaping the distribution network while
+              the compressor maintains higher-than-required pressure.
+            </p>
+
+          </div>
+
+
+          <div class="root-facts">
+
+            <div class="fact-row">
+
+              <span>
+                Leakage estimate
+              </span>
+
+              <strong
+                class="warning"
+                id="factLeakage"
+              >
+                28%
+              </strong>
+
+            </div>
+
+
+            <div class="fact-row">
+
+              <span>
+                Wasted electricity
+              </span>
+
+              <strong id="factWaste">
+                94,500 kWh/year
+              </strong>
+
+            </div>
+
+
+            <div class="fact-row">
+
+              <span>
+                Current pressure
+              </span>
+
+              <strong id="factPressure">
+                7.5 bar
+              </strong>
+
+            </div>
+
+
+            <div class="fact-row">
+
+              <span>
+                Reference pressure
+              </span>
+
+              <strong id="factTarget">
+                ~6.2 bar
+              </strong>
+
+            </div>
+
+
+            <div class="fact-row">
+
+              <span>
+                Cause confidence
+              </span>
+
+              <strong>
+                88%
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="reason-box">
+
+            <span>
+              Why this matters
+            </span>
+
+            <p id="reasonText">
+              Reducing the leak and pressure loss directly reduces
+              compressor electricity demand without reducing production
+              output, making this an avoidable and high-priority source.
+            </p>
+
+          </div>
+
+
+          <div class="root-action">
+
+            <button
+              class="primary-btn"
+              onclick="viewSolutions()"
+            >
+              Find Circular Solution →
+            </button>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+
+      <!-- EVIDENCE -->
+
+      <section class="surface evidence-surface">
+
+        <div class="section-kicker">
+          Evidence & Audit Trail
+        </div>
+
+        <h2 class="section-title">
+          The carbon number remains auditable.
+        </h2>
+
+        <p class="section-text">
+          Carbon Core keeps physical activity data and emission-factor
+          calculations separate from AI interpretation.
+        </p>
+
+
+        <div class="evidence-layout">
+
+          <div class="calculation">
+
+            <div class="calc-label">
+              Deterministic Carbon Calculation
+            </div>
+
+
+            <div class="equation">
+
+              <div class="equation-box">
+
+                <span>
+                  Activity
+                </span>
+
+                <strong id="calcActivity">
+                  337,500 kWh
+                </strong>
+
+              </div>
+
+              <div class="symbol">
+                ×
+              </div>
+
+              <div class="equation-box">
+
+                <span>
+                  Emission Factor
+                </span>
+
+                <strong>
+                  0.48 kgCO₂e/kWh
+                </strong>
+
+              </div>
+
+              <div class="symbol">
+                =
+              </div>
+
+              <div class="equation-box">
+
+                <span>
+                  Carbon
+                </span>
+
+                <strong id="calcCarbon">
+                  162 tCO₂e
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="evidence-data">
+
+            <div class="evidence-row">
+
+              <span>
+                Activity data source
+              </span>
+
+              <strong>
+                Factory input
+              </strong>
+
+            </div>
+
+
+            <div class="evidence-row">
+
+              <span>
+                Emission factor
+              </span>
+
+              <strong>
+                Configured grid factor
+              </strong>
+
+            </div>
+
+
+            <div class="evidence-row">
+
+              <span>
+                Leakage signal
+              </span>
+
+              <strong>
+                Operational input
+              </strong>
+
+            </div>
+
+
+            <div class="evidence-row">
+
+              <span>
+                Calculation method
+              </span>
+
+              <strong>
+                Deterministic
+              </strong>
+
+            </div>
+
+
+            <div class="evidence-row">
+
+              <span>
+                Interpretation confidence
+              </span>
+
+              <strong class="good">
+                88%
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="audit-note">
+          AI does not invent the carbon number. Emissions are calculated
+          from factory activity × emission factor. AI is used to connect
+          abnormal operating conditions, explain likely causes and rank
+          which cause should be investigated first.
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script src="api.js"></script>
+<script>
+
+  let currentHotspotCode = "compressed-air";
+
+  function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("show");
+  }
+
+  async function loadRootCause(){
+    const factoryId = getActiveFactoryId();
+    if (!factoryId) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const codeParam = params.get("hotspot") || params.get("process") || localStorage.getItem("selectedHotspotId") || "compressed-air";
+    currentHotspotCode = codeParam;
+
+    try {
+      const data = await apiFetch(`/api/factories/${factoryId}/root-cause?hotspot_code=${encodeURIComponent(codeParam)}`);
+
+      if (document.getElementById("summaryCarbon")) {
+        document.getElementById("summaryCarbon").textContent = Math.round(data.summary_carbon).toLocaleString("en-IN");
+      }
+      if (document.getElementById("summaryUnit")) {
+        document.getElementById("summaryUnit").textContent = data.summary_unit;
+      }
+      if (document.getElementById("chainProcess")) {
+        document.getElementById("chainProcess").textContent = data.process_name;
+      }
+      if (document.getElementById("chainCarbon")) {
+        document.getElementById("chainCarbon").textContent = data.carbon_str;
+      }
+      if (document.getElementById("chainSignal")) {
+        document.getElementById("chainSignal").textContent = data.signal_str;
+      }
+      if (document.getElementById("chainCondition")) {
+        document.getElementById("chainCondition").textContent = data.condition_str;
+      }
+      if (document.getElementById("chainRoot")) {
+        document.getElementById("chainRoot").textContent = data.root_cause_label;
+      }
+      if (document.getElementById("chainRootText")) {
+        document.getElementById("chainRootText").textContent = data.root_cause_text;
+      }
+      if (document.getElementById("rootPanelTitle")) {
+        document.getElementById("rootPanelTitle").textContent = data.root_cause_title;
+      }
+      if (document.getElementById("rootPanelDescription")) {
+        document.getElementById("rootPanelDescription").textContent = data.root_cause_description;
+      }
+      if (document.getElementById("factLeakage")) {
+        document.getElementById("factLeakage").textContent = data.leakage_metric;
+      }
+      if (document.getElementById("factWaste")) {
+        document.getElementById("factWaste").textContent = data.wasted_metric;
+      }
+      if (document.getElementById("factPressure")) {
+        document.getElementById("factPressure").textContent = data.pressure_metric;
+      }
+      if (document.getElementById("factTarget")) {
+        document.getElementById("factTarget").textContent = data.target_metric;
+      }
+      if (document.getElementById("reasonText")) {
+        document.getElementById("reasonText").textContent = data.diagnostic_reason;
+      }
+      if (document.getElementById("calcActivity")) {
+        document.getElementById("calcActivity").textContent = data.wasted_metric;
+      }
+      if (document.getElementById("calcCarbon")) {
+        document.getElementById("calcCarbon").textContent = data.carbon_str;
+      }
+    } catch (err) {
+      console.error("Root cause load error:", err);
+    }
+  }
+
+  function viewSolutions(){
+    localStorage.setItem("selectedHotspotId", currentHotspotCode);
+    window.location.href = "solutions.html?hotspot=" + encodeURIComponent(currentHotspotCode);
+  }
+
+  window.addEventListener("DOMContentLoaded", loadRootCause);
+  loadSidebarFactory();
+
+</script>
+
+</body>
+</html>

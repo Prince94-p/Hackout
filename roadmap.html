@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — Action Roadmap</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root{
+      --bg:#f6f8f4;
+      --paper:#ffffff;
+
+      --ink:#102019;
+      --text:#34443c;
+      --muted:#7a8980;
+      --line:#dce3dd;
+
+      --green:#175f45;
+      --green2:#238761;
+      --green-soft:#e6f4ea;
+
+      --lime:#c9f454;
+      --lime-soft:#effbd0;
+
+      --orange:#ff7545;
+      --orange-soft:#fff0e9;
+
+      --blue:#2b6de8;
+      --blue-soft:#eaf1ff;
+
+      --amber:#d99220;
+      --amber-soft:#fff6df;
+
+      --sidebar:236px;
+
+      --shadow:
+        0 24px 60px rgba(20,48,36,.06);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:"DM Sans",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button{
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:var(--sidebar) minmax(0,1fr);
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar{
+      position:fixed;
+      inset:0 auto 0 0;
+
+      width:var(--sidebar);
+      min-height:100vh;
+
+      padding:24px 18px 20px;
+
+      display:flex;
+      flex-direction:column;
+
+      background:#fbfcfa;
+      border-right:1px solid var(--line);
+
+      z-index:100;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:0 8px;
+    }
+
+    .brand-mark{
+      width:38px;
+      height:38px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:11px;
+
+      background:var(--ink);
+      color:white;
+
+      font-family:"Manrope",sans-serif;
+      font-weight:800;
+    }
+
+    .brand-name{
+      font-family:"Manrope",sans-serif;
+      font-size:17px;
+      font-weight:800;
+      letter-spacing:-.04em;
+    }
+
+    .brand-name span{
+      color:var(--green2);
+    }
+
+    .factory-switch{
+      margin-top:28px;
+      padding:14px 13px;
+
+      border:1px solid var(--line);
+      border-radius:14px;
+
+      background:white;
+    }
+
+    .factory-switch small{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .factory-switch strong{
+      display:block;
+      margin-top:5px;
+
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .factory-meta{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .factory-dot{
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+      background:var(--lime);
+    }
+
+    .nav-group{
+      margin-top:26px;
+    }
+
+    .nav-label{
+      padding:0 10px;
+
+      color:#9aa69f;
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .nav-list{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+
+      margin-top:8px;
+    }
+
+    .nav-item{
+      position:relative;
+
+      min-height:42px;
+
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 11px;
+
+      border-radius:10px;
+
+      color:#58665e;
+
+      font-size:10px;
+      font-weight:600;
+
+      transition:.18s ease;
+    }
+
+    .nav-item:hover{
+      background:#f0f4ef;
+      color:var(--ink);
+    }
+
+    .nav-icon{
+      width:23px;
+      height:23px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:7px;
+
+      background:#f0f3ef;
+      color:#6c7971;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .nav-item.leak .nav-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .nav-item.root .nav-icon{
+      background:var(--amber-soft);
+      color:var(--amber);
+    }
+
+    .nav-item.solution .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .nav-item.simulator .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .nav-item.active{
+      background:#eef7f1;
+      color:var(--ink);
+      font-weight:700;
+    }
+
+    .nav-item.active::before{
+      content:"";
+
+      position:absolute;
+
+      left:-18px;
+      top:9px;
+      bottom:9px;
+
+      width:3px;
+
+      border-radius:0 4px 4px 0;
+
+      background:var(--green);
+    }
+
+    .nav-item.active .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+
+      padding-top:18px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .confidence-box{
+      padding:13px;
+
+      border-radius:12px;
+
+      background:#f2f6f2;
+    }
+
+    .confidence-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .confidence-top span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .confidence-top strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:12px;
+    }
+
+    .confidence-line{
+      height:5px;
+
+      margin-top:9px;
+
+      overflow:hidden;
+
+      border-radius:100px;
+
+      background:#e0e7e1;
+    }
+
+    .confidence-fill{
+      width:82%;
+      height:100%;
+
+      border-radius:100px;
+
+      background:var(--green2);
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding:15px 5px 0;
+    }
+
+    .avatar{
+      width:34px;
+      height:34px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:50%;
+
+      background:#dfe9e1;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .profile strong{
+      display:block;
+      font-size:9px;
+    }
+
+    .profile span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    .topbar{
+      height:69px;
+
+      position:sticky;
+      top:0;
+
+      z-index:80;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:0 34px;
+
+      border-bottom:1px solid var(--line);
+
+      background:rgba(246,248,244,.91);
+      backdrop-filter:blur(16px);
+    }
+
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .back-btn{
+      height:35px;
+
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:0 11px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:800;
+
+      transition:.18s ease;
+    }
+
+    .back-btn:hover{
+      background:var(--green-soft);
+      color:var(--green);
+
+      border-color:#bdd1c4;
+      transform:translateX(-2px);
+    }
+
+    .breadcrumb{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .breadcrumb strong{
+      color:var(--ink);
+    }
+
+    .roadmap-status{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:7px 10px;
+
+      border:1px solid var(--line);
+      border-radius:100px;
+
+      background:white;
+
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .status-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+      background:var(--lime);
+    }
+
+    .mobile-menu{
+      display:none;
+
+      width:35px;
+      height:35px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+    }
+
+    .sidebar-overlay{
+      display:none;
+    }
+
+    /* =========================
+       CONTENT
+    ========================= */
+
+    .content{
+      width:min(1280px,calc(100% - 64px));
+
+      margin:auto;
+
+      padding:40px 0 70px;
+    }
+
+    .page-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+
+      gap:30px;
+
+      margin-bottom:28px;
+    }
+
+    .eyebrow{
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .page-head h1{
+      max-width:810px;
+
+      margin-top:9px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(38px,4.5vw,56px);
+      line-height:.98;
+
+      letter-spacing:-.055em;
+    }
+
+    .page-head p{
+      max-width:720px;
+
+      margin-top:13px;
+
+      color:var(--text);
+
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .target-summary{
+      min-width:215px;
+      text-align:right;
+    }
+
+    .target-summary span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .target-summary strong{
+      display:block;
+
+      margin-top:4px;
+
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:34px;
+      letter-spacing:-.05em;
+    }
+
+    .target-summary small{
+      display:block;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .surface{
+      background:white;
+
+      border:1px solid var(--line);
+      border-radius:22px;
+
+      box-shadow:var(--shadow);
+    }
+
+    .section-kicker{
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .section-title{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:24px;
+
+      letter-spacing:-.035em;
+    }
+
+    .section-text{
+      max-width:700px;
+
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:10px;
+      line-height:1.6;
+    }
+
+    /* =========================
+       ROADMAP HERO
+    ========================= */
+
+    .roadmap-surface{
+      padding:31px;
+      overflow:hidden;
+    }
+
+    .roadmap-top{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+
+      gap:25px;
+    }
+
+    .roadmap-meta{
+      display:flex;
+      gap:28px;
+    }
+
+    .roadmap-meta div{
+      text-align:right;
+    }
+
+    .roadmap-meta span{
+      display:block;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .roadmap-meta strong{
+      display:block;
+
+      margin-top:4px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:15px;
+    }
+
+    /* TIMELINE */
+
+    .timeline{
+      position:relative;
+
+      margin-top:40px;
+
+      padding-left:48px;
+    }
+
+    .timeline::before{
+      content:"";
+
+      position:absolute;
+
+      left:15px;
+      top:16px;
+      bottom:22px;
+
+      width:2px;
+
+      border-radius:10px;
+
+      background:
+        linear-gradient(
+          to bottom,
+          var(--orange),
+          var(--green2)
+        );
+    }
+
+    .timeline-item{
+      position:relative;
+
+      display:grid;
+
+      grid-template-columns:140px minmax(0,1fr) 170px;
+
+      gap:24px;
+
+      align-items:center;
+
+      min-height:126px;
+
+      padding:17px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .timeline-item:last-child{
+      border-bottom:0;
+    }
+
+    .timeline-dot{
+      position:absolute;
+
+      left:-40px;
+      top:50%;
+
+      width:18px;
+      height:18px;
+
+      transform:translateY(-50%);
+
+      border:4px solid white;
+      border-radius:50%;
+
+      background:var(--green);
+
+      box-shadow:0 0 0 1px #bdd3c3;
+    }
+
+    .timeline-item.now .timeline-dot{
+      background:var(--orange);
+
+      box-shadow:
+        0 0 0 1px #efbca8;
+    }
+
+    .timeline-item.target .timeline-dot{
+      background:var(--lime);
+
+      box-shadow:
+        0 0 0 1px #bfdc6c;
+    }
+
+    .when span{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .when strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:18px;
+      letter-spacing:-.035em;
+    }
+
+    .action-info{
+      padding:17px 19px;
+
+      border:1px solid var(--line);
+      border-radius:15px;
+
+      background:#fbfcfa;
+    }
+
+    .timeline-item.now .action-info{
+      background:#fffaf7;
+      border-color:#efd1c5;
+    }
+
+    .timeline-item.target .action-info{
+      background:#f4faf5;
+      border-color:#c7ddcd;
+    }
+
+    .action-label{
+      color:var(--green);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .timeline-item.now .action-label{
+      color:var(--orange);
+    }
+
+    .action-info h3{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:16px;
+      line-height:1.25;
+
+      letter-spacing:-.03em;
+    }
+
+    .action-info p{
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:8px;
+      line-height:1.55;
+    }
+
+    .action-impact{
+      text-align:right;
+    }
+
+    .action-impact strong{
+      display:block;
+
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:22px;
+      letter-spacing:-.04em;
+    }
+
+    .action-impact span{
+      display:block;
+
+      margin-top:3px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .cost{
+      margin-top:8px;
+
+      color:var(--ink) !important;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:11px !important;
+      font-weight:700;
+    }
+
+    /* =========================
+       SELECTED SCENARIO
+    ========================= */
+
+    .scenario-strip{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr 1fr;
+
+      margin-top:24px;
+
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .scenario-item{
+      padding:19px 17px;
+    }
+
+    .scenario-item + .scenario-item{
+      border-left:1px solid var(--line);
+    }
+
+    .scenario-item span{
+      color:var(--muted);
+
+      font-size:7px;
+    }
+
+    .scenario-item strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:16px;
+    }
+
+    .scenario-item strong.green{
+      color:var(--green);
+    }
+
+    /* =========================
+       PRIORITY PANEL
+    ========================= */
+
+    .priority-grid{
+      display:grid;
+
+      grid-template-columns:minmax(0,1.15fr) minmax(300px,.65fr);
+
+      gap:23px;
+
+      margin-top:24px;
+    }
+
+    .priority{
+      padding:29px 30px;
+    }
+
+    .priority-list{
+      margin-top:23px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .priority-row{
+      display:grid;
+
+      grid-template-columns:36px minmax(0,1fr) 110px 105px;
+
+      gap:16px;
+
+      align-items:center;
+
+      min-height:84px;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .priority-index{
+      width:30px;
+      height:30px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:9px;
+
+      background:var(--green-soft);
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .priority-name strong{
+      display:block;
+
+      font-size:10px;
+    }
+
+    .priority-name span{
+      display:block;
+
+      margin-top:4px;
+
+      color:var(--muted);
+
+      font-size:7px;
+      line-height:1.45;
+    }
+
+    .priority-metric{
+      text-align:right;
+    }
+
+    .priority-metric strong{
+      display:block;
+
+      font-family:"Manrope",sans-serif;
+      font-size:13px;
+    }
+
+    .priority-metric span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    /* TARGET PANEL */
+
+    .target-panel{
+      overflow:hidden;
+    }
+
+    .target-head{
+      padding:27px 25px 22px;
+
+      border-bottom:1px solid var(--line);
+
+      background:
+        linear-gradient(
+          145deg,
+          #f2faf4 0%,
+          #ffffff 100%
+        );
+    }
+
+    .target-label{
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .target-head h3{
+      margin-top:8px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:24px;
+      letter-spacing:-.04em;
+    }
+
+    .target-head p{
+      margin-top:7px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.6;
+    }
+
+    .target-numbers{
+      padding:5px 25px;
+    }
+
+    .target-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:18px;
+
+      padding:15px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .target-row span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .target-row strong{
+      text-align:right;
+
+      font-family:"Manrope",sans-serif;
+      font-size:14px;
+    }
+
+    .target-row strong.green{
+      color:var(--green);
+    }
+
+    .target-callout{
+      margin:18px 25px 0;
+
+      padding:17px;
+
+      border-radius:14px;
+
+      background:var(--lime-soft);
+    }
+
+    .target-callout span{
+      color:var(--green);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .target-callout strong{
+      display:block;
+
+      margin-top:6px;
+
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:25px;
+      letter-spacing:-.04em;
+    }
+
+    .target-callout p{
+      margin-top:5px;
+
+      color:#59705f;
+
+      font-size:8px;
+      line-height:1.55;
+    }
+
+    .target-action{
+      padding:20px 25px 24px;
+    }
+
+    .primary-btn{
+      width:100%;
+      height:46px;
+
+      border:0;
+      border-radius:10px;
+
+      background:var(--ink);
+      color:white;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    /* =========================
+       FINAL NOTE
+    ========================= */
+
+    .closing{
+      margin-top:24px;
+
+      padding:25px 28px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+
+      gap:30px;
+    }
+
+    .closing-copy{
+      max-width:760px;
+    }
+
+    .closing-copy h3{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:18px;
+      letter-spacing:-.03em;
+    }
+
+    .closing-copy p{
+      margin-top:7px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.65;
+    }
+
+    .flow-state{
+      min-width:200px;
+
+      padding:14px;
+
+      border-radius:13px;
+
+      background:#f4f8f4;
+    }
+
+    .flow-state span{
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .flow-state strong{
+      display:block;
+
+      margin-top:4px;
+
+      color:var(--green);
+
+      font-size:10px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width:1080px){
+
+      .priority-grid{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+    @media(max-width:900px){
+
+      :root{
+        --sidebar:0px;
+      }
+
+      .app{
+        display:block;
+      }
+
+      .sidebar{
+        width:236px;
+
+        transform:translateX(-100%);
+        transition:.25s ease;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      .sidebar-overlay{
+        display:block;
+
+        position:fixed;
+        inset:0;
+
+        z-index:90;
+
+        background:rgba(16,32,25,.15);
+
+        opacity:0;
+        pointer-events:none;
+
+        transition:.2s ease;
+      }
+
+      .sidebar-overlay.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      .main{
+        grid-column:auto;
+      }
+
+      .mobile-menu{
+        display:grid;
+        place-items:center;
+      }
+
+    }
+
+    @media(max-width:760px){
+
+      .topbar{
+        padding:0 15px;
+      }
+
+      .breadcrumb,
+      .roadmap-status{
+        display:none;
+      }
+
+      .back-btn span{
+        display:none;
+      }
+
+      .content{
+        width:calc(100% - 24px);
+
+        padding-top:28px;
+      }
+
+      .page-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .target-summary{
+        text-align:left;
+      }
+
+      .roadmap-surface,
+      .priority{
+        padding:23px 18px;
+      }
+
+      .roadmap-top{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .roadmap-meta{
+        width:100%;
+      }
+
+      .roadmap-meta div{
+        text-align:left;
+      }
+
+      .timeline{
+        padding-left:39px;
+      }
+
+      .timeline::before{
+        left:12px;
+      }
+
+      .timeline-dot{
+        left:-35px;
+      }
+
+      .timeline-item{
+        grid-template-columns:1fr;
+
+        gap:9px;
+
+        padding:20px 0;
+      }
+
+      .action-impact{
+        text-align:left;
+      }
+
+      .scenario-strip{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .scenario-item:nth-child(3){
+        border-left:0;
+        border-top:1px solid var(--line);
+      }
+
+      .scenario-item:nth-child(4){
+        border-top:1px solid var(--line);
+      }
+
+      .priority-row{
+        grid-template-columns:34px 1fr;
+
+        gap:8px;
+
+        padding:15px 0;
+      }
+
+      .priority-metric{
+        grid-column:2;
+        text-align:left;
+      }
+
+      .closing{
+        flex-direction:column;
+
+        padding:22px 18px;
+      }
+
+      .flow-state{
+        width:100%;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashboard.html" class="brand">
+
+      <div class="brand-mark">
+        C
+      </div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+
+    </a>
+
+
+    <div class="factory-switch">
+
+      <small>
+        Current Factory
+      </small>
+
+      <strong>
+        <span class="sidebar-factory-name">Apex Components Pvt. Ltd.</span>
+      </strong>
+
+      <div class="factory-meta">
+
+        <span class="factory-dot"></span>
+
+        Automotive · Gujarat
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Overview
+      </div>
+
+      <div class="nav-list">
+
+        <a href="dashboard.html" class="nav-item">
+          <div class="nav-icon">O</div>
+          Carbon Overview
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Investigate
+      </div>
+
+      <div class="nav-list">
+
+        <a href="factory-data.html" class="nav-item">
+          <div class="nav-icon">D</div>
+          Factory Data
+        </a>
+
+        <a href="leak-detector.html" class="nav-item leak">
+          <div class="nav-icon">!</div>
+          Leak Detector
+        </a>
+
+        <a href="root-cause.html" class="nav-item root">
+          <div class="nav-icon">R</div>
+          Root Cause
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Act
+      </div>
+
+      <div class="nav-list">
+
+        <a href="solutions.html" class="nav-item solution">
+          <div class="nav-icon">S</div>
+          Circular Solutions
+        </a>
+
+        <a href="simulator.html" class="nav-item simulator">
+          <div class="nav-icon">W</div>
+          What-If Simulator
+        </a>
+
+        <a href="roadmap.html" class="nav-item solution active">
+          <div class="nav-icon">→</div>
+          Action Roadmap
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="confidence-box">
+
+        <div class="confidence-top">
+
+          <span>
+            Data confidence
+          </span>
+
+          <strong>
+            82%
+          </strong>
+
+        </div>
+
+        <div class="confidence-line">
+          <div class="confidence-fill"></div>
+        </div>
+
+      </div>
+
+
+      <div class="profile">
+
+        <div class="avatar">
+          PP
+        </div>
+
+        <div>
+
+          <strong>
+            Prince
+          </strong>
+
+          <span>
+            Carbon Workspace
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="toggleSidebar()"
+  ></div>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()"
+        >
+          ☰
+        </button>
+
+
+        <a
+          href="simulator.html"
+          class="back-btn"
+        >
+          ←
+
+          <span>
+            Back to Simulator
+          </span>
+        </a>
+
+
+        <div class="breadcrumb">
+
+          Workspace
+
+          <span>›</span>
+
+          What-If Simulator
+
+          <span>›</span>
+
+          <strong>
+            Action Roadmap
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="roadmap-status">
+
+        <span class="status-dot"></span>
+
+        Action sequence ready
+
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <div id="roadmapEmptyState" style="display:none;"></div>
+
+      <!-- HEADER -->
+
+      <section class="page-head">
+
+        <div>
+
+          <div class="eyebrow">
+            Action Sequencer
+          </div>
+
+          <h1>
+            Turn recommendations into an order of action.
+          </h1>
+
+          <p>
+            Carbon Core converts isolated interventions into a
+            practical decarbonization sequence — what to start now,
+            what should follow, how much it costs and what the
+            cumulative carbon impact could be.
+          </p>
+
+        </div>
+
+
+        <div class="target-summary">
+
+          <span>
+            12-Month Target
+          </span>
+
+          <strong id="headerTarget">
+            909
+          </strong>
+
+          <small>
+            tCO₂e / year
+          </small>
+
+        </div>
+
+      </section>
+
+
+      <!-- MAIN ROADMAP -->
+
+      <section class="surface roadmap-surface">
+
+        <div class="roadmap-top">
+
+          <div>
+
+            <div class="section-kicker">
+              Decarbonization Sequence
+            </div>
+
+            <h2 class="section-title">
+              Start with the fastest avoidable loss.
+            </h2>
+
+            <p class="section-text">
+              The sequence balances carbon saving, confidence,
+              cost, implementation effort and disruption.
+            </p>
+
+          </div>
+
+
+          <div class="roadmap-meta">
+
+            <div>
+              <span>Total Planned Saving</span>
+              <strong id="plannedSavingTop">
+                241 tCO₂e
+              </strong>
+            </div>
+
+            <div>
+              <span>Total Estimated Cost</span>
+              <strong id="plannedCostTop">
+                ₹11.6L
+              </strong>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="timeline">
+
+          <!-- NOW -->
+
+          <div class="timeline-item now">
+
+            <div class="timeline-dot"></div>
+
+            <div class="when">
+
+              <span>
+                Starting Point
+              </span>
+
+              <strong>
+                NOW
+              </strong>
+
+            </div>
+
+
+            <div class="action-info">
+
+              <div class="action-label">
+                Current Factory Baseline
+              </div>
+
+              <h3 id="roadmapFactoryName">
+                Your Factory
+              </h3>
+
+              <p>
+                Current activity model before selected interventions
+                are implemented.
+              </p>
+
+            </div>
+
+
+            <div class="action-impact">
+
+              <strong
+                style="color:var(--orange)"
+                id="timelineBaseline"
+              >
+                1,150
+              </strong>
+
+              <span>
+                tCO₂e / year
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- ACTION 1 -->
+
+          <div class="timeline-item">
+
+            <div class="timeline-dot"></div>
+
+            <div class="when">
+
+              <span>
+                Priority 01
+              </span>
+
+              <strong>
+                0–3 Months
+              </strong>
+
+            </div>
+
+
+            <div class="action-info">
+
+              <div class="action-label">
+                Quick Operational Win
+              </div>
+
+              <h3 id="firstActionTitle">
+                Compressor Optimization & Leak Remediation
+              </h3>
+
+              <p id="firstActionText">
+                Repair leaks, optimize compressor sequencing and
+                reduce unnecessary pressure.
+              </p>
+
+            </div>
+
+
+            <div class="action-impact">
+
+              <strong id="firstSaving">
+                -74
+              </strong>
+
+              <span>
+                tCO₂e / year
+              </span>
+
+              <span
+                class="cost"
+                id="firstCost"
+              >
+                ₹1.6L
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- ACTION 2 -->
+
+          <div class="timeline-item">
+
+            <div class="timeline-dot"></div>
+
+            <div class="when">
+
+              <span>
+                Priority 02
+              </span>
+
+              <strong>
+                3–6 Months
+              </strong>
+
+            </div>
+
+
+            <div class="action-info">
+
+              <div class="action-label">
+                Material Circularity
+              </div>
+
+              <h3>
+                Increase Recycled Aluminium Share
+              </h3>
+
+              <p>
+                Increase recycled-content feedstock and reduce
+                dependence on virgin aluminium.
+              </p>
+
+            </div>
+
+
+            <div class="action-impact">
+
+              <strong>
+                -105
+              </strong>
+
+              <span>
+                tCO₂e / year
+              </span>
+
+              <span class="cost">
+                ₹3.8L
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- ACTION 3 -->
+
+          <div class="timeline-item">
+
+            <div class="timeline-dot"></div>
+
+            <div class="when">
+
+              <span>
+                Priority 03
+              </span>
+
+              <strong>
+                6–12 Months
+              </strong>
+
+            </div>
+
+
+            <div class="action-info">
+
+              <div class="action-label">
+                Process Recovery
+              </div>
+
+              <h3>
+                Waste Heat Recovery
+              </h3>
+
+              <p>
+                Recover usable thermal energy and reduce repeated
+                heating demand in heat-treatment operations.
+              </p>
+
+            </div>
+
+
+            <div class="action-impact">
+
+              <strong>
+                -62
+              </strong>
+
+              <span>
+                tCO₂e / year
+              </span>
+
+              <span class="cost">
+                ₹6.2L
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- TARGET -->
+
+          <div class="timeline-item target">
+
+            <div class="timeline-dot"></div>
+
+            <div class="when">
+
+              <span>
+                Target State
+              </span>
+
+              <strong>
+                12 Months
+              </strong>
+
+            </div>
+
+
+            <div class="action-info">
+
+              <div class="action-label">
+                Expected Outcome
+              </div>
+
+              <h3>
+                Lower-carbon operating state
+              </h3>
+
+              <p>
+                Expected footprint after the three prioritized
+                interventions are successfully implemented.
+              </p>
+
+            </div>
+
+
+            <div class="action-impact">
+
+              <strong id="timelineTarget">
+                909
+              </strong>
+
+              <span>
+                tCO₂e / year
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- CURRENT SIMULATION -->
+
+      <section class="scenario-strip">
+
+        <div class="scenario-item">
+
+          <span>
+            Saved Scenario
+          </span>
+
+          <strong id="savedScenarioName">
+            Compressor Optimization
+          </strong>
+
+        </div>
+
+
+        <div class="scenario-item">
+
+          <span>
+            Scenario Saving
+          </span>
+
+          <strong
+            class="green"
+            id="savedScenarioSaving"
+          >
+            74 tCO₂e
+          </strong>
+
+        </div>
+
+
+        <div class="scenario-item">
+
+          <span>
+            Scenario Investment
+          </span>
+
+          <strong id="savedScenarioCost">
+            ₹1.60L
+          </strong>
+
+        </div>
+
+
+        <div class="scenario-item">
+
+          <span>
+            Scenario Footprint
+          </span>
+
+          <strong id="savedScenarioFuture">
+            1,076 tCO₂e
+          </strong>
+
+        </div>
+
+      </section>
+
+
+      <!-- PRIORITY + TARGET -->
+
+      <div class="priority-grid">
+
+        <section class="surface priority">
+
+          <div class="section-kicker">
+            Why This Order?
+          </div>
+
+          <h2 class="section-title">
+            Carbon Core sequences actions, not just scores them.
+          </h2>
+
+          <p class="section-text">
+            Early actions create fast savings with lower disruption.
+            Larger structural changes follow once the easiest avoidable
+            losses have been removed.
+          </p>
+
+
+          <div class="priority-list">
+
+            <div class="priority-row">
+
+              <div class="priority-index">
+                01
+              </div>
+
+              <div class="priority-name">
+
+                <strong>
+                  Compressor Optimization
+                </strong>
+
+                <span>
+                  Confirmed loss · low effort · fastest implementation
+                </span>
+
+              </div>
+
+              <div class="priority-metric">
+
+                <strong>
+                  88%
+                </strong>
+
+                <span>
+                  confidence
+                </span>
+
+              </div>
+
+              <div class="priority-metric">
+
+                <strong>
+                  Low
+                </strong>
+
+                <span>
+                  effort
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="priority-row">
+
+              <div class="priority-index">
+                02
+              </div>
+
+              <div class="priority-name">
+
+                <strong>
+                  Recycled Aluminium
+                </strong>
+
+                <span>
+                  High carbon impact · supplier coordination required
+                </span>
+
+              </div>
+
+              <div class="priority-metric">
+
+                <strong>
+                  82%
+                </strong>
+
+                <span>
+                  confidence
+                </span>
+
+              </div>
+
+              <div class="priority-metric">
+
+                <strong>
+                  Medium
+                </strong>
+
+                <span>
+                  effort
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="priority-row">
+
+              <div class="priority-index">
+                03
+              </div>
+
+              <div class="priority-name">
+
+                <strong>
+                  Waste Heat Recovery
+                </strong>
+
+                <span>
+                  Valuable recovery potential · higher integration effort
+                </span>
+
+              </div>
+
+              <div class="priority-metric">
+
+                <strong>
+                  76%
+                </strong>
+
+                <span>
+                  confidence
+                </span>
+
+              </div>
+
+              <div class="priority-metric">
+
+                <strong>
+                  High
+                </strong>
+
+                <span>
+                  effort
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- TARGET PANEL -->
+
+        <aside class="surface target-panel">
+
+          <div class="target-head">
+
+            <div class="target-label">
+              12-Month Outcome
+            </div>
+
+            <h3>
+              What the factory could look like next.
+            </h3>
+
+            <p>
+              Combined expected impact if the current action
+              sequence is implemented successfully.
+            </p>
+
+          </div>
+
+
+          <div class="target-numbers">
+
+            <div class="target-row">
+
+              <span>
+                Starting baseline
+              </span>
+
+              <strong id="targetBaseline">
+                1,150 tCO₂e
+              </strong>
+
+            </div>
+
+
+            <div class="target-row">
+
+              <span>
+                Planned saving
+              </span>
+
+              <strong class="green" id="targetPlannedSaving">
+                241 tCO₂e
+              </strong>
+
+            </div>
+
+
+            <div class="target-row">
+
+              <span>
+                Estimated investment
+              </span>
+
+              <strong id="targetInvestment">
+                ₹11.6L
+              </strong>
+
+            </div>
+
+
+            <div class="target-row">
+
+              <span>
+                Target footprint
+              </span>
+
+              <strong
+                class="green"
+                id="targetFootprint"
+              >
+                909 tCO₂e
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="target-callout">
+
+            <span>
+              Expected Reduction
+            </span>
+
+            <strong id="targetReduction">
+              21.0%
+            </strong>
+
+            <p>
+              Compared with the current calculated baseline.
+            </p>
+
+          </div>
+
+
+          <div class="target-action">
+
+            <button
+              class="primary-btn"
+              onclick="returnToOverview()"
+            >
+              Return to Carbon Overview →
+            </button>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+
+      <!-- CLOSING -->
+
+      <section class="surface closing">
+
+        <div class="closing-copy">
+
+          <div class="section-kicker">
+            Carbon Core Decision Flow
+          </div>
+
+          <h3>
+            The full chain stays traceable.
+          </h3>
+
+          <p>
+            Factory data → carbon baseline → hotspot → leak point →
+            root cause → circular intervention → what-if simulation →
+            prioritized action roadmap.
+          </p>
+
+        </div>
+
+
+        <div class="flow-state">
+
+          <span>
+            Analysis status
+          </span>
+
+          <strong>
+            Decision path complete
+          </strong>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script src="api.js"></script>
+<script>
+
+  let roadmapData = null;
+
+  function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("show");
+  }
+
+  function returnToOverview(){
+    window.location.href = "dashboard.html";
+  }
+
+  function renderTimelineActions(actions) {
+    const timeline = document.querySelector(".timeline");
+    if (!timeline) return;
+
+    // Keep the NOW (baseline) item, replace action items
+    const nowItem = timeline.querySelector(".timeline-item.now");
+    const targetItem = timeline.querySelector(".timeline-item.target");
+
+    // Remove existing action items (not now, not target)
+    timeline.querySelectorAll(".timeline-item:not(.now):not(.target)").forEach(el => el.remove());
+
+    // Insert dynamic actions before target
+    if (actions && actions.length > 0) {
+      actions.forEach((action, idx) => {
+        const phaseMatch = action.phase_label ? action.phase_label.match(/(\d+[–-]\d+\s*Months?)/) : null;
+        const timeLabel = phaseMatch ? phaseMatch[0] : `Phase ${idx + 1}`;
+        const phaseKicker = action.phase_label ? action.phase_label.replace(/Phase \d+:\s*/, "").replace(/\d+[–-]\d+\s*Months?\s*/, "").replace(/\(|\)/g, "").trim() : "Planned Action";
+
+        const div = document.createElement("div");
+        div.className = "timeline-item";
+        div.innerHTML = `
+          <div class="timeline-dot"></div>
+          <div class="when">
+            <span>Priority ${String(idx + 1).padStart(2, "0")}</span>
+            <strong>${timeLabel}</strong>
+          </div>
+          <div class="action-info">
+            <div class="action-label">${phaseKicker || "Decarbonization Action"}</div>
+            <h3>${action.action_title}</h3>
+            <p>${action.status || "Planned"} · ${action.effort_level} effort · ${action.confidence_pct}% confidence</p>
+          </div>
+          <div class="action-impact">
+            <strong>-${Math.round(action.carbon_saving_tco2e).toLocaleString("en-IN")}</strong>
+            <span>tCO₂e / year</span>
+            <span class="cost">₹${action.cost_inr_lakhs}L</span>
+          </div>
+        `;
+        timeline.insertBefore(div, targetItem);
+      });
+    }
+  }
+
+  function renderPriorityList(actions) {
+    const priorityList = document.querySelector(".priority-list");
+    if (!priorityList || !actions || actions.length === 0) return;
+
+    priorityList.innerHTML = actions.map((action, idx) => `
+      <div class="priority-row">
+        <div class="priority-index">${String(idx + 1).padStart(2, "0")}</div>
+        <div class="priority-name">
+          <strong>${action.action_title}</strong>
+          <span>${action.status || "Planned"} · ${action.effort_level.toLowerCase()} effort</span>
+        </div>
+        <div class="priority-metric">
+          <strong>${action.confidence_pct}%</strong>
+          <span>confidence</span>
+        </div>
+        <div class="priority-metric">
+          <strong>${action.effort_level}</strong>
+          <span>effort</span>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function populateRoadmap(data) {
+    roadmapData = data;
+
+    // Factory name in baseline
+    const roadmapFactoryName = document.getElementById("roadmapFactoryName");
+    if (roadmapFactoryName) {
+      const sidebarFactory = document.getElementById("sidebarFactoryName");
+      roadmapFactoryName.textContent = (sidebarFactory && sidebarFactory.textContent.trim()) || "Your Factory";
+    }
+
+    // Header target
+    const headerTarget = document.getElementById("headerTarget");
+    if (headerTarget) headerTarget.textContent = Math.round(data.target_footprint_tco2e).toLocaleString("en-IN");
+
+    // Timeline baseline
+    const timelineBaseline = document.getElementById("timelineBaseline");
+    if (timelineBaseline) timelineBaseline.textContent = Math.round(data.baseline_tco2e).toLocaleString("en-IN");
+
+    // Timeline target
+    const timelineTarget = document.getElementById("timelineTarget");
+    if (timelineTarget) timelineTarget.textContent = Math.round(data.target_footprint_tco2e).toLocaleString("en-IN");
+
+    // Meta (top)
+    const plannedSavingTop = document.getElementById("plannedSavingTop");
+    if (plannedSavingTop) plannedSavingTop.textContent = Math.round(data.planned_saving_tco2e).toLocaleString("en-IN") + " tCO₂e";
+
+    const plannedCostTop = document.getElementById("plannedCostTop");
+    if (plannedCostTop) plannedCostTop.textContent = "₹" + data.total_cost_inr_lakhs.toFixed(2) + "L";
+
+    // Target panel
+    const targetBaseline = document.getElementById("targetBaseline");
+    if (targetBaseline) targetBaseline.textContent = Math.round(data.baseline_tco2e).toLocaleString("en-IN") + " tCO₂e";
+
+    const targetFootprint = document.getElementById("targetFootprint");
+    if (targetFootprint) targetFootprint.textContent = Math.round(data.target_footprint_tco2e).toLocaleString("en-IN") + " tCO₂e";
+
+    const targetReduction = document.getElementById("targetReduction");
+    if (targetReduction) targetReduction.textContent = data.reduction_percent.toFixed(1) + "%";
+
+    const targetPlannedSaving = document.getElementById("targetPlannedSaving");
+    if (targetPlannedSaving) targetPlannedSaving.textContent = Math.round(data.planned_saving_tco2e).toLocaleString("en-IN") + " tCO₂e";
+
+    const targetInvestment = document.getElementById("targetInvestment");
+    if (targetInvestment) targetInvestment.textContent = "₹" + data.total_cost_inr_lakhs.toFixed(2) + "L";
+
+    // Scenario strip - populate from first action if no localStorage scenario
+    const rawScenario = localStorage.getItem("carbonScenario");
+    if (rawScenario) {
+      try {
+        const scenario = JSON.parse(rawScenario);
+        const savedName = document.getElementById("savedScenarioName");
+        if (savedName) savedName.textContent = scenario.title || "Selected Scenario";
+        const savedSaving = document.getElementById("savedScenarioSaving");
+        if (savedSaving) savedSaving.textContent = (scenario.saving ?? 0).toLocaleString("en-IN") + " tCO₂e";
+        const savedCost = document.getElementById("savedScenarioCost");
+        if (savedCost) savedCost.textContent = "₹" + Number(scenario.cost ?? 0).toFixed(2) + "L";
+        const savedFuture = document.getElementById("savedScenarioFuture");
+        if (savedFuture) savedFuture.textContent = (scenario.future ?? data.target_footprint_tco2e).toLocaleString("en-IN") + " tCO₂e";
+      } catch(e) {}
+    } else if (data.actions && data.actions.length > 0) {
+      const first = data.actions[0];
+      const savedName = document.getElementById("savedScenarioName");
+      if (savedName) savedName.textContent = first.action_title;
+      const savedSaving = document.getElementById("savedScenarioSaving");
+      if (savedSaving) savedSaving.textContent = Math.round(first.carbon_saving_tco2e).toLocaleString("en-IN") + " tCO₂e";
+      const savedCost = document.getElementById("savedScenarioCost");
+      if (savedCost) savedCost.textContent = "₹" + first.cost_inr_lakhs + "L";
+      const savedFuture = document.getElementById("savedScenarioFuture");
+      if (savedFuture) savedFuture.textContent = Math.round(data.baseline_tco2e - first.carbon_saving_tco2e).toLocaleString("en-IN") + " tCO₂e";
+    }
+
+    // Update first action title/saving/cost for the hardcoded first timeline slot (if it exists)
+    if (data.actions && data.actions.length > 0) {
+      const first = data.actions[0];
+      const firstActionTitle = document.getElementById("firstActionTitle");
+      if (firstActionTitle) firstActionTitle.textContent = first.action_title;
+      const firstSaving = document.getElementById("firstSaving");
+      if (firstSaving) firstSaving.textContent = "-" + Math.round(first.carbon_saving_tco2e).toLocaleString("en-IN");
+      const firstCost = document.getElementById("firstCost");
+      if (firstCost) firstCost.textContent = "₹" + first.cost_inr_lakhs + "L";
+    }
+
+    // Render dynamic timeline actions (skip first which is hardcoded, or render all)
+    renderTimelineActions(data.actions);
+    renderPriorityList(data.actions);
+  }
+
+  async function loadRoadmap() {
+    const token = getAuthToken();
+    if (!token) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const factoryId = getActiveFactoryId();
+    if (!factoryId) {
+      window.location.href = "factory-setup.html";
+      return;
+    }
+
+    try {
+      // First try to get stored scenario for preferred_scenario_id
+      const rawScenario = localStorage.getItem("carbonScenario");
+      let scenarioId = null;
+      if (rawScenario) {
+        try {
+          const sc = JSON.parse(rawScenario);
+          scenarioId = sc.recommendation_id || null;
+        } catch(e) {}
+      }
+
+      // Try stored scenario ID
+      const storedScenarioId = localStorage.getItem("selectedScenarioId");
+
+      let data;
+      if (storedScenarioId) {
+        // POST to generate/use this scenario
+        data = await apiFetch(`/api/factories/${factoryId}/roadmap`, {
+          method: "POST",
+          body: JSON.stringify({ preferred_scenario_id: parseInt(storedScenarioId, 10) })
+        });
+      } else {
+        // GET existing or auto-generate
+        data = await apiFetch(`/api/factories/${factoryId}/roadmap`);
+      }
+
+      if (!data || data.baseline_tco2e <= 0) {
+        renderEmptyState("roadmapEmptyState",
+          "No roadmap available yet.",
+          "Complete your factory data entry and baseline calculation to generate your decarbonization roadmap.",
+          "factory-data.html",
+          "Enter Factory Data →"
+        );
+        const content = document.querySelector(".content");
+        const empty = document.getElementById("roadmapEmptyState");
+        if (empty) empty.style.display = "block";
+        return;
+      }
+
+      populateRoadmap(data);
+
+    } catch (err) {
+      console.error("Roadmap load error:", err);
+      // Fallback: try to render from localStorage
+      const rawScenario = localStorage.getItem("carbonScenario");
+      if (rawScenario) {
+        try {
+          const sc = JSON.parse(rawScenario);
+          const bl = Number(sc.baseline || 1150);
+          const sv = Number(sc.saving || 74);
+          populateRoadmap({
+            baseline_tco2e: bl,
+            planned_saving_tco2e: sv,
+            target_footprint_tco2e: bl - sv,
+            reduction_percent: bl > 0 ? (sv / bl * 100) : 0,
+            total_cost_inr_lakhs: Number(sc.cost || 1.6),
+            actions: [{
+              order_index: 1,
+              action_title: sc.title || "Simulated Scenario",
+              phase_label: "Phase 1: 0–3 Months (Quick Wins)",
+              carbon_saving_tco2e: sv,
+              cost_inr_lakhs: Number(sc.cost || 1.6),
+              effort_level: "Low",
+              confidence_pct: sc.confidence || 85,
+              status: "Ready to Deploy"
+            }]
+          });
+        } catch(e2) {
+          console.error("Fallback render failed:", e2);
+        }
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", loadRoadmap);
+  loadSidebarFactory();
+
+</script>
+
+</body>
+</html>

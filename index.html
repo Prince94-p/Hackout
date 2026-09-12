@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — Detect. Divert. Decarbonize.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg: #f5f7f2;
+      --paper: #ffffff;
+      --paper-soft: #eef2eb;
+
+      --ink: #102019;
+      --text: #32423a;
+      --muted: #718078;
+
+      --green: #175f45;
+      --green-2: #238761;
+      --green-soft: #dff4e9;
+
+      --lime: #c9f454;
+      --lime-soft: #effbd0;
+
+      --orange: #ff7b45;
+      --orange-soft: #fff0e8;
+
+      --blue: #2b6de8;
+      --blue-soft: #eaf1ff;
+
+      --line: #dbe2dc;
+
+      --shadow: 0 24px 70px rgba(20, 48, 36, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: "Manrope", sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 40px));
+      margin: auto;
+    }
+
+    /* =====================================================
+       NAVBAR
+    ===================================================== */
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 100;
+
+      height: 76px;
+
+      background: rgba(245, 247, 242, 0.90);
+      backdrop-filter: blur(18px);
+
+      border-bottom: 1px solid rgba(16, 32, 25, 0.08);
+    }
+
+    .nav-inner {
+      height: 100%;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 14px;
+
+      display: grid;
+      place-items: center;
+
+      background: var(--ink);
+      color: white;
+
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .brand-text {
+      font-family: "Manrope", sans-serif;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .brand-text span {
+      color: var(--green-2);
+    }
+
+    .brand-sub {
+      display: block;
+      margin-top: 1px;
+
+      color: var(--muted);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      color: #536159;
+      font-size: 13px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .login-link {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .nav-btn {
+      padding: 11px 18px;
+
+      border-radius: 12px;
+
+      background: var(--ink);
+      color: white;
+
+      font-size: 13px;
+      font-weight: 700;
+
+      transition: 0.2s;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+
+    .hero {
+      min-height: 100vh;
+
+      padding: 135px 0 80px;
+
+      display: flex;
+      align-items: center;
+
+      position: relative;
+    }
+
+    .hero::before {
+      content: "";
+
+      position: absolute;
+      top: 160px;
+      right: -120px;
+
+      width: 420px;
+      height: 420px;
+
+      background: #dff4e9;
+      border-radius: 50%;
+
+      filter: blur(80px);
+      opacity: 0.7;
+
+      z-index: -1;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+
+      padding: 8px 12px;
+
+      border-radius: 100px;
+
+      background: white;
+      border: 1px solid var(--line);
+
+      color: var(--green);
+
+      font-size: 11px;
+      font-weight: 700;
+
+      box-shadow: 0 10px 30px rgba(20,48,36,0.04);
+    }
+
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+      background: var(--lime);
+
+      box-shadow: 0 0 0 4px rgba(201,244,84,0.25);
+    }
+
+    .hero h1 {
+      margin-top: 26px;
+
+      max-width: 720px;
+
+      font-size: clamp(56px, 6vw, 88px);
+      line-height: 0.95;
+
+      letter-spacing: -0.065em;
+    }
+
+    .hero h1 .orange {
+      color: var(--orange);
+    }
+
+    .hero h1 .green {
+      color: var(--green-2);
+    }
+
+    .hero-copy {
+      margin-top: 28px;
+
+      max-width: 630px;
+
+      color: var(--text);
+
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      margin-top: 34px;
+
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      height: 52px;
+
+      padding: 0 22px;
+
+      border-radius: 13px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      transition: 0.25s;
+    }
+
+    .primary-btn {
+      background: var(--ink);
+      color: white;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(16,32,25,0.16);
+    }
+
+    .secondary-btn {
+      background: transparent;
+
+      border: 1px solid #cbd4cd;
+
+      color: var(--ink);
+    }
+
+    .secondary-btn:hover {
+      background: white;
+    }
+
+    .hero-meta {
+      margin-top: 38px;
+
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item strong {
+      display: block;
+
+      font-family: "Manrope", sans-serif;
+      font-size: 20px;
+    }
+
+    .meta-item span {
+      display: block;
+      margin-top: 3px;
+
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* =====================================================
+       HERO VISUAL
+    ===================================================== */
+
+    .flow-stage {
+      position: relative;
+
+      min-height: 560px;
+
+      background: white;
+
+      border: 1px solid var(--line);
+      border-radius: 32px;
+
+      box-shadow: var(--shadow);
+
+      overflow: hidden;
+    }
+
+    .flow-stage::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background-image:
+        linear-gradient(rgba(16,32,25,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16,32,25,0.035) 1px, transparent 1px);
+
+      background-size: 38px 38px;
+    }
+
+    .flow-head {
+      position: relative;
+      z-index: 2;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 22px 24px;
+
+      border-bottom: 1px solid var(--line);
+    }
+
+    .flow-head-left span {
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .flow-head-left h3 {
+      margin-top: 4px;
+      font-size: 16px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+
+      color: var(--green);
+
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+
+      background: var(--lime);
+      border-radius: 50%;
+    }
+
+    .flow-canvas {
+      position: relative;
+      z-index: 2;
+
+      height: 490px;
+    }
+
+    .node {
+      position: absolute;
+
+      background: white;
+
+      border: 1px solid var(--line);
+      border-radius: 16px;
+
+      padding: 14px 15px;
+
+      min-width: 145px;
+
+      box-shadow: 0 14px 34px rgba(20,48,36,0.07);
+    }
+
+    .node-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+
+      color: var(--muted);
+    }
+
+    .node h4 {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .node p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .node-energy {
+      left: 32px;
+      top: 75px;
+    }
+
+    .node-process {
+      left: 215px;
+      top: 75px;
+    }
+
+    .node-carbon {
+      right: 32px;
+      top: 75px;
+
+      border-color: rgba(255,123,69,0.4);
+      background: var(--orange-soft);
+    }
+
+    .node-carbon h4 {
+      color: var(--orange);
+    }
+
+    .node-material {
+      left: 32px;
+      top: 250px;
+    }
+
+    .node-machine {
+      left: 215px;
+      top: 250px;
+    }
+
+    .node-fix {
+      right: 32px;
+      top: 250px;
+
+      background: var(--lime-soft);
+      border-color: rgba(23,95,69,0.16);
+    }
+
+    .node-fix h4 {
+      color: var(--green);
+    }
+
+    .flow-line {
+      position: absolute;
+
+      height: 2px;
+
+      background: #cad4cc;
+      transform-origin: left center;
+    }
+
+    .line-1 {
+      width: 65px;
+      left: 170px;
+      top: 117px;
+    }
+
+    .line-2 {
+      width: 70px;
+      left: 345px;
+      top: 117px;
+    }
+
+    .line-3 {
+      width: 65px;
+      left: 170px;
+      top: 292px;
+    }
+
+    .line-4 {
+      width: 70px;
+      left: 345px;
+      top: 292px;
+    }
+
+    .leak-alert {
+      position: absolute;
+
+      left: 50%;
+      top: 164px;
+
+      transform: translateX(-50%);
+
+      width: calc(100% - 70px);
+
+      padding: 14px 18px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      border-radius: 15px;
+
+      background: #fff7f2;
+      border: 1px solid #ffd9c7;
+    }
+
+    .leak-left {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .leak-icon {
+      width: 34px;
+      height: 34px;
+
+      border-radius: 10px;
+
+      display: grid;
+      place-items: center;
+
+      background: var(--orange);
+      color: white;
+
+      font-weight: 800;
+    }
+
+    .leak-text strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .leak-text span {
+      display: block;
+      margin-top: 2px;
+
+      font-size: 10px;
+      color: #8c6c5e;
+    }
+
+    .leak-value {
+      color: var(--orange);
+      font-family: "Manrope", sans-serif;
+      font-weight: 800;
+    }
+
+    .flow-bottom {
+      position: absolute;
+
+      left: 26px;
+      right: 26px;
+      bottom: 22px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding-top: 17px;
+
+      border-top: 1px solid var(--line);
+    }
+
+    .flow-bottom span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .flow-bottom strong {
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    /* =====================================================
+       PROBLEM SECTION
+    ===================================================== */
+
+    .section {
+      padding: 110px 0;
+    }
+
+    .section-label {
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      margin-top: 14px;
+
+      max-width: 800px;
+
+      font-size: clamp(38px, 4vw, 58px);
+      line-height: 1.05;
+
+      letter-spacing: -0.05em;
+    }
+
+    .section-copy {
+      max-width: 650px;
+
+      margin-top: 18px;
+
+      color: var(--text);
+
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* =====================================================
+       HOW IT WORKS
+    ===================================================== */
+
+    .journey {
+      margin-top: 58px;
+
+      border-top: 1px solid var(--line);
+    }
+
+    .journey-row {
+      display: grid;
+      grid-template-columns: 90px 1.1fr 1fr auto;
+
+      align-items: center;
+      gap: 28px;
+
+      padding: 26px 0;
+
+      border-bottom: 1px solid var(--line);
+    }
+
+    .journey-num {
+      color: var(--muted);
+
+      font-family: "Manrope", sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .journey-title {
+      font-family: "Manrope", sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .journey-desc {
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .journey-tag {
+      padding: 8px 11px;
+
+      border-radius: 10px;
+
+      font-size: 10px;
+      font-weight: 700;
+
+      white-space: nowrap;
+    }
+
+    .tag-blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .tag-orange {
+      background: var(--orange-soft);
+      color: var(--orange);
+    }
+
+    .tag-green {
+      background: var(--lime-soft);
+      color: var(--green);
+    }
+
+    /* =====================================================
+       LEAK SECTION
+    ===================================================== */
+
+    .leak-section {
+      background: var(--ink);
+      color: white;
+    }
+
+    .leak-section .section-label {
+      color: var(--lime);
+    }
+
+    .leak-section .section-copy {
+      color: #b6c2ba;
+    }
+
+    .leak-demo {
+      margin-top: 60px;
+
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 70px;
+
+      align-items: center;
+    }
+
+    .leak-stat {
+      padding: 28px 0;
+
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .leak-stat:first-child {
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .leak-stat span {
+      color: #95a69c;
+      font-size: 11px;
+    }
+
+    .leak-stat strong {
+      display: block;
+
+      margin-top: 7px;
+
+      font-family: "Manrope", sans-serif;
+
+      font-size: 34px;
+      font-weight: 700;
+    }
+
+    .leak-stat strong.orange {
+      color: var(--orange);
+    }
+
+    .leak-stat strong.lime {
+      color: var(--lime);
+    }
+
+    .diagnostic {
+      padding: 34px;
+
+      border-radius: 26px;
+
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .diagnostic h3 {
+      font-size: 22px;
+    }
+
+    .diagnostic-sub {
+      margin-top: 5px;
+
+      color: #8fa097;
+      font-size: 12px;
+    }
+
+    .diagnostic-line {
+      margin-top: 28px;
+
+      display: grid;
+      grid-template-columns: 130px 1fr auto;
+      gap: 16px;
+
+      align-items: center;
+    }
+
+    .diagnostic-line span {
+      font-size: 12px;
+      color: #c8d0cb;
+    }
+
+    .bar {
+      height: 8px;
+
+      background: rgba(255,255,255,0.08);
+
+      border-radius: 100px;
+
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+
+      border-radius: inherit;
+    }
+
+    .orange-fill {
+      width: 78%;
+      background: var(--orange);
+    }
+
+    .cyan-fill {
+      width: 55%;
+      background: #4bd4e8;
+    }
+
+    .green-fill {
+      width: 33%;
+      background: var(--lime);
+    }
+
+    .diagnostic-line strong {
+      font-size: 12px;
+    }
+
+    .matched-fix {
+      margin-top: 32px;
+
+      padding-top: 25px;
+
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .matched-fix-label {
+      color: var(--lime);
+
+      font-size: 10px;
+      font-weight: 800;
+
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+    }
+
+    .matched-fix h4 {
+      margin-top: 8px;
+      font-size: 20px;
+    }
+
+    .matched-fix p {
+      margin-top: 8px;
+
+      color: #9baaa2;
+
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    /* =====================================================
+       IMPACT
+    ===================================================== */
+
+    .impact-grid {
+      margin-top: 55px;
+
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .impact-item {
+      padding: 32px 28px;
+    }
+
+    .impact-item + .impact-item {
+      border-left: 1px solid var(--line);
+    }
+
+    .impact-item span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .impact-item strong {
+      display: block;
+      margin-top: 7px;
+
+      font-family: "Manrope", sans-serif;
+      font-size: 38px;
+    }
+
+    .impact-item p {
+      margin-top: 8px;
+
+      color: var(--text);
+
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    /* =====================================================
+       CTA
+    ===================================================== */
+
+    .cta {
+      padding: 100px 0;
+    }
+
+    .cta-box {
+      padding: 72px;
+
+      border-radius: 34px;
+
+      background:
+        linear-gradient(
+          120deg,
+          #eaf5ec 0%,
+          #f7f9f4 45%,
+          #fff4ec 100%
+        );
+
+      border: 1px solid var(--line);
+
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      gap: 50px;
+    }
+
+    .cta-box h2 {
+      max-width: 720px;
+
+      font-size: clamp(38px, 4vw, 60px);
+      line-height: 1.02;
+
+      letter-spacing: -0.05em;
+    }
+
+    .cta-box p {
+      margin-top: 16px;
+
+      max-width: 600px;
+
+      color: var(--text);
+
+      line-height: 1.7;
+    }
+
+    .cta-button {
+      flex-shrink: 0;
+
+      height: 56px;
+
+      padding: 0 22px;
+
+      border-radius: 14px;
+
+      background: var(--ink);
+      color: white;
+
+      display: inline-flex;
+      align-items: center;
+
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    footer {
+      padding: 35px 0;
+
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+    }
+
+    .footer-inner span {
+      color: var(--muted);
+      font-size: 10px;
+
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media(max-width: 900px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 120px;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 50px;
+      }
+
+      .hero h1 {
+        max-width: 760px;
+      }
+
+      .flow-stage {
+        min-height: 520px;
+      }
+
+      .journey-row {
+        grid-template-columns: 55px 1fr;
+      }
+
+      .journey-desc,
+      .journey-tag {
+        grid-column: 2;
+      }
+
+      .leak-demo {
+        grid-template-columns: 1fr;
+      }
+
+      .impact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .impact-item + .impact-item {
+        border-left: none;
+        border-top: 1px solid var(--line);
+      }
+
+      .cta-box {
+        padding: 45px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media(max-width: 650px) {
+      .container {
+        width: min(100% - 26px, 1180px);
+      }
+
+      nav {
+        height: 68px;
+      }
+
+      .brand-sub,
+      .login-link {
+        display: none;
+      }
+
+      .nav-btn {
+        padding: 10px 12px;
+      }
+
+      .hero h1 {
+        font-size: 52px;
+      }
+
+      .hero-copy {
+        font-size: 15px;
+      }
+
+      .hero-meta {
+        gap: 20px;
+      }
+
+      .flow-stage {
+        display: none;
+      }
+
+      .section {
+        padding: 80px 0;
+      }
+
+      .section-title {
+        font-size: 38px;
+      }
+
+      .journey-row {
+        padding: 22px 0;
+      }
+
+      .cta-box {
+        padding: 32px 24px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =====================================================
+       NAVBAR
+  ====================================================== -->
+
+  <nav>
+    <div class="container nav-inner">
+
+      <a href="#" class="brand">
+        <div class="brand-mark">C</div>
+
+        <div>
+          <div class="brand-text">
+            CARBON<span>CORE</span>
+          </div>
+
+          <span class="brand-sub">
+            Industrial Carbon Intelligence
+          </span>
+        </div>
+      </a>
+
+      <div class="nav-links">
+        <a href="#how">How it Works</a>
+        <a href="#leaks">Leak Detection</a>
+        <a href="#impact">Impact</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="login.html" class="login-link">
+          Sign in
+        </a>
+
+        <a href="login.html" class="nav-btn">
+          Analyze Factory →
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+
+  <section class="hero">
+
+    <div class="container hero-grid">
+
+      <div>
+
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          INDUSTRIAL EMISSION INTELLIGENCE
+        </div>
+
+        <h1>
+          FIND THE
+          <span class="orange">LEAK.</span><br>
+          TRACE THE
+          <span class="green">CAUSE.</span><br>
+          FIX THE FLOW.
+        </h1>
+
+        <p class="hero-copy">
+          Carbon Core turns factory energy, material, process and waste
+          data into a clear carbon map — showing where emissions originate,
+          why they happen, and which circular intervention should come next.
+        </p>
+
+        <div class="hero-actions">
+
+          <a href="login.html" class="primary-btn">
+            Start Factory Analysis →
+          </a>
+
+          <a href="#how" class="secondary-btn">
+            Explore the System
+          </a>
+
+        </div>
+
+        <div class="hero-meta">
+
+          <div class="meta-item">
+            <strong>48%</strong>
+            <span>Top emission source detected</span>
+          </div>
+
+          <div class="meta-item">
+            <strong>74 tCO₂e</strong>
+            <span>Potential first-action saving</span>
+          </div>
+
+          <div class="meta-item">
+            <strong>₹1.6L</strong>
+            <span>Estimated implementation</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- VISUAL -->
+
+      <div class="flow-stage">
+
+        <div class="flow-head">
+
+          <div class="flow-head-left">
+            <span>Live Factory Trace</span>
+            <h3>Apex Components</h3>
+          </div>
+
+          <div class="status">
+            <span class="status-dot"></span>
+            Analysis Ready
+          </div>
+
+        </div>
+
+        <div class="flow-canvas">
+
+          <div class="node node-energy">
+            <div class="node-label">Factory Input</div>
+            <h4>Grid Electricity</h4>
+            <p>1.25M kWh / year</p>
+          </div>
+
+          <div class="flow-line line-1"></div>
+
+          <div class="node node-process">
+            <div class="node-label">Process</div>
+            <h4>Compressed Air</h4>
+            <p>337,500 kWh / year</p>
+          </div>
+
+          <div class="flow-line line-2"></div>
+
+          <div class="node node-carbon">
+            <div class="node-label">Carbon Source</div>
+            <h4>162 tCO₂e</h4>
+            <p>27% of energy emissions</p>
+          </div>
+
+
+          <div class="leak-alert">
+
+            <div class="leak-left">
+
+              <div class="leak-icon">!</div>
+
+              <div class="leak-text">
+                <strong>Leak Point Detected</strong>
+                <span>28% pneumatic leakage measured</span>
+              </div>
+
+            </div>
+
+            <div class="leak-value">
+              ~94,500 kWh wasted
+            </div>
+
+          </div>
+
+
+          <div class="node node-material">
+            <div class="node-label">Material Input</div>
+            <h4>Virgin Aluminium</h4>
+            <p>50,000 kg / year</p>
+          </div>
+
+          <div class="flow-line line-3"></div>
+
+          <div class="node node-machine">
+            <div class="node-label">Process</div>
+            <h4>CNC Machining</h4>
+            <p>8 production spindles</p>
+          </div>
+
+          <div class="flow-line line-4"></div>
+
+          <div class="node node-fix">
+            <div class="node-label">Matched Circular Fix</div>
+            <h4>Compressor Optimization</h4>
+            <p>-74 tCO₂e · ₹1.6L</p>
+          </div>
+
+          <div class="flow-bottom">
+
+            <span>
+              Carbon Core traces data → process → leak → intervention
+            </span>
+
+            <strong>
+              Detect · Divert · Decarbonize
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =====================================================
+       HOW IT WORKS
+  ====================================================== -->
+
+  <section class="section" id="how">
+
+    <div class="container">
+
+      <div class="section-label">
+        How Carbon Core Works
+      </div>
+
+      <h2 class="section-title">
+        From raw factory data to the next best carbon action.
+      </h2>
+
+      <p class="section-copy">
+        Instead of showing only a carbon total, Carbon Core follows the
+        emissions through the factory and connects each major source to
+        practical circular interventions.
+      </p>
+
+      <div class="journey">
+
+        <div class="journey-row">
+          <div class="journey-num">01</div>
+
+          <div class="journey-title">
+            Measure
+          </div>
+
+          <div class="journey-desc">
+            Enter energy, material, process and waste-stream activity data.
+          </div>
+
+          <div class="journey-tag tag-blue">
+            Factory Input
+          </div>
+        </div>
+
+        <div class="journey-row">
+          <div class="journey-num">02</div>
+
+          <div class="journey-title">
+            Map
+          </div>
+
+          <div class="journey-desc">
+            Connect activity data to processes, outputs and emission factors.
+          </div>
+
+          <div class="journey-tag tag-blue">
+            Carbon Flow
+          </div>
+        </div>
+
+        <div class="journey-row">
+          <div class="journey-num">03</div>
+
+          <div class="journey-title">
+            Detect
+          </div>
+
+          <div class="journey-desc">
+            Identify the processes and streams responsible for the largest emissions.
+          </div>
+
+          <div class="journey-tag tag-orange">
+            Leak Point
+          </div>
+        </div>
+
+        <div class="journey-row">
+          <div class="journey-num">04</div>
+
+          <div class="journey-title">
+            Match
+          </div>
+
+          <div class="journey-desc">
+            Connect each hotspot to realistic circular interventions.
+          </div>
+
+          <div class="journey-tag tag-green">
+            Circular Fix
+          </div>
+        </div>
+
+        <div class="journey-row">
+          <div class="journey-num">05</div>
+
+          <div class="journey-title">
+            Sequence
+          </div>
+
+          <div class="journey-desc">
+            Prioritize actions using carbon savings, cost, feasibility and confidence.
+          </div>
+
+          <div class="journey-tag tag-green">
+            Action Plan
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =====================================================
+       LEAK DETECTION
+  ====================================================== -->
+
+  <section class="section leak-section" id="leaks">
+
+    <div class="container">
+
+      <div class="section-label">
+        Industrial Leak Detection
+      </div>
+
+      <h2 class="section-title">
+        Know exactly where the carbon is escaping.
+      </h2>
+
+      <p class="section-copy">
+        Carbon Core does not stop at “Energy = 48%”. It traces the energy
+        burden into individual processes and reveals operational causes that
+        can actually be fixed.
+      </p>
+
+      <div class="leak-demo">
+
+        <div>
+
+          <div class="leak-stat">
+            <span>Total Factory Footprint</span>
+            <strong>1,250 tCO₂e</strong>
+          </div>
+
+          <div class="leak-stat">
+            <span>Largest Source</span>
+            <strong class="orange">Energy · 48%</strong>
+          </div>
+
+          <div class="leak-stat">
+            <span>First Recommended Action</span>
+            <strong class="lime">-74 tCO₂e</strong>
+          </div>
+
+        </div>
+
+        <div class="diagnostic">
+
+          <h3>
+            Energy Leak Investigation
+          </h3>
+
+          <div class="diagnostic-sub">
+            Contribution to measured energy emissions
+          </div>
+
+          <div class="diagnostic-line">
+            <span>CNC Machining</span>
+
+            <div class="bar">
+              <div class="bar-fill orange-fill"></div>
+            </div>
+
+            <strong>228 t</strong>
+          </div>
+
+          <div class="diagnostic-line">
+            <span>Compressed Air</span>
+
+            <div class="bar">
+              <div class="bar-fill cyan-fill"></div>
+            </div>
+
+            <strong>162 t</strong>
+          </div>
+
+          <div class="diagnostic-line">
+            <span>Heat Treatment</span>
+
+            <div class="bar">
+              <div class="bar-fill green-fill"></div>
+            </div>
+
+            <strong>132 t</strong>
+          </div>
+
+          <div class="matched-fix">
+
+            <div class="matched-fix-label">
+              Matched Circular Action
+            </div>
+
+            <h4>
+              Compressor Optimization & Leak Remediation
+            </h4>
+
+            <p>
+              Reduce operating pressure, repair detected pneumatic leakage,
+              and introduce automatic isolation for idle lines.
+              Estimated implementation: ₹1.6L with potential saving of
+              74 tCO₂e/year.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =====================================================
+       IMPACT
+  ====================================================== -->
+
+  <section class="section" id="impact">
+
+    <div class="container">
+
+      <div class="section-label">
+        Actionable Carbon Intelligence
+      </div>
+
+      <h2 class="section-title">
+        Recommendations that show both climate impact and business cost.
+      </h2>
+
+      <p class="section-copy">
+        Every intervention is evaluated as an engineering decision —
+        not just a sustainability suggestion.
+      </p>
+
+      <div class="impact-grid">
+
+        <div class="impact-item">
+          <span>Compressor Optimization</span>
+
+          <strong>
+            74 tCO₂e
+          </strong>
+
+          <p>
+            Potential annual carbon saving with an estimated implementation
+            cost of ₹1.6L.
+          </p>
+        </div>
+
+        <div class="impact-item">
+          <span>Recycled Aluminium</span>
+
+          <strong>
+            105 tCO₂e
+          </strong>
+
+          <p>
+            Potential annual saving from increasing recycled material content
+            with an estimated cost of ₹3.8L.
+          </p>
+        </div>
+
+        <div class="impact-item">
+          <span>Waste Heat Recovery</span>
+
+          <strong>
+            62 tCO₂e
+          </strong>
+
+          <p>
+            Recover thermal exhaust from heat-treatment operations with an
+            estimated implementation cost of ₹6.2L.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =====================================================
+       CTA
+  ====================================================== -->
+
+  <section class="cta">
+
+    <div class="container">
+
+      <div class="cta-box">
+
+        <div>
+
+          <h2>
+            Carbon data is useful.
+            Knowing what to do next is better.
+          </h2>
+
+          <p>
+            Build your factory baseline, detect the strongest carbon leak,
+            compare circular interventions and create a prioritized
+            decarbonization roadmap.
+          </p>
+
+        </div>
+
+        <a href="login.html" class="cta-button">
+          Analyze Your Factory →
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
+  <footer>
+
+    <div class="container footer-inner">
+
+      <span>
+        Carbon Core · TechVortex · HackOut'26
+      </span>
+
+      <span>
+        <a href="privacy-policy.html" style="color:inherit;text-decoration:none;opacity:.7">Privacy Policy</a>
+        &nbsp;·&nbsp;
+        Detect · Divert · Decarbonize
+      </span>
+
+    </div>
+
+  </footer>
+
+</body>
+</html>

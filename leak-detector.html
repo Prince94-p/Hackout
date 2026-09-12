@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — Leak Detector</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root{
+      --bg:#f6f8f4;
+      --paper:#ffffff;
+
+      --ink:#102019;
+      --text:#34443c;
+      --muted:#7a8980;
+      --line:#dce3dd;
+
+      --green:#175f45;
+      --green2:#238761;
+      --green-soft:#e6f4ea;
+
+      --lime:#c9f454;
+
+      --orange:#ff7545;
+      --orange-soft:#fff0e9;
+
+      --blue:#2b6de8;
+      --blue-soft:#eaf1ff;
+
+      --amber:#d99220;
+      --amber-soft:#fff6df;
+
+      --purple:#725bd8;
+      --purple-soft:#f0edff;
+
+      --sidebar:236px;
+
+      --shadow:
+        0 24px 60px rgba(20,48,36,.06);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:"DM Sans",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button{
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:var(--sidebar) minmax(0,1fr);
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar{
+      position:fixed;
+      inset:0 auto 0 0;
+
+      width:var(--sidebar);
+      min-height:100vh;
+
+      padding:24px 18px 20px;
+
+      display:flex;
+      flex-direction:column;
+
+      background:#fbfcfa;
+      border-right:1px solid var(--line);
+
+      z-index:100;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:0 8px;
+    }
+
+    .brand-mark{
+      width:38px;
+      height:38px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:11px;
+
+      background:var(--ink);
+      color:white;
+
+      font-family:"Manrope",sans-serif;
+      font-weight:800;
+    }
+
+    .brand-name{
+      font-family:"Manrope",sans-serif;
+      font-size:17px;
+      font-weight:800;
+      letter-spacing:-.04em;
+    }
+
+    .brand-name span{
+      color:var(--green2);
+    }
+
+    .factory-switch{
+      margin-top:28px;
+
+      padding:14px 13px;
+
+      background:white;
+
+      border:1px solid var(--line);
+      border-radius:14px;
+    }
+
+    .factory-switch small{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .factory-switch strong{
+      display:block;
+      margin-top:5px;
+
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .factory-meta{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .factory-dot{
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+    }
+
+    .nav-group{
+      margin-top:26px;
+    }
+
+    .nav-label{
+      padding:0 10px;
+
+      color:#9aa69f;
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .nav-list{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+
+      margin-top:8px;
+    }
+
+    .nav-item{
+      position:relative;
+
+      min-height:42px;
+
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 11px;
+
+      border-radius:10px;
+
+      color:#58665e;
+
+      font-size:10px;
+      font-weight:600;
+
+      transition:.18s ease;
+    }
+
+    .nav-item:hover{
+      background:#f0f4ef;
+      color:var(--ink);
+    }
+
+    .nav-icon{
+      width:23px;
+      height:23px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:7px;
+
+      background:#f0f3ef;
+
+      color:#6c7971;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .nav-item.leak .nav-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .nav-item.root .nav-icon{
+      background:var(--amber-soft);
+      color:var(--amber);
+    }
+
+    .nav-item.solution .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .nav-item.simulator .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .nav-item.active{
+      background:#fff6f1;
+      color:var(--ink);
+      font-weight:700;
+    }
+
+    .nav-item.active::before{
+      content:"";
+
+      position:absolute;
+
+      left:-18px;
+      top:9px;
+      bottom:9px;
+
+      width:3px;
+
+      background:var(--orange);
+
+      border-radius:0 4px 4px 0;
+    }
+
+    .nav-item.active .nav-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+
+      padding-top:18px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .confidence-box{
+      padding:13px;
+
+      border-radius:12px;
+
+      background:#f2f6f2;
+    }
+
+    .confidence-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .confidence-top span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .confidence-top strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:12px;
+    }
+
+    .confidence-line{
+      height:5px;
+
+      margin-top:9px;
+
+      overflow:hidden;
+
+      border-radius:100px;
+
+      background:#e0e7e1;
+    }
+
+    .confidence-fill{
+      width:82%;
+      height:100%;
+
+      background:var(--green2);
+      border-radius:100px;
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding:15px 5px 0;
+    }
+
+    .avatar{
+      width:34px;
+      height:34px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:50%;
+
+      background:#dfe9e1;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .profile strong{
+      display:block;
+      font-size:9px;
+    }
+
+    .profile span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    .topbar{
+      height:69px;
+
+      position:sticky;
+      top:0;
+
+      z-index:80;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:0 34px;
+
+      border-bottom:1px solid var(--line);
+
+      background:rgba(246,248,244,.91);
+      backdrop-filter:blur(16px);
+    }
+
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .back-btn{
+      height:35px;
+
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:0 11px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:800;
+
+      transition:.18s ease;
+    }
+
+    .back-btn:hover{
+      background:var(--orange-soft);
+      color:var(--orange);
+
+      border-color:#efc6b6;
+
+      transform:translateX(-2px);
+    }
+
+    .breadcrumb{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .breadcrumb strong{
+      color:var(--ink);
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .scan-status{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:7px 10px;
+
+      border:1px solid var(--line);
+      border-radius:100px;
+
+      background:white;
+
+      color:var(--orange);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .scan-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:var(--orange);
+    }
+
+    .mobile-menu{
+      display:none;
+
+      width:35px;
+      height:35px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+    }
+
+    .sidebar-overlay{
+      display:none;
+    }
+
+    /* =========================
+       CONTENT
+    ========================= */
+
+    .content{
+      width:min(1280px,calc(100% - 64px));
+      margin:auto;
+
+      padding:40px 0 70px;
+    }
+
+    .page-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+
+      gap:28px;
+
+      margin-bottom:28px;
+    }
+
+    .eyebrow{
+      color:var(--orange);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .page-head h1{
+      margin-top:9px;
+
+      max-width:780px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(38px,4.5vw,56px);
+      line-height:.98;
+
+      letter-spacing:-.055em;
+    }
+
+    .page-head p{
+      max-width:720px;
+
+      margin-top:13px;
+
+      color:var(--text);
+
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .hotspot-summary{
+      min-width:200px;
+      text-align:right;
+    }
+
+    .hotspot-summary span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:700;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .hotspot-summary strong{
+      display:block;
+
+      margin-top:4px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:32px;
+
+      letter-spacing:-.045em;
+    }
+
+    .hotspot-summary small{
+      display:block;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    /* =========================
+       PROCESS TRACE
+    ========================= */
+
+    .trace-layout{
+      display:grid;
+
+      grid-template-columns:minmax(0,1.45fr) minmax(320px,.75fr);
+
+      gap:23px;
+
+      align-items:start;
+    }
+
+    .surface{
+      border:1px solid var(--line);
+      border-radius:22px;
+
+      background:white;
+
+      box-shadow:var(--shadow);
+    }
+
+    .trace-surface{
+      padding:30px;
+    }
+
+    .section-kicker{
+      color:var(--orange);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .section-title{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:24px;
+
+      letter-spacing:-.035em;
+    }
+
+    .section-text{
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:10px;
+      line-height:1.6;
+    }
+
+    .trace-line{
+      margin-top:34px;
+    }
+
+    .trace-row{
+      position:relative;
+
+      display:grid;
+      grid-template-columns:145px 42px 1fr 42px 1fr;
+
+      align-items:center;
+
+      gap:12px;
+    }
+
+    .trace-node{
+      min-height:92px;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+
+      padding:15px;
+
+      border:1px solid var(--line);
+      border-radius:15px;
+
+      background:#fbfcfa;
+
+      transition:.2s ease;
+    }
+
+    .trace-node span{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .trace-node strong{
+      margin-top:5px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:14px;
+
+      letter-spacing:-.025em;
+    }
+
+    .trace-node small{
+      margin-top:6px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .trace-node.problem{
+      background:#fffaf7;
+      border-color:#f1c3b2;
+    }
+
+    .trace-node.problem strong{
+      color:#b54823;
+    }
+
+    .connector{
+      height:1px;
+
+      background:#cfd8d1;
+
+      position:relative;
+    }
+
+    .connector::after{
+      content:"";
+
+      position:absolute;
+
+      right:-1px;
+      top:50%;
+
+      width:6px;
+      height:6px;
+
+      border-top:1px solid #98a69d;
+      border-right:1px solid #98a69d;
+
+      transform:
+        translateY(-50%)
+        rotate(45deg);
+    }
+
+    .process-branch{
+      position:relative;
+
+      margin-top:32px;
+
+      padding-top:27px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .process-branch::before{
+      content:"";
+
+      position:absolute;
+
+      top:0;
+      left:50%;
+
+      width:1px;
+      height:27px;
+
+      background:#cfd8d1;
+    }
+
+    .process-list{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+
+      gap:12px;
+    }
+
+    .process-card{
+      min-height:140px;
+
+      padding:17px;
+
+      border:1px solid var(--line);
+      border-radius:15px;
+
+      background:#fff;
+
+      transition:.2s ease;
+
+      cursor:pointer;
+    }
+
+    .process-card:hover{
+      transform:translateY(-3px);
+
+      box-shadow:0 12px 28px rgba(20,48,36,.06);
+    }
+
+    .process-card.active{
+      background:#fff8f4;
+      border-color:#efbca7;
+
+      box-shadow:
+        inset 0 0 0 1px rgba(255,117,69,.05);
+    }
+
+    .process-card-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:10px;
+    }
+
+    .process-icon{
+      width:31px;
+      height:31px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:9px;
+
+      background:#f2f5f2;
+      color:#69766e;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .process-card.active .process-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .severity{
+      padding:4px 6px;
+
+      border-radius:100px;
+
+      background:#f3f5f2;
+      color:var(--muted);
+
+      font-size:6px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .process-card.active .severity{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .process-card h3{
+      margin-top:14px;
+
+      font-size:10px;
+    }
+
+    .process-card strong{
+      display:block;
+
+      margin-top:7px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:20px;
+
+      letter-spacing:-.04em;
+    }
+
+    .process-card p{
+      margin-top:4px;
+
+      color:var(--muted);
+      font-size:7px;
+      line-height:1.5;
+    }
+
+    /* =========================
+       DETAIL PANEL
+    ========================= */
+
+    .detail-panel{
+      overflow:hidden;
+    }
+
+    .detail-head{
+      padding:26px 24px 21px;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .detail-signal{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--orange);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .detail-signal-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:var(--orange);
+    }
+
+    .detail-head h2{
+      margin-top:10px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:25px;
+      line-height:1.12;
+
+      letter-spacing:-.04em;
+    }
+
+    .detail-head p{
+      margin-top:8px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.6;
+    }
+
+    .detail-data{
+      padding:5px 24px;
+    }
+
+    .detail-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:18px;
+
+      padding:14px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .detail-row span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .detail-row strong{
+      text-align:right;
+
+      font-family:"Manrope",sans-serif;
+      font-size:13px;
+    }
+
+    .detail-row strong.alert{
+      color:var(--orange);
+    }
+
+    .why-flagged{
+      margin:18px 24px 0;
+
+      padding:16px;
+
+      border-radius:13px;
+
+      background:#fff7f2;
+    }
+
+    .why-flagged span{
+      color:var(--orange);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .why-flagged p{
+      margin-top:7px;
+
+      color:#6c5147;
+
+      font-size:8px;
+      line-height:1.65;
+    }
+
+    .intervention{
+      margin:12px 24px 0;
+
+      padding:16px;
+
+      border-radius:13px;
+
+      background:var(--green-soft);
+    }
+
+    .intervention span{
+      color:var(--green);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .intervention strong{
+      display:block;
+
+      margin-top:6px;
+
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:13px;
+    }
+
+    .intervention p{
+      margin-top:5px;
+
+      color:#526b5e;
+
+      font-size:8px;
+      line-height:1.55;
+    }
+
+    .detail-action{
+      padding:20px 24px 24px;
+    }
+
+    .primary-btn{
+      width:100%;
+      height:46px;
+
+      border:0;
+      border-radius:10px;
+
+      background:var(--ink);
+      color:white;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    /* =========================
+       LEAK EXPLANATION
+    ========================= */
+
+    .explanation{
+      margin-top:24px;
+
+      padding:28px 30px;
+    }
+
+    .explanation-grid{
+      display:grid;
+
+      grid-template-columns:1.1fr .9fr;
+
+      gap:30px;
+
+      margin-top:22px;
+    }
+
+    .loss-chain{
+      position:relative;
+    }
+
+    .loss-step{
+      display:grid;
+
+      grid-template-columns:30px 1fr;
+
+      gap:12px;
+
+      padding-bottom:20px;
+
+      position:relative;
+    }
+
+    .loss-step:not(:last-child)::after{
+      content:"";
+
+      position:absolute;
+
+      left:14px;
+      top:31px;
+      bottom:0;
+
+      width:1px;
+
+      background:#d4ddd6;
+    }
+
+    .loss-index{
+      width:30px;
+      height:30px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:50%;
+
+      background:#f1f4f1;
+      color:#68766d;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .loss-step.problem .loss-index{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .loss-content strong{
+      display:block;
+
+      font-size:10px;
+    }
+
+    .loss-content p{
+      margin-top:4px;
+
+      color:var(--muted);
+
+      font-size:8px;
+      line-height:1.55;
+    }
+
+    .impact-block{
+      padding:20px;
+
+      border-radius:16px;
+
+      background:#f7f9f6;
+    }
+
+    .impact-block span{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .impact-number{
+      margin-top:10px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:42px;
+      line-height:1;
+
+      letter-spacing:-.05em;
+    }
+
+    .impact-unit{
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .impact-divider{
+      height:1px;
+
+      margin:18px 0;
+
+      background:var(--line);
+    }
+
+    .impact-list{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+
+      gap:14px;
+    }
+
+    .impact-mini strong{
+      display:block;
+
+      font-family:"Manrope",sans-serif;
+      font-size:16px;
+    }
+
+    .impact-mini span{
+      margin-top:3px;
+
+      color:var(--muted);
+
+      font-size:7px;
+      text-transform:none;
+      letter-spacing:0;
+      font-weight:500;
+    }
+
+    /* =========================
+       EVIDENCE
+    ========================= */
+
+    .evidence{
+      display:grid;
+
+      grid-template-columns:repeat(5,1fr);
+
+      margin-top:23px;
+
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .evidence-item{
+      padding:18px 16px;
+    }
+
+    .evidence-item + .evidence-item{
+      border-left:1px solid var(--line);
+    }
+
+    .evidence-item span{
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .evidence-item strong{
+      display:block;
+
+      margin-top:4px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:13px;
+    }
+
+    .evidence-item:last-child strong{
+      color:var(--green);
+    }
+
+    .audit-note{
+      margin-top:13px;
+
+      color:var(--muted);
+
+      font-size:8px;
+      line-height:1.6;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width:1100px){
+
+      .trace-layout{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+    @media(max-width:900px){
+
+      :root{
+        --sidebar:0px;
+      }
+
+      .app{
+        display:block;
+      }
+
+      .sidebar{
+        width:236px;
+
+        transform:translateX(-100%);
+
+        transition:.25s ease;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      .sidebar-overlay{
+        display:block;
+
+        position:fixed;
+        inset:0;
+
+        z-index:90;
+
+        background:rgba(16,32,25,.15);
+
+        opacity:0;
+        pointer-events:none;
+
+        transition:.2s;
+      }
+
+      .sidebar-overlay.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      .main{
+        grid-column:auto;
+      }
+
+      .mobile-menu{
+        display:grid;
+        place-items:center;
+      }
+
+    }
+
+    @media(max-width:760px){
+
+      .topbar{
+        padding:0 15px;
+      }
+
+      .breadcrumb,
+      .scan-status{
+        display:none;
+      }
+
+      .back-btn span{
+        display:none;
+      }
+
+      .content{
+        width:calc(100% - 24px);
+        padding-top:28px;
+      }
+
+      .page-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .hotspot-summary{
+        text-align:left;
+      }
+
+      .trace-surface{
+        padding:24px 18px;
+      }
+
+      .trace-row{
+        grid-template-columns:1fr;
+      }
+
+      .connector{
+        width:1px;
+        height:25px;
+
+        margin:auto;
+      }
+
+      .connector::after{
+        right:auto;
+        left:50%;
+        top:auto;
+        bottom:-1px;
+
+        transform:
+          translateX(-50%)
+          rotate(135deg);
+      }
+
+      .process-list{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .explanation{
+        padding:24px 18px;
+      }
+
+      .explanation-grid{
+        grid-template-columns:1fr;
+      }
+
+      .evidence{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .evidence-item:nth-child(3),
+      .evidence-item:nth-child(5){
+        border-left:0;
+      }
+
+      .evidence-item:nth-child(n+3){
+        border-top:1px solid var(--line);
+      }
+
+    }
+
+    @media(max-width:500px){
+
+      .process-list{
+        grid-template-columns:1fr;
+      }
+
+      .impact-list{
+        grid-template-columns:1fr;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashboard.html" class="brand">
+      <div class="brand-mark">C</div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+    </a>
+
+
+    <div class="factory-switch">
+
+      <small>Current Factory</small>
+
+      <strong>
+        <span class="sidebar-factory-name">Apex Components Pvt. Ltd.</span>
+      </strong>
+
+      <div class="factory-meta">
+        <span class="factory-dot"></span>
+        Automotive · Gujarat
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Overview
+      </div>
+
+      <div class="nav-list">
+
+        <a href="dashboard.html" class="nav-item">
+          <div class="nav-icon">O</div>
+          Carbon Overview
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Investigate
+      </div>
+
+      <div class="nav-list">
+
+        <a href="factory-data.html" class="nav-item">
+          <div class="nav-icon">D</div>
+          Factory Data
+        </a>
+
+        <a href="leak-detector.html" class="nav-item leak active">
+          <div class="nav-icon">!</div>
+          Leak Detector
+        </a>
+
+        <a href="root-cause.html" class="nav-item root">
+          <div class="nav-icon">R</div>
+          Root Cause
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Act
+      </div>
+
+      <div class="nav-list">
+
+        <a href="solutions.html" class="nav-item solution">
+          <div class="nav-icon">S</div>
+          Circular Solutions
+        </a>
+
+        <a href="simulator.html" class="nav-item simulator">
+          <div class="nav-icon">W</div>
+          What-If Simulator
+        </a>
+
+        <a href="roadmap.html" class="nav-item solution">
+          <div class="nav-icon">→</div>
+          Action Roadmap
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="confidence-box">
+
+        <div class="confidence-top">
+          <span>Data confidence</span>
+          <strong>82%</strong>
+        </div>
+
+        <div class="confidence-line">
+          <div class="confidence-fill"></div>
+        </div>
+
+      </div>
+
+
+      <div class="profile">
+
+        <div class="avatar">PP</div>
+
+        <div>
+          <strong>Prince</strong>
+          <span>Carbon Workspace</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="toggleSidebar()"
+  ></div>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()"
+        >
+          ☰
+        </button>
+
+        <a href="dashboard.html" class="back-btn">
+          ←
+          <span>Back to Overview</span>
+        </a>
+
+        <div class="breadcrumb">
+          Workspace
+          <span>›</span>
+          <strong>Leak Detector</strong>
+        </div>
+
+      </div>
+
+
+      <div class="top-actions">
+
+        <div class="scan-status">
+          <span class="scan-dot"></span>
+          Leak signal detected
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <!-- HEADER -->
+
+      <section class="page-head">
+
+        <div>
+
+          <div class="eyebrow">
+            Leak Point Detector
+          </div>
+
+          <h1>
+            Trace the hotspot to the exact loss point.
+          </h1>
+
+          <p>
+            Carbon Core breaks the energy hotspot into individual
+            processes, compares operating signals, and isolates the
+            process where avoidable carbon is most likely being created.
+          </p>
+
+        </div>
+
+
+        <div class="hotspot-summary">
+
+          <span>
+            Energy Hotspot
+          </span>
+
+          <strong>
+            600
+          </strong>
+
+          <small>
+            tCO₂e / year
+          </small>
+
+        </div>
+
+      </section>
+
+
+      <!-- TRACE -->
+
+      <div class="trace-layout">
+
+        <section class="surface trace-surface">
+
+          <div class="section-kicker">
+            Process Trace
+          </div>
+
+          <h2 class="section-title">
+            Follow the carbon through the factory.
+          </h2>
+
+          <p class="section-text">
+            Energy is the largest source. Carbon Core now traces how
+            that energy is consumed across production and utility systems.
+          </p>
+
+
+          <div class="trace-line">
+
+            <div class="trace-row">
+
+              <div class="trace-node">
+
+                <span>Source</span>
+
+                <strong>
+                  Grid Electricity
+                </strong>
+
+                <small>
+                  1,250,000 kWh / year
+                </small>
+
+              </div>
+
+
+              <div class="connector"></div>
+
+
+              <div class="trace-node">
+
+                <span>Carbon Category</span>
+
+                <strong>
+                  Energy & Utilities
+                </strong>
+
+                <small>
+                  600 tCO₂e / year
+                </small>
+
+              </div>
+
+
+              <div class="connector"></div>
+
+
+              <div class="trace-node problem">
+
+                <span>Strongest Signal</span>
+
+                <strong>
+                  Compressed Air
+                </strong>
+
+                <small>
+                  28% estimated leakage
+                </small>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="process-branch">
+
+            <div class="process-list" id="processCardsList">
+
+              <div
+                class="process-card"
+                data-process="cnc"
+                onclick="selectProcess('cnc')"
+              >
+
+                <div class="process-card-top">
+
+                  <div class="process-icon">
+                    C
+                  </div>
+
+                  <span class="severity">
+                    High
+                  </span>
+
+                </div>
+
+                <h3>
+                  CNC Machining
+                </h3>
+
+                <strong>
+                  228 t
+                </strong>
+
+                <p>
+                  High spindle and idle energy consumption.
+                </p>
+
+              </div>
+
+
+              <div
+                class="process-card active"
+                data-process="compressed-air"
+                onclick="selectProcess('compressed-air')"
+              >
+
+                <div class="process-card-top">
+
+                  <div class="process-icon">
+                    !
+                  </div>
+
+                  <span class="severity">
+                    Leak
+                  </span>
+
+                </div>
+
+                <h3>
+                  Compressed Air
+                </h3>
+
+                <strong>
+                  162 t
+                </strong>
+
+                <p>
+                  Leakage and excess operating pressure detected.
+                </p>
+
+              </div>
+
+
+              <div
+                class="process-card"
+                data-process="heat-treatment"
+                onclick="selectProcess('heat-treatment')"
+              >
+
+                <div class="process-card-top">
+
+                  <div class="process-icon">
+                    H
+                  </div>
+
+                  <span class="severity">
+                    Medium
+                  </span>
+
+                </div>
+
+                <h3>
+                  Heat Treatment
+                </h3>
+
+                <strong>
+                  132 t
+                </strong>
+
+                <p>
+                  High thermal load during furnace operation.
+                </p>
+
+              </div>
+
+
+              <div
+                class="process-card"
+                data-process="other-energy"
+                onclick="selectProcess('other-energy')"
+              >
+
+                <div class="process-card-top">
+
+                  <div class="process-icon">
+                    O
+                  </div>
+
+                  <span class="severity">
+                    Low
+                  </span>
+
+                </div>
+
+                <h3>
+                  Other Energy
+                </h3>
+
+                <strong>
+                  78 t
+                </strong>
+
+                <p>
+                  Lighting, pumps and support equipment.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- DETAIL PANEL -->
+
+        <aside class="surface detail-panel">
+
+          <div class="detail-head">
+
+            <div class="detail-signal">
+              <span class="detail-signal-dot"></span>
+              Selected Process
+            </div>
+
+            <h2 id="detailTitle">
+              Compressed Air System
+            </h2>
+
+            <p id="detailDescription">
+              The compressed-air network shows the strongest
+              avoidable-loss signal inside the energy hotspot.
+            </p>
+
+          </div>
+
+
+          <div class="detail-data">
+
+            <div class="detail-row">
+
+              <span>
+                Annual energy use
+              </span>
+
+              <strong id="detailEnergy">
+                337,500 kWh
+              </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+              <span>
+                Process footprint
+              </span>
+
+              <strong id="detailCarbon">
+                162 tCO₂e
+              </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+              <span>
+                Main abnormal signal
+              </span>
+
+              <strong
+                class="alert"
+                id="detailSignal"
+              >
+                28% leakage
+              </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+              <span>
+                Operating condition
+              </span>
+
+              <strong id="detailCondition">
+                7.5 bar
+              </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+              <span>
+                Data confidence
+              </span>
+
+              <strong id="detailConfidence">
+                88%
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="why-flagged">
+
+            <span>
+              Why Carbon Core flagged this
+            </span>
+
+            <p id="flagReason">
+              High leakage combined with elevated operating pressure
+              indicates electricity is being consumed without creating
+              useful production output.
+            </p>
+
+          </div>
+
+
+          <div class="intervention">
+
+            <span>
+              Potential Intervention
+            </span>
+
+            <strong id="interventionTitle">
+              Compressor Optimization + Leak Remediation
+            </strong>
+
+            <p id="interventionText">
+              Repair leakage points, reduce pressure where feasible
+              and optimize compressor sequencing.
+            </p>
+
+          </div>
+
+
+          <div class="detail-action">
+
+            <button
+              class="primary-btn"
+              onclick="traceRootCause()"
+            >
+              Trace Root Cause →
+            </button>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+
+      <!-- EXPLANATION -->
+
+      <section class="surface explanation">
+
+        <div class="section-kicker">
+          Leak Explanation
+        </div>
+
+        <h2 class="section-title">
+          Why this process is wasting carbon.
+        </h2>
+
+        <p class="section-text">
+          Carbon Core does not treat high emissions alone as a leak.
+          It combines contribution with abnormal operating signals
+          and avoidable-loss indicators.
+        </p>
+
+
+        <div class="explanation-grid">
+
+          <div class="loss-chain">
+
+            <div class="loss-step">
+
+              <div class="loss-index">
+                1
+              </div>
+
+              <div class="loss-content">
+
+                <strong>
+                  Compressed air consumes 337,500 kWh/year.
+                </strong>
+
+                <p>
+                  At the current electricity factor this creates
+                  approximately 162 tCO₂e/year.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="loss-step problem">
+
+              <div class="loss-index">
+                2
+              </div>
+
+              <div class="loss-content">
+
+                <strong>
+                  28% of compressed air is estimated to be lost.
+                </strong>
+
+                <p>
+                  That represents approximately 94,500 kWh of
+                  electricity being consumed without useful output.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="loss-step problem">
+
+              <div class="loss-index">
+                3
+              </div>
+
+              <div class="loss-content">
+
+                <strong>
+                  Operating pressure is higher than the target range.
+                </strong>
+
+                <p>
+                  Current pressure is 7.5 bar while the process
+                  reference is approximately 6.2 bar.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="loss-step">
+
+              <div class="loss-index">
+                4
+              </div>
+
+              <div class="loss-content">
+
+                <strong>
+                  The loss is technically actionable.
+                </strong>
+
+                <p>
+                  Leak repair and compressor optimization can reduce
+                  both wasted electricity and associated carbon.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="impact-block">
+
+            <span>
+              Potential Annual Saving
+            </span>
+
+            <div class="impact-number">
+              74
+            </div>
+
+            <div class="impact-unit">
+              tCO₂e / year
+            </div>
+
+
+            <div class="impact-divider"></div>
+
+
+            <div class="impact-list">
+
+              <div class="impact-mini">
+
+                <strong>
+                  ₹1.6L
+                </strong>
+
+                <span>
+                  estimated implementation
+                </span>
+
+              </div>
+
+
+              <div class="impact-mini">
+
+                <strong>
+                  Low
+                </strong>
+
+                <span>
+                  implementation effort
+                </span>
+
+              </div>
+
+
+              <div class="impact-mini">
+
+                <strong>
+                  88%
+                </strong>
+
+                <span>
+                  recommendation confidence
+                </span>
+
+              </div>
+
+
+              <div class="impact-mini">
+
+                <strong>
+                  First
+                </strong>
+
+                <span>
+                  priority sequence
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- PROCESS BREAKDOWN CHART -->
+      <section class="surface" style="margin-bottom: 24px; padding: 24px; background: #ffffff; border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow);">
+        <div style="margin-bottom: 16px;">
+          <div class="section-kicker" style="font-size: 0.8rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Process Attribution</div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--ink);">Process Emission Breakdown (tCO₂e)</h3>
+        </div>
+        <div style="height: 220px; position: relative;">
+          <canvas id="processBarChart"></canvas>
+        </div>
+      </section>
+
+
+      <!-- EVIDENCE -->
+
+      <section class="evidence">
+
+        <div class="evidence-item">
+          <span>Activity Data</span>
+          <strong id="evidenceActivity">337,500 kWh</strong>
+        </div>
+
+        <div class="evidence-item">
+          <span>Emission Factor</span>
+          <strong id="evidenceFactor">0.48 kgCO₂e/kWh</strong>
+        </div>
+
+        <div class="evidence-item">
+          <span>Calculated Carbon</span>
+          <strong id="evidenceCarbon">162 tCO₂e</strong>
+        </div>
+
+        <div class="evidence-item">
+          <span>Leak Signal</span>
+          <strong id="evidenceSignal">28%</strong>
+        </div>
+
+        <div class="evidence-item">
+          <span>Confidence</span>
+          <strong id="evidenceConfidence">88%</strong>
+        </div>
+
+      </section>
+
+
+      <p class="audit-note">
+        Carbon values are calculated deterministically from activity data
+        and emission factors. AI is used to interpret operating signals,
+        rank investigation priorities and explain why a process should
+        be investigated.
+      </p>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="api.js"></script>
+<script>
+
+  let activeHotspots = [];
+  let selectedCode = "compressed-air";
+
+  function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("show");
+  }
+
+  function selectProcess(code){
+    selectedCode = code;
+    localStorage.setItem("selectedHotspotId", code);
+
+    document.querySelectorAll(".process-card").forEach(card => {
+      card.classList.toggle("active", card.dataset.process === code);
+    });
+
+    const hotspot = activeHotspots.find(h => h.code === code) || activeHotspots[0];
+    if (!hotspot) return;
+
+    const details = hotspot.details || {};
+
+    if (document.getElementById("processTitle")) {
+      document.getElementById("processTitle").textContent = hotspot.title;
+    }
+    if (document.getElementById("processDescription")) {
+      document.getElementById("processDescription").textContent = details.reason || "Process flagged for energy and carbon optimization.";
+    }
+    if (document.getElementById("detailEnergy")) {
+      document.getElementById("detailEnergy").textContent = details.energy_str || "Measured Load";
+    }
+    if (document.getElementById("detailCarbon")) {
+      document.getElementById("detailCarbon").textContent = `${Math.round(hotspot.carbon_tco2e)} tCO₂e`;
+    }
+    if (document.getElementById("detailSignal")) {
+      document.getElementById("detailSignal").textContent = hotspot.signal_value;
+    }
+    if (document.getElementById("detailCondition")) {
+      document.getElementById("detailCondition").textContent = hotspot.operating_condition || "Standard operation";
+    }
+    if (document.getElementById("detailConfidence")) {
+      document.getElementById("detailConfidence").textContent = `${Math.round(hotspot.confidence_pct)}%`;
+    }
+    if (document.getElementById("flagReason")) {
+      document.getElementById("flagReason").textContent = details.reason || "Operating signal deviates from optimal benchmark.";
+    }
+    if (document.getElementById("interventionTitle")) {
+      document.getElementById("interventionTitle").textContent = details.intervention || "Process Optimization";
+    }
+    if (document.getElementById("interventionText")) {
+      document.getElementById("interventionText").textContent = details.intervention_text || "Apply operational tuning and equipment servicing.";
+    }
+
+    if (document.getElementById("evidenceActivity")) {
+      document.getElementById("evidenceActivity").textContent = details.energy_str || "Operational Stream";
+    }
+    if (document.getElementById("evidenceFactor")) {
+      document.getElementById("evidenceFactor").textContent = "0.48 kgCO₂e/kWh";
+    }
+    if (document.getElementById("evidenceCarbon")) {
+      document.getElementById("evidenceCarbon").textContent = `${Math.round(hotspot.carbon_tco2e)} tCO₂e`;
+    }
+    if (document.getElementById("evidenceSignal")) {
+      document.getElementById("evidenceSignal").textContent = hotspot.signal_value;
+    }
+    if (document.getElementById("evidenceConfidence")) {
+      document.getElementById("evidenceConfidence").textContent = `${Math.round(hotspot.confidence_pct)}%`;
+    }
+  }
+
+  function traceRootCause(){
+    const selected = selectedCode || "compressed-air";
+    localStorage.setItem("selectedHotspotId", selected);
+    window.location.href = "root-cause.html?hotspot=" + encodeURIComponent(selected);
+  }
+
+  async function loadLeakDetectorData() {
+    const factoryId = getActiveFactoryId();
+    if (!factoryId) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const hotspots = await apiFetch(`/api/factories/${factoryId}/hotspots`);
+      activeHotspots = hotspots || [];
+
+      if (activeHotspots.length === 0) {
+        return;
+      }
+
+      const container = document.getElementById("processCardsList");
+      if (container) {
+        container.innerHTML = activeHotspots.map((h, i) => `
+          <div class="process-card ${i === 0 ? 'active' : ''}" data-process="${h.code}" onclick="selectProcess('${h.code}')">
+            <div class="process-card-top">
+              <div class="process-icon">${h.title.charAt(0)}</div>
+              <span class="severity">${h.rank === 1 ? 'Primary' : 'High'}</span>
+            </div>
+            <h3>${h.title}</h3>
+            <strong>${Math.round(h.carbon_tco2e)} t</strong>
+            <p>${h.signal_value} observed in operation.</p>
+          </div>
+        `).join("");
+      }
+
+      const chartLabels = activeHotspots.map(h => h.title);
+      const chartData = activeHotspots.map(h => h.carbon_tco2e);
+      const chartColors = activeHotspots.map((_, i) => i === 0 ? BRAND_COLORS.orange : (i === 1 ? BRAND_COLORS.blue : BRAND_COLORS.green));
+
+      renderBarChart("processBarChart", chartLabels, chartData, chartColors, "tCO₂e");
+
+      const params = new URLSearchParams(window.location.search);
+      const reqHotspot = params.get("hotspot") || localStorage.getItem("selectedHotspotId") || activeHotspots[0].code;
+
+      selectProcess(reqHotspot);
+
+    } catch (err) {
+      console.error("Leak detector load error:", err);
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", loadLeakDetectorData);
+  loadSidebarFactory();
+
+</script>
+
+</body>
+</html>

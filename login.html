@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — Access Workspace</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f5f7f2;
+      --paper:#ffffff;
+
+      --ink:#102019;
+      --text:#394940;
+      --muted:#7b8981;
+      --line:#dbe2dc;
+
+      --green:#175f45;
+      --green2:#238761;
+      --green-soft:#e4f4e9;
+
+      --lime:#c9f454;
+      --orange:#ff7b45;
+
+      --shadow:0 30px 80px rgba(20,48,36,.10);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      min-height:100vh;
+
+      font-family:"DM Sans",sans-serif;
+
+      color:var(--ink);
+
+      background:
+        radial-gradient(
+          circle at 8% 20%,
+          rgba(201,244,84,.13),
+          transparent 25%
+        ),
+        radial-gradient(
+          circle at 92% 82%,
+          rgba(35,135,97,.09),
+          transparent 28%
+        ),
+        var(--bg);
+
+      overflow-x:hidden;
+    }
+
+    button,
+    input{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    /* =========================================
+       NAV
+    ========================================= */
+
+    nav{
+      height:74px;
+
+      padding:0 5vw;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+    }
+
+    .brand-mark{
+      width:40px;
+      height:40px;
+
+      border-radius:13px;
+
+      display:grid;
+      place-items:center;
+
+      background:var(--ink);
+      color:#fff;
+
+      font-family:"Manrope",sans-serif;
+      font-weight:800;
+    }
+
+    .brand-name{
+      font-family:"Manrope",sans-serif;
+
+      font-size:18px;
+      font-weight:800;
+
+      letter-spacing:-.04em;
+    }
+
+    .brand-name span{
+      color:var(--green2);
+    }
+
+    .back-home{
+      color:var(--muted);
+
+      font-size:12px;
+      font-weight:600;
+
+      transition:.2s;
+    }
+
+    .back-home:hover{
+      color:var(--ink);
+    }
+
+    /* =========================================
+       MAIN
+    ========================================= */
+
+    main{
+      min-height:calc(100vh - 74px);
+
+      display:grid;
+      place-items:center;
+
+      padding:25px 22px 55px;
+    }
+
+    .auth-shell{
+      width:min(1060px,100%);
+
+      display:grid;
+      grid-template-columns:.8fr 1.2fr;
+      gap:75px;
+
+      align-items:center;
+    }
+
+    /* =========================================
+       LEFT INFO
+    ========================================= */
+
+    .intro-label{
+      display:flex;
+      align-items:center;
+      gap:9px;
+
+      color:var(--green);
+
+      font-size:10px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.1em;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+
+      box-shadow:
+        0 0 0 5px rgba(201,244,84,.20);
+    }
+
+    .intro h1{
+      margin-top:22px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(46px,5vw,66px);
+      line-height:.98;
+
+      letter-spacing:-.06em;
+    }
+
+    .intro h1 span{
+      color:var(--green2);
+    }
+
+    .intro-description{
+      max-width:420px;
+
+      margin-top:22px;
+
+      color:var(--text);
+
+      font-size:14px;
+      line-height:1.75;
+    }
+
+    /* MINI CARBON TRACE */
+
+    .mini-flow{
+      margin-top:37px;
+      max-width:420px;
+    }
+
+    .flow-row{
+      display:flex;
+      align-items:center;
+
+      min-height:50px;
+    }
+
+    .flow-node{
+      width:31px;
+      height:31px;
+
+      flex-shrink:0;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      display:grid;
+      place-items:center;
+
+      background:white;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .flow-line{
+      width:34px;
+      height:1px;
+
+      background:#cdd6cf;
+    }
+
+    .flow-text{
+      padding-left:12px;
+    }
+
+    .flow-text strong{
+      display:block;
+
+      font-size:11px;
+    }
+
+    .flow-text span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .orange-node{
+      background:#fff0e8;
+      border-color:#ffd4c1;
+
+      color:var(--orange);
+    }
+
+    .green-node{
+      background:var(--green-soft);
+
+      color:var(--green);
+    }
+
+    /* =========================================
+       AUTH STAGE
+    ========================================= */
+
+    .auth-stage{
+      height:590px;
+
+      position:relative;
+
+      border-radius:28px;
+
+      background:white;
+      border:1px solid var(--line);
+
+      box-shadow:var(--shadow);
+
+      overflow:hidden;
+    }
+
+    /* subtle background number */
+
+    .auth-stage::before{
+      content:"C";
+
+      position:absolute;
+
+      right:-10px;
+      bottom:-75px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:260px;
+      font-weight:800;
+
+      color:#f4f7f3;
+
+      pointer-events:none;
+    }
+
+    /* =========================================
+       FORMS
+    ========================================= */
+
+    .auth-view{
+      position:absolute;
+      inset:0;
+
+      padding:43px 48px;
+
+      transition:
+        opacity .25s ease,
+        transform .35s ease;
+    }
+
+    .login-view{
+      opacity:1;
+      transform:translateY(0);
+
+      pointer-events:auto;
+    }
+
+    .register-view{
+      opacity:0;
+
+      transform:translateY(14px);
+
+      pointer-events:none;
+    }
+
+    .auth-stage.register-mode .login-view{
+      opacity:0;
+
+      transform:translateY(-14px);
+
+      pointer-events:none;
+    }
+
+    .auth-stage.register-mode .register-view{
+      opacity:1;
+
+      transform:translateY(0);
+
+      pointer-events:auto;
+    }
+
+    /* =========================================
+       FORM HEADER
+    ========================================= */
+
+    .form-meta{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      margin-bottom:32px;
+    }
+
+    .status{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .status-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+      background:var(--lime);
+    }
+
+    .form-id{
+      color:#a0aba4;
+
+      font-size:9px;
+      font-weight:700;
+
+      letter-spacing:.08em;
+    }
+
+    .auth-view h2{
+      font-family:"Manrope",sans-serif;
+
+      font-size:33px;
+      line-height:1.05;
+
+      letter-spacing:-.045em;
+    }
+
+    .auth-description{
+      margin-top:9px;
+
+      color:var(--muted);
+
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    /* =========================================
+       FORM
+    ========================================= */
+
+    form{
+      margin-top:29px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+
+      gap:13px;
+    }
+
+    .field{
+      margin-bottom:15px;
+    }
+
+    .field label{
+      display:block;
+
+      margin-bottom:7px;
+
+      color:#58665e;
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .input-wrap{
+      position:relative;
+    }
+
+    .field input{
+      width:100%;
+      height:49px;
+
+      padding:0 14px;
+
+      outline:none;
+
+      border:1px solid #d8dfd9;
+      border-radius:11px;
+
+      background:#fafbf9;
+
+      color:var(--ink);
+
+      font-size:12px;
+
+      transition:.2s;
+    }
+
+    .field input::placeholder{
+      color:#a8b1ab;
+    }
+
+    .field input:focus{
+      background:white;
+
+      border-color:var(--green2);
+
+      box-shadow:
+        0 0 0 3px rgba(35,135,97,.08);
+    }
+
+    .password{
+      padding-right:60px !important;
+    }
+
+    .show-password{
+      position:absolute;
+
+      right:13px;
+      top:50%;
+
+      transform:translateY(-50%);
+
+      border:0;
+      background:transparent;
+
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .options{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      margin:0 0 21px;
+
+      gap:15px;
+    }
+
+    .remember{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--muted);
+
+      font-size:10px;
+    }
+
+    .remember input{
+      accent-color:var(--green);
+    }
+
+    .forgot{
+      color:var(--green);
+
+      font-size:10px;
+      font-weight:700;
+    }
+
+    /* =========================================
+       BUTTON
+    ========================================= */
+
+    .main-btn{
+      width:100%;
+      height:51px;
+
+      border:0;
+      border-radius:12px;
+
+      background:var(--ink);
+      color:white;
+
+      font-size:11px;
+      font-weight:800;
+
+      transition:.25s;
+    }
+
+    .main-btn:hover{
+      transform:translateY(-2px);
+
+      background:#18372b;
+
+      box-shadow:
+        0 12px 28px rgba(16,32,25,.15);
+    }
+
+    /* =========================================
+       SWITCH
+    ========================================= */
+
+    .switch{
+      margin-top:24px;
+
+      padding-top:20px;
+
+      border-top:1px solid var(--line);
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      gap:20px;
+    }
+
+    .switch span{
+      color:var(--muted);
+      font-size:10px;
+    }
+
+    .switch button{
+      border:0;
+      background:transparent;
+
+      color:var(--green);
+
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .switch button:hover{
+      text-decoration:underline;
+    }
+
+    /* =========================================
+       DEMO BUTTON
+    ========================================= */
+
+    .demo-btn{
+      width:100%;
+      height:44px;
+
+      margin-top:11px;
+
+      border:1px solid var(--line);
+      border-radius:11px;
+
+      background:white;
+
+      color:var(--text);
+
+      font-size:10px;
+      font-weight:700;
+
+      transition:.2s;
+    }
+
+    .demo-btn:hover{
+      background:var(--green-soft);
+    }
+
+    /* =========================================
+       PASSWORD STRENGTH
+    ========================================= */
+
+    .strength{
+      display:flex;
+      gap:5px;
+
+      margin-top:7px;
+    }
+
+    .strength span{
+      flex:1;
+
+      height:3px;
+
+      border-radius:20px;
+
+      background:#e5e9e5;
+    }
+
+    .strength span.active{
+      background:var(--green2);
+    }
+
+    .strength-label{
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    /* =========================================
+       CURTAIN
+    ========================================= */
+
+    .curtain{
+      position:absolute;
+      inset:0;
+
+      z-index:50;
+
+      pointer-events:none;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      background:var(--green);
+
+      /*
+        Initially completely hidden
+        at the center.
+      */
+
+      clip-path:
+        inset(
+          0 50% 0 50%
+          round 28px
+        );
+    }
+
+    .curtain.active-in{
+      animation:
+        curtainIn
+        .48s
+        cubic-bezier(.76,0,.24,1)
+        forwards;
+    }
+
+    .curtain.active-out{
+      animation:
+        curtainOut
+        .52s
+        cubic-bezier(.76,0,.24,1)
+        forwards;
+    }
+
+    @keyframes curtainIn{
+
+      0%{
+        clip-path:
+          inset(
+            0 50% 0 50%
+            round 28px
+          );
+      }
+
+      100%{
+        clip-path:
+          inset(
+            0 0 0 0
+            round 28px
+          );
+      }
+
+    }
+
+    @keyframes curtainOut{
+
+      0%{
+        clip-path:
+          inset(
+            0 0 0 0
+            round 28px
+          );
+      }
+
+      100%{
+        clip-path:
+          inset(
+            0 0 0 100%
+            round 28px
+          );
+      }
+
+    }
+
+    /* =========================================
+       CURTAIN CONTENT
+    ========================================= */
+
+    .curtain-content{
+      text-align:center;
+
+      color:white;
+
+      opacity:0;
+      transform:translateY(8px);
+
+      transition:
+        opacity .2s ease,
+        transform .2s ease;
+    }
+
+    .curtain.covered
+    .curtain-content{
+      opacity:1;
+      transform:none;
+    }
+
+    .curtain-logo{
+      width:48px;
+      height:48px;
+
+      margin:0 auto 16px;
+
+      border-radius:15px;
+
+      display:grid;
+      place-items:center;
+
+      background:var(--lime);
+
+      color:var(--ink);
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:17px;
+      font-weight:800;
+    }
+
+    .curtain-content span{
+      display:block;
+
+      color:#d5e8dc;
+
+      font-size:8px;
+      font-weight:800;
+
+      letter-spacing:.14em;
+
+      text-transform:uppercase;
+    }
+
+    .curtain-content strong{
+      display:block;
+
+      margin-top:7px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:21px;
+      font-weight:700;
+
+      letter-spacing:-.035em;
+    }
+
+    /* small moving line */
+
+    .scan{
+      width:85px;
+      height:2px;
+
+      margin:17px auto 0;
+
+      overflow:hidden;
+
+      background:rgba(255,255,255,.15);
+
+      border-radius:100px;
+    }
+
+    .scan::after{
+      content:"";
+
+      display:block;
+
+      width:30px;
+      height:100%;
+
+      background:var(--lime);
+
+      animation:scan 1s linear infinite;
+    }
+
+    @keyframes scan{
+
+      from{
+        transform:translateX(-30px);
+      }
+
+      to{
+        transform:translateX(90px);
+      }
+
+    }
+
+    /* =========================================
+       SUCCESS
+    ========================================= */
+
+    .message{
+      display:none;
+
+      margin-bottom:14px;
+
+      padding:10px 12px;
+
+      border-radius:9px;
+
+      background:var(--green-soft);
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:700;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+
+    @media(max-width:880px){
+
+      .auth-shell{
+        grid-template-columns:1fr;
+
+        max-width:590px;
+
+        gap:35px;
+      }
+
+      .intro{
+        text-align:center;
+      }
+
+      .intro-description{
+        margin-left:auto;
+        margin-right:auto;
+      }
+
+      .mini-flow{
+        display:none;
+      }
+
+      .intro h1{
+        font-size:45px;
+      }
+
+    }
+
+    @media(max-width:560px){
+
+      nav{
+        height:65px;
+
+        padding:0 18px;
+      }
+
+      main{
+        min-height:calc(100vh - 65px);
+
+        padding:20px 14px 40px;
+      }
+
+      .intro h1{
+        font-size:38px;
+      }
+
+      .intro-description{
+        font-size:12px;
+      }
+
+      .auth-stage{
+        height:610px;
+      }
+
+      .auth-view{
+        padding:30px 22px;
+      }
+
+      .row{
+        grid-template-columns:1fr;
+        gap:0;
+      }
+
+      .curtain{
+        border-radius:22px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+
+  <nav>
+
+    <a href="index.html" class="brand">
+
+      <div class="brand-mark">
+        C
+      </div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+
+    </a>
+
+    <a href="index.html" class="back-home">
+      ← Back to home
+    </a>
+
+  </nav>
+
+
+  <main>
+
+    <div class="auth-shell">
+
+      <!-- LEFT -->
+
+      <section class="intro">
+
+        <div class="intro-label">
+
+          <span class="dot"></span>
+
+          Industrial Carbon Intelligence
+
+        </div>
+
+
+        <h1>
+          Find the leak.<br>
+          Trace the cause.<br>
+          <span>Fix the flow.</span>
+        </h1>
+
+
+        <p class="intro-description">
+          Access your factory workspace to trace emission
+          hotspots, compare circular alternatives and build
+          a practical decarbonization roadmap.
+        </p>
+
+
+        <div class="mini-flow">
+
+          <div class="flow-row">
+
+            <div class="flow-node">
+              IN
+            </div>
+
+            <div class="flow-line"></div>
+
+            <div class="flow-text">
+              <strong>
+                Factory activity
+              </strong>
+
+              <span>
+                Energy · materials · processes · waste
+              </span>
+            </div>
+
+          </div>
+
+
+          <div class="flow-row">
+
+            <div class="flow-node orange-node">
+              !
+            </div>
+
+            <div class="flow-line"></div>
+
+            <div class="flow-text">
+              <strong>
+                Carbon leak detected
+              </strong>
+
+              <span>
+                Trace the process creating the hotspot
+              </span>
+            </div>
+
+          </div>
+
+
+          <div class="flow-row">
+
+            <div class="flow-node green-node">
+              ✓
+            </div>
+
+            <div class="flow-line"></div>
+
+            <div class="flow-text">
+              <strong>
+                Circular action matched
+              </strong>
+
+              <span>
+                CO₂ saving · cost · feasibility
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- AUTH -->
+
+      <section
+        class="auth-stage"
+        id="authStage"
+      >
+
+        <!-- LOGIN VIEW -->
+
+        <div class="auth-view login-view">
+
+          <div class="form-meta">
+
+            <div class="status">
+              <span class="status-dot"></span>
+              Workspace Ready
+            </div>
+
+            <div class="form-id">
+              ACCESS / 01
+            </div>
+
+          </div>
+
+
+          <h2>
+            Welcome back.
+          </h2>
+
+          <p class="auth-description">
+            Continue your factory carbon investigation.
+          </p>
+
+
+          <form id="loginForm">
+
+            <div
+              class="message"
+              id="loginMessage"
+            >
+              Access verified. Opening workspace...
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Work Email
+              </label>
+
+              <input
+                type="email"
+                id="loginEmail"
+                placeholder="name@company.com"
+                required
+              />
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Password
+              </label>
+
+              <div class="input-wrap">
+
+                <input
+                  type="password"
+                  id="loginPassword"
+                  class="password"
+                  placeholder="Enter your password"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="show-password"
+                  onclick="togglePassword('loginPassword',this)"
+                >
+                  SHOW
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div class="options">
+
+              <label class="remember">
+
+                <input type="checkbox">
+
+                Keep me signed in
+
+              </label>
+
+
+              <a href="#" class="forgot">
+                Forgot password?
+              </a>
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="main-btn"
+            >
+              Enter Carbon Workspace →
+            </button>
+
+          </form>
+
+
+          <button
+            class="demo-btn"
+            onclick="openDemo()"
+          >
+            Explore Apex Components Demo
+          </button>
+
+
+          <div class="switch">
+
+            <span>
+              New to Carbon Core?
+            </span>
+
+            <button
+              onclick="switchToRegister()"
+            >
+              Create workspace →
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- REGISTER VIEW -->
+
+        <div class="auth-view register-view">
+
+          <div class="form-meta">
+
+            <div class="status">
+              <span class="status-dot"></span>
+              New Workspace
+            </div>
+
+            <div class="form-id">
+              SETUP / 01
+            </div>
+
+          </div>
+
+
+          <h2>
+            Create your workspace.
+          </h2>
+
+          <p class="auth-description">
+            Your first factory profile comes next.
+          </p>
+
+
+          <form id="registerForm">
+
+            <div
+              class="message"
+              id="registerMessage"
+            >
+              Workspace created successfully.
+            </div>
+
+
+            <div class="row">
+
+              <div class="field">
+
+                <label>
+                  Full Name
+                </label>
+
+                <input
+                  type="text"
+                  id="fullName"
+                  placeholder="Your name"
+                  required
+                />
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Organization
+                </label>
+
+                <input
+                  type="text"
+                  id="organization"
+                  placeholder="Company name"
+                  required
+                />
+
+              </div>
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Work Email
+              </label>
+
+              <input
+                type="email"
+                id="registerEmail"
+                placeholder="name@company.com"
+                required
+              />
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Create Password
+              </label>
+
+              <div class="input-wrap">
+
+                <input
+                  type="password"
+                  id="registerPassword"
+                  class="password"
+                  placeholder="Minimum 8 characters"
+                  minlength="8"
+                  oninput="checkStrength(this.value)"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="show-password"
+                  onclick="togglePassword('registerPassword',this)"
+                >
+                  SHOW
+                </button>
+
+              </div>
+
+
+              <div class="strength">
+
+                <span id="strength1"></span>
+                <span id="strength2"></span>
+                <span id="strength3"></span>
+                <span id="strength4"></span>
+
+              </div>
+
+              <div
+                class="strength-label"
+                id="strengthLabel"
+              >
+                Use 8+ characters, number and symbol.
+              </div>
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="main-btn"
+            >
+              Create Carbon Workspace →
+            </button>
+
+          </form>
+
+
+          <div class="switch">
+
+            <span>
+              Already have an account?
+            </span>
+
+            <button
+              onclick="switchToLogin()"
+            >
+              ← Sign in
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- CURTAIN -->
+
+        <div
+          class="curtain"
+          id="curtain"
+        >
+
+          <div
+            class="curtain-content"
+            id="curtainContent"
+          >
+
+            <div class="curtain-logo">
+              C
+            </div>
+
+            <span id="curtainSmall">
+              Carbon Core
+            </span>
+
+            <strong id="curtainTitle">
+              Build your workspace.
+            </strong>
+
+            <div class="scan"></div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <script src="api.js"></script>
+  <script>
+
+    const stage =
+      document.getElementById("authStage");
+
+    const curtain =
+      document.getElementById("curtain");
+
+    const curtainTitle =
+      document.getElementById("curtainTitle");
+
+    let animating = false;
+
+
+    /* =====================================
+       CURTAIN TRANSITION
+    ===================================== */
+
+    function runCurtain(target){
+
+      if(animating) return;
+
+      animating = true;
+
+
+      if(target === "register"){
+
+        curtainTitle.textContent =
+          "Build your workspace.";
+
+      }else{
+
+        curtainTitle.textContent =
+          "Welcome back.";
+
+      }
+
+
+      /*
+        Reset animation
+      */
+
+      curtain.classList.remove(
+        "active-in",
+        "active-out",
+        "covered"
+      );
+
+      void curtain.offsetWidth;
+
+
+      /*
+        Curtain expands from center
+      */
+
+      curtain.classList.add(
+        "active-in"
+      );
+
+
+      /*
+        When screen is fully covered,
+        switch form underneath.
+      */
+
+      setTimeout(()=>{
+
+        curtain.classList.add(
+          "covered"
+        );
+
+
+        if(target === "register"){
+
+          stage.classList.add(
+            "register-mode"
+          );
+
+        }else{
+
+          stage.classList.remove(
+            "register-mode"
+          );
+
+        }
+
+      },450);
+
+
+      /*
+        Keep message visible briefly,
+        then open curtain.
+      */
+
+      setTimeout(()=>{
+
+        curtain.classList.remove(
+          "active-in"
+        );
+
+        curtain.classList.add(
+          "active-out"
+        );
+
+      },800);
+
+
+      /*
+        Cleanup
+      */
+
+      setTimeout(()=>{
+
+        curtain.classList.remove(
+          "active-out",
+          "covered"
+        );
+
+        animating = false;
+
+      },1330);
+
+    }
+
+
+    function switchToRegister(){
+
+      runCurtain("register");
+
+    }
+
+
+    function switchToLogin(){
+
+      runCurtain("login");
+
+    }
+
+
+    /* =====================================
+       PASSWORD SHOW / HIDE
+    ===================================== */
+
+    function togglePassword(
+      inputId,
+      button
+    ){
+
+      const input =
+        document.getElementById(inputId);
+
+
+      if(input.type === "password"){
+
+        input.type = "text";
+
+        button.textContent =
+          "HIDE";
+
+      }else{
+
+        input.type = "password";
+
+        button.textContent =
+          "SHOW";
+
+      }
+
+    }
+
+
+    /* =====================================
+       PASSWORD STRENGTH
+    ===================================== */
+
+    function checkStrength(password){
+
+      let score = 0;
+
+
+      if(password.length >= 8)
+        score++;
+
+      if(/[A-Z]/.test(password))
+        score++;
+
+      if(/[0-9]/.test(password))
+        score++;
+
+      if(/[^A-Za-z0-9]/.test(password))
+        score++;
+
+
+      const bars = [
+
+        document.getElementById(
+          "strength1"
+        ),
+
+        document.getElementById(
+          "strength2"
+        ),
+
+        document.getElementById(
+          "strength3"
+        ),
+
+        document.getElementById(
+          "strength4"
+        )
+
+      ];
+
+
+      bars.forEach(
+        (bar,index)=>{
+
+          bar.classList.toggle(
+            "active",
+            index < score
+          );
+
+        }
+      );
+
+
+      const labels = [
+
+        "Use 8+ characters, number and symbol.",
+
+        "Weak password",
+
+        "Fair password",
+
+        "Good password",
+
+        "Strong password"
+
+      ];
+
+
+      document.getElementById(
+        "strengthLabel"
+      ).textContent =
+        labels[score];
+
+    }
+
+
+    /* =====================================
+       LOGIN
+    ===================================== */
+
+    document
+      .getElementById("loginForm")
+      .addEventListener(
+        "submit",
+        async function(event){
+
+          event.preventDefault();
+
+          const email = document.getElementById("loginEmail").value;
+          const password = document.getElementById("loginPassword").value;
+          const message = document.getElementById("loginMessage");
+
+          message.style.background = "";
+          message.style.color = "";
+          message.textContent = "Verifying credentials...";
+          message.classList.add("show");
+
+          try {
+            const data = await apiFetch("/api/auth/login", {
+              method: "POST",
+              body: JSON.stringify({ email, password })
+            });
+
+            setAuthToken(data.access_token);
+            if (data.factory_id) {
+              setActiveFactoryId(data.factory_id);
+            }
+
+            message.textContent = "Access verified. Opening workspace...";
+
+            setTimeout(() => {
+              if (data.has_factory) {
+                window.location.href = "dashboard.html";
+              } else {
+                window.location.href = "factory-setup.html";
+              }
+            }, 600);
+          } catch (err) {
+            message.style.background = "#fff0f0";
+            message.style.color = "#c92a2a";
+            message.textContent = err.message || "Invalid email or password.";
+          }
+
+        }
+      );
+
+
+    /* =====================================
+       REGISTER
+    ===================================== */
+
+    document
+      .getElementById("registerForm")
+      .addEventListener(
+        "submit",
+        async function(event){
+
+          event.preventDefault();
+
+          const name = document.getElementById("fullName").value;
+          const organization = document.getElementById("organization").value;
+          const email = document.getElementById("registerEmail").value;
+          const password = document.getElementById("registerPassword").value;
+          const message = document.getElementById("registerMessage");
+
+          message.style.background = "";
+          message.style.color = "";
+          message.textContent = "Creating your workspace...";
+          message.classList.add("show");
+
+          try {
+            const data = await apiFetch("/api/auth/register", {
+              method: "POST",
+              body: JSON.stringify({ name, organization, email, password })
+            });
+
+            setAuthToken(data.access_token);
+
+            message.textContent = "Workspace created successfully. Setting up factory...";
+
+            setTimeout(() => {
+              window.location.href = "factory-setup.html";
+            }, 600);
+          } catch (err) {
+            message.style.background = "#fff0f0";
+            message.style.color = "#c92a2a";
+            message.textContent = err.message || "Registration failed.";
+          }
+
+        }
+      );
+
+
+    /* =====================================
+       DEMO FACTORY
+    ===================================== */
+
+    async function openDemo(){
+
+      try {
+        let token = getAuthToken();
+        if (!token) {
+          const reg = await apiFetch("/api/auth/register", {
+            method: "POST",
+            body: JSON.stringify({
+              name: "Demo Operator",
+              organization: "Apex Components",
+              email: "demo_" + Date.now() + "@carboncore.local",
+              password: "DemoPassword123!"
+            })
+          });
+          setAuthToken(reg.access_token);
+        }
+
+        const demo = await apiFetch("/api/factories/demo", { method: "POST" });
+        setActiveFactoryId(demo.id);
+        await apiFetch(`/api/factories/${demo.id}/calculate`, { method: "POST" });
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        console.error("Demo failed:", err);
+        window.location.href = "dashboard.html";
+      }
+
+    }
+
+  </script>
+
+</body>
+</html>

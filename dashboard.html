@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Carbon Core — Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root{
+      --bg:#f6f8f4;
+      --paper:#ffffff;
+
+      --ink:#102019;
+      --text:#34443c;
+      --muted:#7a8980;
+      --line:#dce3dd;
+
+      --green:#175f45;
+      --green2:#238761;
+      --green-soft:#e6f4ea;
+
+      --lime:#c9f454;
+
+      --orange:#ff7545;
+      --orange-soft:#fff0e9;
+
+      --blue:#2b6de8;
+      --blue-soft:#eaf1ff;
+
+      --sidebar:236px;
+
+      --shadow:
+        0 24px 60px rgba(20,48,36,.06);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:"DM Sans",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    a{
+      text-decoration:none;
+      color:inherit;
+    }
+
+    button{
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:var(--sidebar) minmax(0,1fr);
+    }
+
+    /* SIDEBAR */
+
+    .sidebar{
+      position:fixed;
+      inset:0 auto 0 0;
+
+      width:var(--sidebar);
+      min-height:100vh;
+
+      padding:24px 18px 20px;
+
+      display:flex;
+      flex-direction:column;
+
+      background:#fbfcfa;
+      border-right:1px solid var(--line);
+
+      z-index:100;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 8px;
+    }
+
+    .brand-mark{
+      width:38px;
+      height:38px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:11px;
+
+      background:var(--ink);
+      color:white;
+
+      font-family:"Manrope",sans-serif;
+      font-weight:800;
+    }
+
+    .brand-name{
+      font-family:"Manrope",sans-serif;
+      font-size:17px;
+      font-weight:800;
+      letter-spacing:-.04em;
+    }
+
+    .brand-name span{
+      color:var(--green2);
+    }
+
+    .factory-switch{
+      margin-top:28px;
+
+      padding:14px 13px;
+
+      background:white;
+
+      border:1px solid var(--line);
+      border-radius:14px;
+    }
+
+    .factory-switch small{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .factory-switch strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .factory-meta{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .factory-dot{
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+    }
+
+    .nav-group{
+      margin-top:26px;
+    }
+
+    .nav-label{
+      padding:0 10px;
+
+      color:#9aa69f;
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .nav-list{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+
+      margin-top:8px;
+    }
+
+    .nav-item{
+      position:relative;
+
+      min-height:42px;
+
+      display:flex;
+      align-items:center;
+      gap:11px;
+
+      padding:0 11px;
+
+      border-radius:10px;
+
+      color:#58665e;
+
+      font-size:10px;
+      font-weight:600;
+
+      transition:.18s ease;
+    }
+
+    .nav-item:hover{
+      background:#f0f4ef;
+      color:var(--ink);
+    }
+
+    .nav-icon{
+      width:23px;
+      height:23px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:7px;
+
+      background:#f0f3ef;
+
+      color:#6c7971;
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .nav-item.active{
+      background:#f1f6f2;
+      color:var(--ink);
+
+      font-weight:700;
+    }
+
+    .nav-item.active::before{
+      content:"";
+
+      position:absolute;
+
+      left:-18px;
+      top:9px;
+      bottom:9px;
+
+      width:3px;
+
+      background:var(--green);
+
+      border-radius:0 4px 4px 0;
+    }
+
+    .nav-item.active .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .nav-item.leak .nav-icon{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .nav-item.root .nav-icon{
+      background:#fff6df;
+      color:#d99220;
+    }
+
+    .nav-item.solution .nav-icon{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .nav-item.simulator .nav-icon{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+
+      padding-top:18px;
+
+      border-top:1px solid var(--line);
+    }
+
+    .confidence-box{
+      padding:13px;
+
+      border-radius:12px;
+
+      background:#f2f6f2;
+    }
+
+    .confidence-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .confidence-top span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .confidence-top strong{
+      color:var(--green);
+
+      font-family:"Manrope",sans-serif;
+      font-size:12px;
+    }
+
+    .confidence-line{
+      height:5px;
+
+      margin-top:9px;
+
+      overflow:hidden;
+
+      border-radius:100px;
+
+      background:#e0e7e1;
+    }
+
+    .confidence-fill{
+      width:82%;
+      height:100%;
+
+      border-radius:100px;
+
+      background:var(--green2);
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      padding:15px 5px 0;
+    }
+
+    .avatar{
+      width:34px;
+      height:34px;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:50%;
+
+      background:#dfe9e1;
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .profile strong{
+      display:block;
+      font-size:9px;
+    }
+
+    .profile span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    /* MAIN */
+
+    .main{
+      grid-column:2;
+      min-width:0;
+    }
+
+    .topbar{
+      height:69px;
+
+      position:sticky;
+      top:0;
+
+      z-index:80;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:0 34px;
+
+      border-bottom:1px solid var(--line);
+
+      background:rgba(246,248,244,.91);
+      backdrop-filter:blur(16px);
+    }
+
+    .breadcrumb{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      color:var(--muted);
+
+      font-size:9px;
+    }
+
+    .breadcrumb strong{
+      color:var(--ink);
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .status{
+      display:flex;
+      align-items:center;
+      gap:7px;
+
+      padding:7px 10px;
+
+      border:1px solid var(--line);
+      border-radius:100px;
+
+      background:white;
+
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .status-dot{
+      width:7px;
+      height:7px;
+
+      border-radius:50%;
+
+      background:var(--lime);
+    }
+
+    .edit-btn{
+      height:34px;
+
+      padding:0 12px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+      color:var(--text);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    .mobile-menu{
+      display:none;
+
+      width:35px;
+      height:35px;
+
+      border:1px solid var(--line);
+      border-radius:9px;
+
+      background:white;
+    }
+
+    .sidebar-overlay{
+      display:none;
+    }
+
+    /* CONTENT */
+
+    .content{
+      width:min(1280px,calc(100% - 64px));
+
+      margin:auto;
+
+      padding:40px 0 70px;
+    }
+
+    .page-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+
+      gap:30px;
+
+      margin-bottom:30px;
+    }
+
+    .eyebrow{
+      color:var(--green);
+
+      font-size:9px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.11em;
+    }
+
+    .page-head h1{
+      margin-top:9px;
+
+      max-width:750px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:clamp(38px,4.6vw,57px);
+      line-height:.98;
+
+      letter-spacing:-.055em;
+    }
+
+    .page-head p{
+      max-width:690px;
+
+      margin-top:13px;
+
+      color:var(--text);
+
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .baseline{
+      min-width:210px;
+
+      text-align:right;
+    }
+
+    .baseline span{
+      display:block;
+
+      color:var(--muted);
+
+      font-size:8px;
+      font-weight:700;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .baseline strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-family:"Manrope",sans-serif;
+
+      font-size:38px;
+      line-height:1;
+
+      letter-spacing:-.05em;
+    }
+
+    .baseline small{
+      display:block;
+
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    /* SUMMARY STRIP */
+
+    .summary-strip{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+
+      margin-bottom:23px;
+
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+    }
+
+    .summary-item{
+      padding:18px 17px;
+    }
+
+    .summary-item + .summary-item{
+      border-left:1px solid var(--line);
+    }
+
+    .summary-item span{
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .summary-item strong{
+      display:block;
+
+      margin-top:4px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:15px;
+    }
+
+    .summary-item:first-child strong{
+      color:var(--orange);
+    }
+
+    /* GRID */
+
+    .overview-grid{
+      display:grid;
+
+      grid-template-columns:minmax(0,1.5fr) minmax(300px,.75fr);
+
+      gap:23px;
+    }
+
+    .surface{
+      border:1px solid var(--line);
+      border-radius:22px;
+
+      background:white;
+
+      box-shadow:var(--shadow);
+    }
+
+    .flow-surface{
+      padding:30px;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+
+      gap:20px;
+    }
+
+    .section-kicker{
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .section-head h2{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:24px;
+
+      letter-spacing:-.035em;
+    }
+
+    .section-head p{
+      max-width:560px;
+
+      margin-top:6px;
+
+      color:var(--muted);
+
+      font-size:10px;
+      line-height:1.55;
+    }
+
+    .hint{
+      padding:7px 10px;
+
+      border-radius:8px;
+
+      background:#f5f7f4;
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:700;
+    }
+
+    /* FLOW MAP */
+
+    .flow-map{
+      display:grid;
+
+      grid-template-columns:160px 1fr;
+
+      gap:46px;
+
+      margin-top:35px;
+    }
+
+    .factory-node{
+      align-self:center;
+
+      min-height:155px;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+
+      padding:18px;
+
+      border:1px solid var(--line);
+      border-radius:17px;
+
+      background:#fafbf9;
+    }
+
+    .factory-node span{
+      color:var(--muted);
+
+      font-size:7px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .factory-node strong{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:17px;
+    }
+
+    .factory-node small{
+      margin-top:8px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .branches{
+      position:relative;
+
+      display:flex;
+      flex-direction:column;
+
+      gap:17px;
+    }
+
+    .branches::before{
+      content:"";
+
+      position:absolute;
+
+      left:-24px;
+      top:45px;
+      bottom:45px;
+
+      width:1px;
+
+      background:#ccd6ce;
+    }
+
+    .branch{
+      position:relative;
+
+      min-height:94px;
+
+      display:grid;
+
+      grid-template-columns:minmax(0,1fr) 100px 65px;
+
+      align-items:center;
+
+      gap:15px;
+
+      padding:15px 16px;
+
+      border:1px solid var(--line);
+      border-radius:15px;
+
+      background:white;
+
+      cursor:pointer;
+
+      transition:.2s ease;
+    }
+
+    .branch::before{
+      content:"";
+
+      position:absolute;
+
+      left:-24px;
+      top:50%;
+
+      width:24px;
+      height:1px;
+
+      background:#ccd6ce;
+    }
+
+    .branch:hover{
+      transform:translateX(4px);
+
+      box-shadow:0 12px 30px rgba(20,48,36,.06);
+    }
+
+    .branch.hotspot{
+      border-color:#efc3b2;
+
+      background:#fffdfa;
+    }
+
+    .branch-info{
+      display:flex;
+      align-items:center;
+
+      gap:13px;
+    }
+
+    .branch-icon{
+      width:39px;
+      height:39px;
+
+      flex-shrink:0;
+
+      display:grid;
+      place-items:center;
+
+      border-radius:11px;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    .energy{
+      background:var(--orange-soft);
+      color:var(--orange);
+    }
+
+    .materials{
+      background:var(--green-soft);
+      color:var(--green);
+    }
+
+    .waste{
+      background:var(--blue-soft);
+      color:var(--blue);
+    }
+
+    .branch-info strong{
+      display:block;
+
+      font-size:11px;
+    }
+
+    .branch-info span{
+      display:block;
+
+      margin-top:4px;
+
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .hotspot-pill{
+      display:inline-block !important;
+
+      width:max-content;
+
+      margin-top:7px !important;
+
+      padding:4px 7px;
+
+      border-radius:100px;
+
+      background:var(--orange-soft);
+
+      color:var(--orange) !important;
+
+      font-size:6px !important;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+
+    .branch-value{
+      text-align:right;
+    }
+
+    .branch-value strong{
+      display:block;
+
+      font-family:"Manrope",sans-serif;
+      font-size:21px;
+
+      letter-spacing:-.04em;
+    }
+
+    .branch-value span{
+      display:block;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .branch-share{
+      text-align:right;
+
+      font-family:"Manrope",sans-serif;
+      font-size:21px;
+      font-weight:700;
+
+      letter-spacing:-.04em;
+    }
+
+    /* FINDING */
+
+    .finding{
+      overflow:hidden;
+    }
+
+    .finding-head{
+      padding:27px 24px 22px;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .finding-kicker{
+      color:var(--orange);
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+      letter-spacing:.09em;
+    }
+
+    .finding-head h3{
+      margin-top:8px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:25px;
+      line-height:1.12;
+
+      letter-spacing:-.04em;
+    }
+
+    .finding-head p{
+      margin-top:8px;
+
+      color:var(--muted);
+
+      font-size:9px;
+      line-height:1.6;
+    }
+
+    .path{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+
+      gap:6px;
+
+      padding:18px 24px 5px;
+    }
+
+    .path span{
+      padding:5px 7px;
+
+      border-radius:100px;
+
+      background:#f3f5f2;
+
+      color:#5e6c63;
+
+      font-size:7px;
+      font-weight:700;
+    }
+
+    .path b{
+      color:#9eaaa2;
+      font-size:8px;
+    }
+
+    .finding-stats{
+      padding:7px 24px 3px;
+    }
+
+    .stat-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      gap:20px;
+
+      padding:14px 0;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .stat-row span{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .stat-row strong{
+      font-family:"Manrope",sans-serif;
+      font-size:14px;
+    }
+
+    .stat-row strong.alert{
+      color:var(--orange);
+    }
+
+    .finding-action{
+      padding:21px 24px 24px;
+    }
+
+    .primary-btn{
+      width:100%;
+      height:46px;
+
+      border:0;
+      border-radius:10px;
+
+      background:var(--ink);
+      color:white;
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    /* QUEUE */
+
+    .queue{
+      margin-top:24px;
+
+      padding:28px 30px;
+    }
+
+    .queue-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+
+      gap:20px;
+
+      margin-bottom:20px;
+    }
+
+    .queue-head h3{
+      margin-top:6px;
+
+      font-family:"Manrope",sans-serif;
+      font-size:22px;
+
+      letter-spacing:-.035em;
+    }
+
+    .queue-head p{
+      margin-top:5px;
+
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .queue-count{
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .queue-list{
+      border-top:1px solid var(--line);
+    }
+
+    .queue-row{
+      min-height:70px;
+
+      display:grid;
+
+      grid-template-columns:34px minmax(0,1fr) 130px 125px auto;
+
+      gap:18px;
+
+      align-items:center;
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .rank{
+      color:#a3ada6;
+
+      font-family:"Manrope",sans-serif;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .queue-name strong{
+      display:block;
+
+      font-size:10px;
+    }
+
+    .queue-name span{
+      display:block;
+
+      margin-top:3px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .metric strong{
+      display:block;
+
+      font-family:"Manrope",sans-serif;
+      font-size:12px;
+    }
+
+    .metric span{
+      display:block;
+
+      margin-top:2px;
+
+      color:var(--muted);
+      font-size:7px;
+    }
+
+    .row-link{
+      border:0;
+      background:none;
+
+      color:var(--green);
+
+      font-size:8px;
+      font-weight:800;
+    }
+
+    /* RESPONSIVE */
+
+    @media(max-width:1080px){
+      .overview-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:900px){
+
+      :root{
+        --sidebar:0px;
+      }
+
+      .app{
+        display:block;
+      }
+
+      .sidebar{
+        width:236px;
+
+        transform:translateX(-100%);
+
+        transition:.25s ease;
+      }
+
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      .sidebar-overlay{
+        display:block;
+
+        position:fixed;
+        inset:0;
+
+        z-index:90;
+
+        background:rgba(16,32,25,.15);
+
+        opacity:0;
+
+        pointer-events:none;
+
+        transition:.2s ease;
+      }
+
+      .sidebar-overlay.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      .main{
+        grid-column:auto;
+      }
+
+      .mobile-menu{
+        display:grid;
+        place-items:center;
+      }
+    }
+
+    @media(max-width:720px){
+
+      .topbar{
+        padding:0 16px;
+      }
+
+      .breadcrumb{
+        display:none;
+      }
+
+      .status{
+        display:none;
+      }
+
+      .content{
+        width:calc(100% - 24px);
+
+        padding-top:28px;
+      }
+
+      .page-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .baseline{
+        text-align:left;
+      }
+
+      .summary-strip{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .summary-item:nth-child(3){
+        border-left:0;
+        border-top:1px solid var(--line);
+      }
+
+      .summary-item:nth-child(4){
+        border-top:1px solid var(--line);
+      }
+
+      .flow-surface{
+        padding:24px 18px;
+      }
+
+      .section-head{
+        flex-direction:column;
+      }
+
+      .flow-map{
+        grid-template-columns:1fr;
+
+        gap:16px;
+      }
+
+      .branches::before,
+      .branch::before{
+        display:none;
+      }
+
+      .branch{
+        grid-template-columns:1fr;
+
+        gap:10px;
+      }
+
+      .branch-value,
+      .branch-share{
+        text-align:left;
+      }
+
+      .queue{
+        padding:24px 18px;
+      }
+
+      .queue-row{
+        grid-template-columns:1fr;
+
+        gap:6px;
+
+        padding:15px 0;
+      }
+
+      .rank{
+        display:none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+
+    <a href="dashboard.html" class="brand">
+      <div class="brand-mark">C</div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+    </a>
+
+
+    <div class="factory-switch">
+
+      <small>Current Factory</small>
+
+      <strong>
+        <span class="sidebar-factory-name">Apex Components Pvt. Ltd.</span>
+      </strong>
+
+      <div class="factory-meta">
+        <span class="factory-dot"></span>
+        Automotive · Gujarat
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Overview
+      </div>
+
+      <div class="nav-list">
+
+        <a href="dashboard.html" class="nav-item active">
+          <div class="nav-icon">O</div>
+          Carbon Overview
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Investigate
+      </div>
+
+      <div class="nav-list">
+
+        <a href="factory-data.html" class="nav-item">
+          <div class="nav-icon">D</div>
+          Factory Data
+        </a>
+
+        <a href="leak-detector.html" class="nav-item leak">
+          <div class="nav-icon">!</div>
+          Leak Detector
+        </a>
+
+        <a href="root-cause.html" class="nav-item root">
+          <div class="nav-icon">R</div>
+          Root Cause
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="nav-group">
+
+      <div class="nav-label">
+        Act
+      </div>
+
+      <div class="nav-list">
+
+        <a href="solutions.html" class="nav-item solution">
+          <div class="nav-icon">S</div>
+          Circular Solutions
+        </a>
+
+        <a href="simulator.html" class="nav-item simulator">
+          <div class="nav-icon">W</div>
+          What-If Simulator
+        </a>
+
+        <a href="roadmap.html" class="nav-item solution">
+          <div class="nav-icon">→</div>
+          Action Roadmap
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="confidence-box">
+
+        <div class="confidence-top">
+          <span>Data confidence</span>
+          <strong>82%</strong>
+        </div>
+
+        <div class="confidence-line">
+          <div class="confidence-fill"></div>
+        </div>
+
+      </div>
+
+
+      <div class="profile">
+
+        <div class="avatar">
+          PP
+        </div>
+
+        <div>
+          <strong>Prince</strong>
+          <span>Carbon Workspace</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="toggleSidebar()"
+  ></div>
+
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div style="display:flex;align-items:center;gap:12px;">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()"
+        >
+          ☰
+        </button>
+
+        <div class="breadcrumb">
+          Workspace
+          <span>›</span>
+          <strong>Carbon Overview</strong>
+        </div>
+
+      </div>
+
+
+      <div class="top-actions">
+
+        <div class="status">
+          <span class="status-dot"></span>
+          Baseline calculated
+        </div>
+
+        <button
+          class="edit-btn"
+          onclick="location.href='factory-data.html'"
+        >
+          Edit Factory Data
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <div id="dashboardEmptyState" style="display: none;"></div>
+
+      <div id="dashboardCalculatedContent">
+
+      <section class="page-head">
+
+        <div>
+
+          <div class="eyebrow">
+            Carbon Overview
+          </div>
+
+          <h1>
+            Your carbon has a pattern.
+          </h1>
+
+          <p>
+            Carbon Core converts factory activity into a traceable
+            carbon map. Start from the largest source, move into the
+            process layer, and find where avoidable carbon is being
+            created.
+          </p>
+
+        </div>
+
+
+        <div class="baseline">
+
+          <span>
+            Factory Baseline
+          </span>
+
+          <strong id="baselineNumber">
+            1,150
+          </strong>
+
+          <small>
+            tCO₂e / year
+          </small>
+
+        </div>
+
+      </section>
+
+
+      <section class="summary-strip">
+
+        <div class="summary-item">
+          <span>Largest Source</span>
+          <strong id="summaryLargestSource">Energy</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Top Share</span>
+          <strong id="summaryTopShare">52%</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Priority Leak</span>
+          <strong id="summaryPriorityLeak">Compressed Air</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Analysis Confidence</span>
+          <strong id="summaryConfidence">82%</strong>
+        </div>
+
+      </section>
+
+
+      <div class="overview-grid">
+
+        <section class="surface flow-surface">
+
+          <div class="section-head">
+
+            <div>
+
+              <div class="section-kicker">
+                Source Trace
+              </div>
+
+              <h2>
+                Where is your carbon coming from?
+              </h2>
+
+              <p>
+                The factory baseline is separated into source
+                categories. Select a branch to trace the emissions
+                into actual processes and leak points.
+              </p>
+
+            </div>
+
+            <div class="hint">
+              Click a branch to investigate
+            </div>
+
+          </div>
+
+
+          <div class="flow-map">
+
+            <div class="factory-node">
+
+              <span>
+                Factory
+              </span>
+
+              <strong id="factoryNameNode">
+                Apex Components
+              </strong>
+
+              <small id="factoryBaseline">
+                1,150 tCO₂e / year
+              </small>
+
+            </div>
+
+
+            <div class="branches">
+
+              <div
+                class="branch hotspot"
+                onclick="openHotspot('energy')"
+              >
+
+                <div class="branch-info">
+
+                  <div class="branch-icon energy">
+                    E
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      Energy & Utilities
+                    </strong>
+
+                    <span>
+                      Electricity, compressed air, thermal loads
+                    </span>
+
+                    <span class="hotspot-pill">
+                      Primary Hotspot
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div class="branch-value">
+                  <strong id="energyBranchVal">600</strong>
+                  <span>tCO₂e</span>
+                </div>
+
+                <div class="branch-share" id="energyBranchShare">
+                  52%
+                </div>
+
+              </div>
+
+
+              <div
+                class="branch"
+                onclick="openHotspot('materials')"
+              >
+
+                <div class="branch-info">
+
+                  <div class="branch-icon materials">
+                    M
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      Material Inputs
+                    </strong>
+
+                    <span>
+                      Aluminium and production materials
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div class="branch-value">
+                  <strong id="materialsBranchVal">400</strong>
+                  <span>tCO₂e</span>
+                </div>
+
+                <div class="branch-share" id="materialsBranchShare">
+                  35%
+                </div>
+
+              </div>
+
+
+              <div
+                class="branch"
+                onclick="openHotspot('waste')"
+              >
+
+                <div class="branch-info">
+
+                  <div class="branch-icon waste">
+                    W
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      Waste Streams
+                    </strong>
+
+                    <span>
+                      Metal waste, disposal and recovery
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div class="branch-value">
+                  <strong id="wasteBranchVal">150</strong>
+                  <span>tCO₂e</span>
+                </div>
+
+                <div class="branch-share" id="wasteBranchShare">
+                  13%
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <aside class="surface finding">
+
+          <div class="finding-head">
+
+            <div class="finding-kicker">
+              Priority Signal
+            </div>
+
+            <h3 id="priorityFindingTitle">
+              Compressed air is leaking carbon.
+            </h3>
+
+            <p>
+              Carbon Core found an avoidable utility loss
+              inside the factory's largest emission source.
+            </p>
+
+          </div>
+
+
+          <div class="path" id="priorityFindingPath">
+            <span>Energy</span>
+            <b>→</b>
+            <span>Utilities</span>
+            <b>→</b>
+            <span>Compressed Air</span>
+          </div>
+
+
+          <div class="finding-stats">
+
+            <div class="stat-row">
+              <span>Estimated leakage</span>
+              <strong class="alert" id="priorityFindingLeakage">28%</strong>
+            </div>
+
+            <div class="stat-row">
+              <span>Wasted electricity</span>
+              <strong id="priorityFindingWasted">94,500 kWh</strong>
+            </div>
+
+            <div class="stat-row">
+              <span>Process footprint</span>
+              <strong id="priorityFindingFootprint">162 tCO₂e</strong>
+            </div>
+
+            <div class="stat-row">
+              <span>Operating pressure</span>
+              <strong id="priorityFindingPressure">7.5 bar</strong>
+            </div>
+
+          </div>
+
+
+          <div class="finding-action">
+
+            <button
+              class="primary-btn"
+              onclick="openHotspot('compressed-air')"
+            >
+              Investigate Leak →
+            </button>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+
+      <!-- CARBON CHARTS SECTION -->
+      <section class="surface charts-surface" id="dashboardChartsSection" style="margin-bottom: 24px;">
+
+        <div class="section-head" style="margin-bottom: 20px;">
+          <div>
+            <div class="section-kicker">
+              Carbon Analytics
+            </div>
+            <h2>
+              Emissions by Source & Composition
+            </h2>
+            <p>
+              Deterministic carbon attribution across factory energy, material inputs, and process waste.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+          <div style="background: #fafbfa; border: 1px solid var(--line); border-radius: 14px; padding: 18px;">
+            <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--ink);">Carbon by Source (tCO₂e)</div>
+            <div style="height: 220px; position: relative;">
+              <canvas id="sourceBarChart"></canvas>
+            </div>
+          </div>
+
+          <div style="background: #fafbfa; border: 1px solid var(--line); border-radius: 14px; padding: 18px;">
+            <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--ink);">Carbon Composition (%)</div>
+            <div style="height: 220px; position: relative;">
+              <canvas id="compositionDoughnutChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <section class="surface queue">
+
+        <div class="queue-head">
+
+          <div>
+
+            <div class="section-kicker">
+              Investigation Queue
+            </div>
+
+            <h3>
+              Areas worth tracing deeper.
+            </h3>
+
+            <p>
+              Ranked using emission contribution, abnormal
+              operational signals and data confidence.
+            </p>
+
+          </div>
+
+          <div class="queue-count" id="queueCountBadge">
+            03 findings
+          </div>
+
+        </div>
+
+
+        <div class="queue-list" id="investigationQueueList">
+
+          <div class="queue-row">
+
+            <div class="rank">
+              01
+            </div>
+
+            <div class="queue-name">
+              <strong>Compressed Air System</strong>
+              <span>Energy → Utilities</span>
+            </div>
+
+            <div class="metric">
+              <strong>162 tCO₂e</strong>
+              <span>process footprint</span>
+            </div>
+
+            <div class="metric">
+              <strong>28%</strong>
+              <span>leakage signal</span>
+            </div>
+
+            <button
+              class="row-link"
+              onclick="openHotspot('compressed-air')"
+            >
+              Investigate →
+            </button>
+
+          </div>
+
+
+          <div class="queue-row">
+
+            <div class="rank">
+              02
+            </div>
+
+            <div class="queue-name">
+              <strong>CNC Machining</strong>
+              <span>Energy → Production</span>
+            </div>
+
+            <div class="metric">
+              <strong>228 tCO₂e</strong>
+              <span>process footprint</span>
+            </div>
+
+            <div class="metric">
+              <strong>High</strong>
+              <span>idle energy load</span>
+            </div>
+
+            <button
+              class="row-link"
+              onclick="openHotspot('cnc')"
+            >
+              Investigate →
+            </button>
+
+          </div>
+
+
+          <div class="queue-row">
+
+            <div class="rank">
+              03
+            </div>
+
+            <div class="queue-name">
+              <strong>Virgin Aluminium</strong>
+              <span>Materials → Input</span>
+            </div>
+
+            <div class="metric">
+              <strong>400 tCO₂e</strong>
+              <span>embodied carbon</span>
+            </div>
+
+            <div class="metric">
+              <strong>20%</strong>
+              <span>recycled content</span>
+            </div>
+
+            <button
+              class="row-link"
+              onclick="openHotspot('aluminium')"
+            >
+              Investigate →
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      </div> <!-- /dashboardCalculatedContent -->
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="api.js"></script>
+<script>
+
+  function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("show");
+  }
+
+  function openHotspot(type){
+    localStorage.setItem("selectedHotspotId", type);
+    window.location.href = "leak-detector.html?hotspot=" + encodeURIComponent(type);
+  }
+
+  async function loadDashboardData() {
+    const factoryId = getActiveFactoryId();
+    if (!factoryId) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const mainContent = document.getElementById("dashboardCalculatedContent");
+    const emptyContainer = document.getElementById("dashboardEmptyState");
+
+    try {
+      const summary = await apiFetch(`/api/factories/${factoryId}/emissions/summary`);
+
+      if (!summary.has_calculation || summary.baseline <= 0) {
+        if (mainContent) mainContent.style.display = "none";
+        if (emptyContainer) {
+          emptyContainer.style.display = "block";
+          renderEmptyState(
+            "dashboardEmptyState",
+            "No carbon calculation available yet.",
+            "Your factory activity data has not been calculated into a carbon baseline. Enter energy, materials, and process data to trace your emissions.",
+            "factory-data.html",
+            "Enter Factory Data →"
+          );
+        }
+        return;
+      }
+
+      if (emptyContainer) emptyContainer.style.display = "none";
+      if (mainContent) mainContent.style.display = "block";
+
+      const baseFormatted = Math.round(summary.baseline).toLocaleString("en-IN");
+      if (document.getElementById("baselineNumber")) {
+        document.getElementById("baselineNumber").textContent = baseFormatted;
+      }
+      if (document.getElementById("factoryBaseline")) {
+        document.getElementById("factoryBaseline").textContent = `${baseFormatted} tCO₂e / year`;
+      }
+      if (document.getElementById("factoryNameNode")) {
+        document.getElementById("factoryNameNode").textContent = summary.factory_name;
+      }
+
+      if (document.getElementById("summaryLargestSource")) {
+        document.getElementById("summaryLargestSource").textContent = summary.largest_source;
+      }
+      if (document.getElementById("summaryTopShare")) {
+        document.getElementById("summaryTopShare").textContent = `${Math.round(summary.top_share_pct)}%`;
+      }
+      if (document.getElementById("summaryPriorityLeak")) {
+        document.getElementById("summaryPriorityLeak").textContent = summary.priority_leak || "Compressed Air";
+      }
+      if (document.getElementById("summaryConfidence")) {
+        document.getElementById("summaryConfidence").textContent = `${Math.round(summary.confidence)}%`;
+      }
+
+      if (document.getElementById("energyBranchVal")) {
+        document.getElementById("energyBranchVal").textContent = Math.round(summary.energy_tco2e).toLocaleString("en-IN");
+      }
+      if (document.getElementById("energyBranchShare")) {
+        document.getElementById("energyBranchShare").textContent = `${Math.round(summary.energy_pct)}%`;
+      }
+      if (document.getElementById("materialsBranchVal")) {
+        document.getElementById("materialsBranchVal").textContent = Math.round(summary.material_tco2e).toLocaleString("en-IN");
+      }
+      if (document.getElementById("materialsBranchShare")) {
+        document.getElementById("materialsBranchShare").textContent = `${Math.round(summary.material_pct)}%`;
+      }
+      if (document.getElementById("wasteBranchVal")) {
+        document.getElementById("wasteBranchVal").textContent = Math.round(summary.waste_tco2e).toLocaleString("en-IN");
+      }
+      if (document.getElementById("wasteBranchShare")) {
+        document.getElementById("wasteBranchShare").textContent = `${Math.round(summary.waste_pct)}%`;
+      }
+
+      if (document.getElementById("priorityFindingTitle")) {
+        document.getElementById("priorityFindingTitle").textContent = `${summary.priority_leak || "Compressed air"} is leaking carbon.`;
+      }
+      if (document.getElementById("priorityFindingLeakage")) {
+        document.getElementById("priorityFindingLeakage").textContent = summary.priority_leak_pct || "28%";
+      }
+      if (document.getElementById("priorityFindingWasted")) {
+        document.getElementById("priorityFindingWasted").textContent = summary.wasted_kwh 
+          ? `${Math.round(summary.wasted_kwh).toLocaleString("en-IN")} kWh` 
+          : "N/A";
+      }
+      if (document.getElementById("priorityFindingFootprint")) {
+        document.getElementById("priorityFindingFootprint").textContent = `${Math.round(summary.priority_footprint || 0)} tCO₂e`;
+      }
+      if (document.getElementById("priorityFindingPressure")) {
+        document.getElementById("priorityFindingPressure").textContent = summary.operating_pressure || "Normal";
+      }
+
+      const queueList = document.getElementById("investigationQueueList");
+      if (queueList && summary.investigation_queue && summary.investigation_queue.length > 0) {
+        queueList.innerHTML = summary.investigation_queue.map(item => `
+          <div class="queue-row">
+            <div class="rank">${item.rank}</div>
+            <div class="queue-name">
+              <strong>${item.name}</strong>
+              <span>${item.path}</span>
+            </div>
+            <div class="metric">
+              <strong>${item.footprint}</strong>
+              <span>process footprint</span>
+            </div>
+            <div class="metric">
+              <strong>${item.signal}</strong>
+              <span>${item.signal_label}</span>
+            </div>
+            <button class="row-link" onclick="openHotspot('${item.code}')">
+              Investigate →
+            </button>
+          </div>
+        `).join("");
+
+        if (document.getElementById("queueCountBadge")) {
+          document.getElementById("queueCountBadge").textContent = `${String(summary.investigation_queue.length).padStart(2, "0")} findings`;
+        }
+      }
+
+      renderBarChart(
+        "sourceBarChart",
+        ["Energy", "Materials", "Waste"],
+        [summary.energy_tco2e, summary.material_tco2e, summary.waste_tco2e],
+        [BRAND_COLORS.orange, BRAND_COLORS.green, BRAND_COLORS.blue],
+        "tCO₂e"
+      );
+
+      renderDoughnutChart(
+        "compositionDoughnutChart",
+        ["Energy", "Materials", "Waste"],
+        [summary.energy_pct, summary.material_pct, summary.waste_pct],
+        [BRAND_COLORS.orange, BRAND_COLORS.green, BRAND_COLORS.blue]
+      );
+
+    } catch (err) {
+      console.error("Dashboard summary error:", err);
+      if (mainContent) mainContent.style.display = "none";
+      if (emptyContainer) {
+        emptyContainer.style.display = "block";
+        renderErrorState("dashboardEmptyState", err.message || "Failed to load carbon summary.", "loadDashboardData");
+      }
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", loadDashboardData);
+  loadSidebarFactory();
+
+</script>
+
+</body>
+</html>
