@@ -4,11 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Carbon Core — Privacy Policy</title>
-  <meta name="description" content="Privacy Policy for Carbon Core — how we handle your factory emissions data, account information, and usage data." />
+  <title>Privacy Policy — Carbon Core</title>
+
+  <meta
+    name="description"
+    content="Learn how Carbon Core collects, processes, stores, and protects factory emissions data and account information."
+  />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
     rel="stylesheet"
@@ -16,403 +21,1772 @@
 
   <style>
     :root {
-      --bg: #f5f7f2;
-      --paper: #ffffff;
+      --bg: #f4f7f2;
+      --surface: #ffffff;
+      --surface-soft: #f8faf7;
+
       --ink: #102019;
-      --text: #32423a;
-      --muted: #718078;
-      --green: #175f45;
-      --green2: #238761;
-      --greenSoft: #dff4e9;
+      --text: #44524b;
+      --muted: #7d8983;
+
+      --green: #125d43;
+      --green-dark: #0b4733;
+      --green-light: #e6f5ed;
+
       --lime: #c9f454;
-      --orange: #ff7b45;
-      --line: #dbe2dc;
-      --shadow: 0 24px 70px rgba(20,48,36,.08);
+      --lime-soft: #efffc8;
+
+      --orange: #ff7a45;
+
+      --border: #dce4dd;
+      --border-soft: #e9eeea;
+
+      --shadow:
+        0 24px 60px rgba(17, 46, 34, 0.08);
+
+      --shadow-soft:
+        0 10px 30px rgba(17, 46, 34, 0.05);
     }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html { scroll-behavior:smooth; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: "DM Sans", sans-serif;
       background:
-        radial-gradient(circle at 90% 10%, rgba(201,244,84,.10), transparent 24%),
+        radial-gradient(
+          circle at 90% 0%,
+          rgba(201, 244, 84, 0.18),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 0% 35%,
+          rgba(23, 95, 69, 0.07),
+          transparent 24%
+        ),
         var(--bg);
+
       color: var(--ink);
-      line-height: 1.7;
+      min-height: 100vh;
     }
 
-    a { color: var(--green); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a {
+      color: inherit;
+    }
 
-    /* ---- TOPBAR ---- */
-    .topbar {
-      height: 72px;
-      padding: 0 34px;
+    /* =========================
+       NAVBAR
+    ========================== */
+
+    .navbar {
+      width: 100%;
+      height: 76px;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(245,247,242,.92);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--line);
+
+      padding: 0 42px;
+
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 100;
+
+      background: rgba(244, 247, 242, 0.82);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      border-bottom: 1px solid rgba(220, 228, 221, 0.85);
     }
 
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 11px;
+      gap: 12px;
+
       text-decoration: none;
-      color: var(--ink);
     }
 
-    .brand-mark {
-      width: 39px;
-      height: 39px;
-      border-radius: 12px;
-      background: var(--green);
-      color: var(--lime);
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 13px;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
+      background: linear-gradient(
+        145deg,
+        var(--green),
+        var(--green-dark)
+      );
+
+      color: var(--lime);
+
       font-family: "Manrope", sans-serif;
+      font-size: 19px;
       font-weight: 800;
-      font-size: 18px;
+
+      box-shadow:
+        0 7px 18px rgba(18, 93, 67, 0.18);
     }
 
     .brand-name {
       font-family: "Manrope", sans-serif;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 17px;
-      letter-spacing: -.02em;
+
+      letter-spacing: -0.03em;
     }
 
-    .brand-name span { color: var(--green); }
-
-    .topbar-links {
-      display: flex;
-      gap: 24px;
-      align-items: center;
-    }
-
-    .topbar-links a {
-      font-size: 14px;
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .topbar-links a:hover { color: var(--ink); }
-
-    /* ---- CONTENT ---- */
-    .page-wrap {
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 56px 28px 80px;
-    }
-
-    .page-eyebrow {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .08em;
+    .brand-name span {
       color: var(--green);
-      margin-bottom: 12px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link {
+      text-decoration: none;
+
+      padding: 10px 15px;
+      border-radius: 10px;
+
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+
+      transition: 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .login-btn {
+      margin-left: 4px;
+
+      color: white;
+      background: var(--green);
+
+      padding: 10px 18px;
+
+      border-radius: 11px;
+    }
+
+    .login-btn:hover {
+      background: var(--green-dark);
+      color: white;
+    }
+
+
+    /* =========================
+       HERO
+    ========================== */
+
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto;
+
+      padding: 88px 30px 55px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 0.6fr;
+      gap: 60px;
+
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      padding: 7px 12px;
+
+      border: 1px solid rgba(18, 93, 67, 0.13);
+      border-radius: 100px;
+
+      background: rgba(255, 255, 255, 0.75);
+
+      color: var(--green);
+
+      font-size: 12px;
+      font-weight: 700;
+
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+
+      margin-bottom: 20px;
+    }
+
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--lime);
+      box-shadow: 0 0 0 4px rgba(201, 244, 84, 0.22);
     }
 
     h1 {
+      max-width: 700px;
+
       font-family: "Manrope", sans-serif;
-      font-size: 36px;
+      font-size: clamp(42px, 6vw, 68px);
+      line-height: 1.02;
+
+      letter-spacing: -0.055em;
+
       font-weight: 800;
-      letter-spacing: -.03em;
-      line-height: 1.2;
-      margin-bottom: 8px;
+
+      margin-bottom: 22px;
     }
 
-    .updated {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 40px;
-    }
+    .hero-description {
+      max-width: 700px;
 
-    .policy-card {
-      background: var(--paper);
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      padding: 48px 52px;
-    }
-
-    .policy-card h2 {
-      font-family: "Manrope", sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--ink);
-      margin-top: 36px;
-      margin-bottom: 10px;
-      letter-spacing: -.02em;
-    }
-
-    .policy-card h2:first-child { margin-top: 0; }
-
-    .policy-card p,
-    .policy-card li {
-      font-size: 15px;
       color: var(--text);
+
+      font-size: 17px;
       line-height: 1.75;
     }
 
-    .policy-card ul {
-      padding-left: 22px;
-      margin: 8px 0 16px;
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      gap: 12px;
+
+      border-left: 1px solid var(--border);
+
+      padding-left: 28px;
+      padding-bottom: 6px;
     }
 
-    .policy-card li { margin-bottom: 6px; }
+    .meta-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
 
-    .policy-card .highlight {
-      background: var(--greenSoft);
-      border-left: 3px solid var(--green);
-      padding: 14px 18px;
-      border-radius: 8px;
-      margin: 18px 0;
-      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .meta-value {
+      font-family: "Manrope", sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      background: var(--green-light);
       color: var(--green);
-      font-weight: 500;
-    }
 
-    .divider {
-      border: none;
-      border-top: 1px solid var(--line);
-      margin: 28px 0;
-    }
+      padding: 8px 12px;
 
-    /* ---- FOOTER ---- */
-    footer {
-      text-align: center;
-      padding: 28px;
+      border-radius: 10px;
+
       font-size: 13px;
+      font-weight: 700;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+
+    /* =========================
+       MAIN LAYOUT
+    ========================== */
+
+    .main {
+      max-width: 1180px;
+
+      margin: 0 auto;
+      padding: 0 30px 100px;
+
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      gap: 42px;
+
+      align-items: start;
+    }
+
+
+    /* =========================
+       SIDEBAR
+    ========================== */
+
+    .sidebar {
+      position: sticky;
+      top: 105px;
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 700;
+
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+
+      color: var(--muted);
+
+      margin-bottom: 14px;
+    }
+
+    .toc {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+
+      gap: 3px;
+    }
+
+    .toc a {
+      display: block;
+
+      padding: 8px 11px;
+
+      border-radius: 8px;
+
+      text-decoration: none;
+
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+
+      transition: 0.18s ease;
+    }
+
+    .toc a:hover {
+      color: var(--green);
+      background: var(--green-light);
+    }
+
+    .sidebar-note {
+      margin-top: 28px;
+
+      padding: 18px;
+
+      border: 1px solid var(--border);
+      border-radius: 14px;
+
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .sidebar-note strong {
+      display: block;
+
+      margin-bottom: 7px;
+
+      font-size: 13px;
+    }
+
+    .sidebar-note p {
+      font-size: 12px;
+      line-height: 1.65;
+
       color: var(--muted);
     }
 
-    footer a { color: var(--muted); }
-    footer a:hover { color: var(--ink); }
 
-    @media (max-width: 640px) {
-      .page-wrap { padding: 32px 18px 60px; }
-      .policy-card { padding: 28px 22px; }
-      h1 { font-size: 28px; }
+    /* =========================
+       POLICY CARD
+    ========================== */
+
+    .policy {
+      background: rgba(255, 255, 255, 0.92);
+
+      border: 1px solid var(--border);
+      border-radius: 24px;
+
+      padding: 14px 52px 54px;
+
+      box-shadow: var(--shadow);
     }
+
+    .policy-section {
+      padding: 44px 0;
+
+      border-bottom: 1px solid var(--border-soft);
+
+      scroll-margin-top: 120px;
+    }
+
+    .policy-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .section-heading {
+      display: flex;
+      gap: 18px;
+
+      align-items: flex-start;
+
+      margin-bottom: 18px;
+    }
+
+    .number {
+      min-width: 40px;
+      height: 40px;
+
+      border-radius: 12px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: var(--green-light);
+      color: var(--green);
+
+      font-family: "Manrope", sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .section-heading h2 {
+      font-family: "Manrope", sans-serif;
+
+      font-size: 23px;
+      line-height: 1.2;
+
+      letter-spacing: -0.035em;
+
+      font-weight: 750;
+    }
+
+    .policy p,
+    .policy li {
+      color: var(--text);
+
+      font-size: 15px;
+      line-height: 1.78;
+    }
+
+    .policy p + p {
+      margin-top: 12px;
+    }
+
+    .subheading {
+      margin-top: 24px;
+      margin-bottom: 10px;
+
+      font-size: 14px !important;
+
+      color: var(--ink) !important;
+
+      font-weight: 700;
+    }
+
+    .policy ul {
+      list-style: none;
+
+      padding: 0;
+
+      margin-top: 12px;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 9px;
+    }
+
+    .policy li {
+      position: relative;
+
+      padding-left: 25px;
+    }
+
+    .policy li::before {
+      content: "";
+
+      position: absolute;
+
+      left: 3px;
+      top: 10px;
+
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--lime);
+
+      box-shadow:
+        0 0 0 3px rgba(201, 244, 84, 0.2);
+    }
+
+    code {
+      font-family: monospace;
+
+      background: #edf2ee;
+      color: var(--green-dark);
+
+      border-radius: 5px;
+
+      padding: 2px 6px;
+
+      font-size: 13px;
+    }
+
+
+    /* =========================
+       INFO BOXES
+    ========================== */
+
+    .notice {
+      margin-top: 22px;
+
+      display: flex;
+
+      gap: 15px;
+
+      padding: 19px 20px;
+
+      border: 1px solid rgba(18, 93, 67, 0.13);
+
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(230, 245, 237, 0.9),
+          rgba(239, 255, 200, 0.45)
+        );
+    }
+
+    .notice-icon {
+      flex-shrink: 0;
+
+      width: 34px;
+      height: 34px;
+
+      border-radius: 10px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: var(--green);
+
+      color: var(--lime);
+
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .notice p {
+      font-size: 14px;
+      line-height: 1.65;
+
+      color: var(--green-dark);
+    }
+
+
+    /* =========================
+       SECURITY CARDS
+    ========================== */
+
+    .security-grid {
+      margin-top: 22px;
+
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+
+      gap: 12px;
+    }
+
+    .security-card {
+      padding: 18px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 14px;
+
+      background: var(--surface-soft);
+    }
+
+    .security-card strong {
+      display: block;
+
+      margin-bottom: 5px;
+
+      font-size: 13px;
+
+      color: var(--ink);
+    }
+
+    .security-card span {
+      color: var(--muted);
+
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+
+    /* =========================
+       CONTACT
+    ========================== */
+
+    .contact-card {
+      margin-top: 20px;
+
+      padding: 24px;
+
+      border-radius: 16px;
+
+      background: var(--green-dark);
+      color: white;
+
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card::after {
+      content: "";
+
+      position: absolute;
+
+      width: 160px;
+      height: 160px;
+
+      border-radius: 50%;
+
+      background: rgba(201, 244, 84, 0.12);
+
+      right: -55px;
+      top: -65px;
+    }
+
+    .contact-card .contact-title {
+      position: relative;
+      z-index: 2;
+
+      font-family: "Manrope", sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+
+      margin-bottom: 8px;
+    }
+
+    .contact-card p {
+      position: relative;
+      z-index: 2;
+
+      color: rgba(255, 255, 255, 0.73);
+
+      font-size: 14px;
+    }
+
+    .contact-email {
+      position: relative;
+      z-index: 2;
+
+      display: inline-flex;
+
+      margin-top: 16px;
+
+      padding: 10px 14px;
+
+      border-radius: 10px;
+
+      background: var(--lime);
+
+      color: var(--green-dark);
+
+      text-decoration: none;
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .contact-email:hover {
+      transform: translateY(-1px);
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    footer {
+      border-top: 1px solid var(--border);
+
+      padding: 30px 34px;
+
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      max-width: 1180px;
+
+      margin: auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+    }
+
+    .footer-left {
+      font-size: 13px;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+
+      gap: 18px;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+    .footer-links a:hover {
+      color: var(--green);
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+
+    @media (max-width: 950px) {
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .hero-meta {
+        border-left: none;
+
+        border-top: 1px solid var(--border);
+
+        padding-left: 0;
+        padding-top: 22px;
+      }
+
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 700px) {
+
+      .navbar {
+        height: 68px;
+        padding: 0 18px;
+      }
+
+      .nav-link:not(.login-btn) {
+        display: none;
+      }
+
+      .brand-logo {
+        width: 38px;
+        height: 38px;
+      }
+
+      .hero {
+        padding: 58px 20px 40px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .hero-description {
+        font-size: 15px;
+      }
+
+      .main {
+        padding: 0 16px 70px;
+      }
+
+      .policy {
+        padding: 4px 22px 38px;
+
+        border-radius: 18px;
+      }
+
+      .policy-section {
+        padding: 34px 0;
+      }
+
+      .section-heading {
+        gap: 12px;
+      }
+
+      .number {
+        min-width: 35px;
+        height: 35px;
+
+        border-radius: 10px;
+      }
+
+      .section-heading h2 {
+        font-size: 20px;
+      }
+
+      .policy p,
+      .policy li {
+        font-size: 14px;
+      }
+
+      .security-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+
+        text-align: center;
+      }
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <nav class="topbar">
+  <!-- ======================
+       NAVBAR
+  ======================= -->
+
+  <nav class="navbar">
+
     <a href="index.html" class="brand">
-      <div class="brand-mark">C</div>
-      <div class="brand-name">CARBON<span>CORE</span></div>
+
+      <div class="brand-logo">
+        C
+      </div>
+
+      <div class="brand-name">
+        CARBON<span>CORE</span>
+      </div>
+
     </a>
-    <div class="topbar-links">
-      <a href="index.html">Home</a>
-      <a href="login.html">Login</a>
+
+
+    <div class="nav-links">
+
+      <a href="index.html" class="nav-link">
+        Home
+      </a>
+
+      <a href="login.html" class="nav-link login-btn">
+        Login
+      </a>
+
     </div>
+
   </nav>
 
 
-  <div class="page-wrap">
 
-    <div class="page-eyebrow">Legal</div>
+  <!-- ======================
+       HERO
+  ======================= -->
 
-    <h1>Privacy Policy</h1>
+  <header class="hero">
 
-    <p class="updated">Last updated: September 2026</p>
+    <div class="hero-grid">
+
+      <div>
+
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          Legal & Privacy
+        </div>
 
 
-    <div class="policy-card">
+        <h1>
+          Your industrial data
+          stays yours.
+        </h1>
 
-      <h2>1. Introduction</h2>
-      <p>
-        Carbon Core ("we", "our", "us") is an industrial emission leak-point
-        detector and circular alternative recommender built for the HackOut'26
-        hackathon by Team TechVortex. This Privacy Policy explains how we
-        collect, use, and protect information when you use our web application
-        at carboncore.app or any locally hosted instance.
-      </p>
 
-      <div class="highlight">
-        Carbon Core is designed to process factory-level operational data —
-        not personal consumer data. We collect only what is necessary to
-        deliver emission analysis and decarbonization recommendations.
+        <p class="hero-description">
+          This Privacy Policy explains how Carbon Core collects,
+          processes and protects account information, factory
+          operational data, emission calculations and generated
+          recommendations.
+        </p>
+
       </div>
 
 
-      <hr class="divider" />
+      <div class="hero-meta">
 
-      <h2>2. Information We Collect</h2>
+        <span class="meta-label">
+          Last updated
+        </span>
 
-      <p><strong>Account Information</strong></p>
-      <ul>
-        <li>Full name and email address (used for login and workspace identification)</li>
-        <li>Organization name</li>
-        <li>Hashed password (we never store plaintext passwords)</li>
-      </ul>
-
-      <p><strong>Factory & Operational Data</strong></p>
-      <ul>
-        <li>Factory name, industry, location, and reporting period</li>
-        <li>Energy sources and annual consumption (kWh, fuel types)</li>
-        <li>Material inputs, recycled content percentages, and quantities</li>
-        <li>Waste streams, types, and disposal methods</li>
-        <li>Compressed air system data (pressure, leakage, energy)</li>
-        <li>Process-level information and selected manufacturing operations</li>
-      </ul>
-
-      <p><strong>Calculated & Generated Data</strong></p>
-      <ul>
-        <li>Emission baselines (tCO₂e) computed from your activity data</li>
-        <li>Hotspot detection results and root-cause diagnostics</li>
-        <li>Circular economy recommendations and confidence scores</li>
-        <li>What-if simulation scenarios you create and save</li>
-        <li>Decarbonization roadmap actions and sequencing</li>
-      </ul>
-
-      <p><strong>Technical Data</strong></p>
-      <ul>
-        <li>Browser type and version</li>
-        <li>Access timestamps</li>
-        <li>Authentication tokens (JWT, stored in your browser's localStorage)</li>
-      </ul>
+        <span class="meta-value">
+          September 2026
+        </span>
 
 
-      <hr class="divider" />
+        <div class="status">
 
-      <h2>3. How We Use Your Information</h2>
-      <ul>
-        <li>To authenticate your account and provide workspace access</li>
-        <li>To calculate emission baselines from your factory activity data</li>
-        <li>To detect emission hotspots and identify root causes</li>
-        <li>To generate circular economy recommendations</li>
-        <li>To run what-if simulations on your emission scenarios</li>
-        <li>To build prioritized decarbonization roadmaps</li>
-        <li>To maintain and improve application performance</li>
-      </ul>
+          <span class="status-dot"></span>
 
-      <div class="highlight">
-        We do not use your factory data for advertising, profiling,
-        or any purpose beyond delivering Carbon Core's analysis and
-        recommendations to you.
+          Privacy-first architecture
+
+        </div>
+
       </div>
-
-
-      <hr class="divider" />
-
-      <h2>4. Data Storage & Security</h2>
-      <ul>
-        <li>All data is stored in a local SQLite database on the server where Carbon Core is deployed</li>
-        <li>Passwords are hashed using industry-standard bcrypt before storage</li>
-        <li>Authentication uses signed JWT tokens with expiration</li>
-        <li>No factory data is transmitted to third-party services or external APIs</li>
-        <li>All communication between your browser and the server uses the connection protocol of the host (HTTPS recommended for production)</li>
-      </ul>
-
-
-      <hr class="divider" />
-
-      <h2>5. Data Sharing</h2>
-      <p>
-        We do <strong>not</strong> sell, rent, or share your factory data with
-        any third party. Your emission data, simulation results, and
-        recommendations remain within your Carbon Core workspace.
-      </p>
-      <p>
-        The only exception is if required by law or legal process.
-      </p>
-
-
-      <hr class="divider" />
-
-      <h2>6. Your Rights</h2>
-      <ul>
-        <li><strong>Access:</strong> You can view all your factory data through the Carbon Core dashboard at any time.</li>
-        <li><strong>Correction:</strong> You can update your factory data and account information through the application.</li>
-        <li><strong>Deletion:</strong> You may request full deletion of your account and all associated factory data by contacting us.</li>
-        <li><strong>Export:</strong> Your emission summary, recommendations, and roadmap data are accessible through the application interface.</li>
-      </ul>
-
-
-      <hr class="divider" />
-
-      <h2>7. Cookies & Local Storage</h2>
-      <p>
-        Carbon Core does not use tracking cookies. We use browser
-        <code>localStorage</code> to store:
-      </p>
-      <ul>
-        <li>Your authentication token (for session persistence)</li>
-        <li>Active factory ID (for workspace state)</li>
-        <li>Temporary simulation/scenario data (for cross-page navigation)</li>
-      </ul>
-      <p>
-        You can clear this data at any time by logging out or clearing
-        your browser's local storage.
-      </p>
-
-
-      <hr class="divider" />
-
-      <h2>8. Demo Data</h2>
-      <p>
-        Carbon Core includes a built-in demo factory ("Apex Components Pvt. Ltd.")
-        pre-loaded with synthetic operational data. This demo data is entirely
-        fictional and does not represent any real company or facility.
-      </p>
-
-
-      <hr class="divider" />
-
-      <h2>9. Children's Privacy</h2>
-      <p>
-        Carbon Core is an industrial analysis tool not intended for use by
-        individuals under 18 years of age. We do not knowingly collect
-        information from minors.
-      </p>
-
-
-      <hr class="divider" />
-
-      <h2>10. Changes to This Policy</h2>
-      <p>
-        We may update this Privacy Policy as Carbon Core evolves. Any changes
-        will be reflected on this page with an updated revision date. Continued
-        use of the application after changes constitutes acceptance.
-      </p>
-
-
-      <hr class="divider" />
-
-      <h2>11. Contact</h2>
-      <p>
-        If you have questions about this Privacy Policy or your data, contact
-        Team TechVortex:
-      </p>
-      <ul>
-        <li>Project: Carbon Core</li>
-        <li>Event: HackOut'26</li>
-        <li>Email: <a href="mailto:princepatel98798@gmail.com">contact@carboncore.app</a></li>
-      </ul>
 
     </div>
 
-  </div>
+  </header>
 
+
+
+  <!-- ======================
+       CONTENT
+  ======================= -->
+
+  <main class="main">
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+      <div class="sidebar-title">
+        On this page
+      </div>
+
+      <ul class="toc">
+
+        <li>
+          <a href="#introduction">
+            Introduction
+          </a>
+        </li>
+
+        <li>
+          <a href="#information">
+            Information we collect
+          </a>
+        </li>
+
+        <li>
+          <a href="#usage">
+            How we use data
+          </a>
+        </li>
+
+        <li>
+          <a href="#security">
+            Storage & security
+          </a>
+        </li>
+
+        <li>
+          <a href="#sharing">
+            Data sharing
+          </a>
+        </li>
+
+        <li>
+          <a href="#rights">
+            Your rights
+          </a>
+        </li>
+
+        <li>
+          <a href="#storage">
+            Cookies & storage
+          </a>
+        </li>
+
+        <li>
+          <a href="#demo">
+            Demo data
+          </a>
+        </li>
+
+        <li>
+          <a href="#children">
+            Children's privacy
+          </a>
+        </li>
+
+        <li>
+          <a href="#changes">
+            Policy changes
+          </a>
+        </li>
+
+        <li>
+          <a href="#contact">
+            Contact
+          </a>
+        </li>
+
+      </ul>
+
+
+      <div class="sidebar-note">
+
+        <strong>
+          Carbon Core
+        </strong>
+
+        <p>
+          Industrial emission leak-point detection,
+          circular alternatives and decarbonization
+          intelligence for SMEs.
+        </p>
+
+      </div>
+
+    </aside>
+
+
+
+    <!-- POLICY -->
+
+    <article class="policy">
+
+
+      <!-- 01 -->
+
+      <section
+        class="policy-section"
+        id="introduction"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            01
+          </div>
+
+          <h2>
+            Introduction
+          </h2>
+
+        </div>
+
+
+        <p>
+          Carbon Core ("we", "our", "us") is an industrial
+          emission leak-point detector and circular alternative
+          recommendation platform built by Team TechVortex for
+          HackOut'26.
+        </p>
+
+
+        <p>
+          This Privacy Policy explains how information is
+          collected, processed, stored and protected when you
+          use Carbon Core or a locally hosted instance of the
+          application.
+        </p>
+
+
+        <div class="notice">
+
+          <div class="notice-icon">
+            ✓
+          </div>
+
+          <p>
+            Carbon Core is designed around industrial and
+            factory-level operational information rather than
+            consumer profiling. We collect only the data
+            required to provide emission analysis and
+            decarbonization recommendations.
+          </p>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- 02 -->
+
+      <section
+        class="policy-section"
+        id="information"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            02
+          </div>
+
+          <h2>
+            Information we collect
+          </h2>
+
+        </div>
+
+
+        <p class="subheading">
+          Account Information
+        </p>
+
+        <ul>
+
+          <li>
+            Full name and email address used for login
+            and workspace identification
+          </li>
+
+          <li>
+            Organization name
+          </li>
+
+          <li>
+            Securely hashed account password
+          </li>
+
+        </ul>
+
+
+        <p class="subheading">
+          Factory & Operational Data
+        </p>
+
+        <ul>
+
+          <li>
+            Factory name, industry, location and reporting period
+          </li>
+
+          <li>
+            Energy sources and annual consumption including
+            electricity and fuel usage
+          </li>
+
+          <li>
+            Material inputs, quantities and recycled-content
+            percentages
+          </li>
+
+          <li>
+            Waste streams, waste categories and disposal methods
+          </li>
+
+          <li>
+            Compressed-air information such as pressure,
+            leakage and energy consumption
+          </li>
+
+          <li>
+            Process-level manufacturing and operational data
+          </li>
+
+        </ul>
+
+
+        <p class="subheading">
+          Calculated & Generated Data
+        </p>
+
+        <ul>
+
+          <li>
+            Emission baselines expressed in tCO₂e
+          </li>
+
+          <li>
+            Emission hotspot detection results
+          </li>
+
+          <li>
+            Root-cause diagnostics
+          </li>
+
+          <li>
+            Circular economy recommendations
+            and confidence scores
+          </li>
+
+          <li>
+            Saved what-if simulation scenarios
+          </li>
+
+          <li>
+            Decarbonization actions,
+            priorities and roadmap sequencing
+          </li>
+
+        </ul>
+
+
+        <p class="subheading">
+          Technical Data
+        </p>
+
+        <ul>
+
+          <li>
+            Browser type and browser version
+          </li>
+
+          <li>
+            Access timestamps
+          </li>
+
+          <li>
+            Authentication tokens used to maintain
+            your application session
+          </li>
+
+        </ul>
+
+      </section>
+
+
+
+      <!-- 03 -->
+
+      <section
+        class="policy-section"
+        id="usage"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            03
+          </div>
+
+          <h2>
+            How we use your information
+          </h2>
+
+        </div>
+
+
+        <ul>
+
+          <li>
+            Authenticate users and provide secure workspace access
+          </li>
+
+          <li>
+            Calculate emission baselines from factory activity data
+          </li>
+
+          <li>
+            Detect major emission hotspots
+          </li>
+
+          <li>
+            Identify potential root causes behind high emissions
+          </li>
+
+          <li>
+            Generate circular economy interventions
+          </li>
+
+          <li>
+            Run emission and cost what-if simulations
+          </li>
+
+          <li>
+            Build prioritized decarbonization roadmaps
+          </li>
+
+          <li>
+            Maintain application reliability and performance
+          </li>
+
+        </ul>
+
+
+        <div class="notice">
+
+          <div class="notice-icon">
+            ✦
+          </div>
+
+          <p>
+            Carbon Core does not use factory information for
+            advertising, behavioural profiling or unrelated
+            commercial purposes.
+          </p>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- 04 -->
+
+      <section
+        class="policy-section"
+        id="security"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            04
+          </div>
+
+          <h2>
+            Data storage & security
+          </h2>
+
+        </div>
+
+
+        <p>
+          Carbon Core is designed to minimize unnecessary
+          movement of industrial operational data.
+        </p>
+
+
+        <div class="security-grid">
+
+          <div class="security-card">
+
+            <strong>
+              Local Database
+            </strong>
+
+            <span>
+              Application data can be stored in a local
+              SQLite database on the deployed server.
+            </span>
+
+          </div>
+
+
+          <div class="security-card">
+
+            <strong>
+              Password Security
+            </strong>
+
+            <span>
+              Passwords are hashed using bcrypt rather
+              than stored in plaintext.
+            </span>
+
+          </div>
+
+
+          <div class="security-card">
+
+            <strong>
+              Authentication
+            </strong>
+
+            <span>
+              Signed JWT tokens with expiration are
+              used for authenticated sessions.
+            </span>
+
+          </div>
+
+
+          <div class="security-card">
+
+            <strong>
+              Secure Transport
+            </strong>
+
+            <span>
+              HTTPS is recommended for production
+              deployment and secure communication.
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <p style="margin-top:20px;">
+          Factory information is not intentionally transmitted to
+          third-party advertising or analytics services as part of
+          Carbon Core's core analysis workflow.
+        </p>
+
+      </section>
+
+
+
+      <!-- 05 -->
+
+      <section
+        class="policy-section"
+        id="sharing"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            05
+          </div>
+
+          <h2>
+            Data sharing
+          </h2>
+
+        </div>
+
+
+        <p>
+          We do not sell or rent factory operational data.
+          Emission information, simulation results and generated
+          recommendations remain within the Carbon Core workspace
+          and deployment environment.
+        </p>
+
+
+        <p>
+          Information may be disclosed when required by
+          applicable law, regulation, court order or valid
+          legal process.
+        </p>
+
+      </section>
+
+
+
+      <!-- 06 -->
+
+      <section
+        class="policy-section"
+        id="rights"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            06
+          </div>
+
+          <h2>
+            Your rights
+          </h2>
+
+        </div>
+
+
+        <ul>
+
+          <li>
+            <strong>Access:</strong>
+            View factory information through your
+            Carbon Core workspace.
+          </li>
+
+          <li>
+            <strong>Correction:</strong>
+            Update factory and account information
+            through the application.
+          </li>
+
+          <li>
+            <strong>Deletion:</strong>
+            Request deletion of your account and
+            associated factory information.
+          </li>
+
+          <li>
+            <strong>Export:</strong>
+            Access generated emission summaries,
+            recommendations and roadmap information.
+          </li>
+
+        </ul>
+
+      </section>
+
+
+
+      <!-- 07 -->
+
+      <section
+        class="policy-section"
+        id="storage"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            07
+          </div>
+
+          <h2>
+            Cookies & local storage
+          </h2>
+
+        </div>
+
+
+        <p>
+          Carbon Core does not rely on tracking cookies.
+          Browser <code>localStorage</code> may be used to
+          maintain essential application state.
+        </p>
+
+
+        <ul>
+
+          <li>
+            Authentication token for session persistence
+          </li>
+
+          <li>
+            Active factory identifier
+          </li>
+
+          <li>
+            Temporary simulation and scenario data
+          </li>
+
+        </ul>
+
+
+        <p style="margin-top:15px;">
+          Stored browser data can be removed by logging out
+          or clearing your browser's local storage.
+        </p>
+
+      </section>
+
+
+
+      <!-- 08 -->
+
+      <section
+        class="policy-section"
+        id="demo"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            08
+          </div>
+
+          <h2>
+            Demo data
+          </h2>
+
+        </div>
+
+
+        <p>
+          Carbon Core may include a pre-loaded demonstration
+          factory such as
+          <strong>"Apex Components Pvt. Ltd."</strong>
+          containing synthetic operational information.
+        </p>
+
+
+        <p>
+          Demo information is fictional and is intended solely
+          to demonstrate the platform's analytical capabilities.
+        </p>
+
+      </section>
+
+
+
+      <!-- 09 -->
+
+      <section
+        class="policy-section"
+        id="children"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            09
+          </div>
+
+          <h2>
+            Children's privacy
+          </h2>
+
+        </div>
+
+
+        <p>
+          Carbon Core is an industrial sustainability and
+          operational analysis platform and is not intended
+          for use by individuals under 18 years of age.
+        </p>
+
+
+        <p>
+          We do not knowingly collect information from minors.
+        </p>
+
+      </section>
+
+
+
+      <!-- 10 -->
+
+      <section
+        class="policy-section"
+        id="changes"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            10
+          </div>
+
+          <h2>
+            Changes to this policy
+          </h2>
+
+        </div>
+
+
+        <p>
+          This Privacy Policy may be updated as Carbon Core
+          evolves. Material revisions will be reflected on
+          this page together with a revised update date.
+        </p>
+
+      </section>
+
+
+
+      <!-- 11 -->
+
+      <section
+        class="policy-section"
+        id="contact"
+      >
+
+        <div class="section-heading">
+
+          <div class="number">
+            11
+          </div>
+
+          <h2>
+            Contact
+          </h2>
+
+        </div>
+
+
+        <p>
+          For questions regarding this Privacy Policy,
+          Carbon Core or your information, contact
+          Team TechVortex.
+        </p>
+
+
+        <div class="contact-card">
+
+          <div class="contact-title">
+            Team TechVortex
+          </div>
+
+          <p>
+            Carbon Core · HackOut'26
+          </p>
+
+
+          <a
+            class="contact-email"
+            href="mailto:princepatel98798@gmail.com"
+          >
+            princepatel98798@gmail.com
+          </a>
+
+        </div>
+
+      </section>
+
+    </article>
+
+  </main>
+
+
+
+  <!-- ======================
+       FOOTER
+  ======================= -->
 
   <footer>
-    <span>Carbon Core · TechVortex · HackOut'26</span>
-    &nbsp;·&nbsp;
-    <a href="index.html">Home</a>
-    &nbsp;·&nbsp;
-    <a href="privacy-policy.html">Privacy Policy</a>
+
+    <div class="footer-inner">
+
+      <div class="footer-left">
+        © 2026 Carbon Core · Built by Team TechVortex for HackOut'26
+      </div>
+
+
+      <div class="footer-links">
+
+        <a href="index.html">
+          Home
+        </a>
+
+        <a href="privacy-policy.html">
+          Privacy
+        </a>
+
+        <a href="login.html">
+          Login
+        </a>
+
+      </div>
+
+    </div>
+
   </footer>
 
 </body>
