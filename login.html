@@ -1460,6 +1460,9 @@
 
   <script src="api.js"></script>
   <script>
+    // Ensure any previous session is cleared when opening the auth page
+    setAuthToken(null);
+    setActiveFactoryId(null);
 
     const stage =
       document.getElementById("authStage");
