@@ -7,7 +7,12 @@ from fastapi.responses import FileResponse, RedirectResponse
 from app.database import engine, Base
 from app.routers import auth, factories, data_entry, emissions, hotspots, root_cause, recommendations, simulator, roadmap
 
-Base.metadata.create_all(bind=engine)
+from app.config import DATABASE_URL
+
+# Only run create_all for local SQLite development. 
+# Production PostgreSQL schema management should rely entirely on Alembic migrations.
+if DATABASE_URL.startswith("sqlite"):
+    Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Carbon Core API",

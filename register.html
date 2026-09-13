@@ -1411,6 +1411,9 @@
 
 <script src="api.js"></script>
 <script>
+  // Fix: Ensure any previous session is cleared when opening the registration page
+  setAuthToken(null);
+  setActiveFactoryId(null);
 
   let currentStep = 0;
   let selectedMethod = "manual";
