@@ -3,14 +3,14 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse
 from app.database import engine, Base
 from app.routers import auth, factories, data_entry, emissions, hotspots, root_cause, recommendations, simulator, roadmap
 
 from app.config import DATABASE_URL
 
-# Only run create_all for local SQLite development. 
-# Production PostgreSQL schema management should rely entirely on Alembic migrations.
+# Only run create_all for local SQLite development.
+# Production PostgreSQL schema management relies on Alembic migrations.
 if DATABASE_URL.startswith("sqlite"):
     Base.metadata.create_all(bind=engine)
 
@@ -20,9 +20,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# CORS: since FastAPI serves both frontend + backend from the same origin on Railway,
+# a wildcard is only needed for local cross-port development.
+# ALLOWED_ORIGINS env var can narrow this in production if needed.
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "*")
+allow_origins = [o.strip() for o in _raw_origins.split(",")] if _raw_origins != "*" else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,14 +56,6 @@ def find_file(filename: str) -> Path:
     for c in candidates:
         if c.exists():
             return c
-    # Fallback checks
-    if filename == "factory-setup.html":
-        reg = BASE_DIR / "register.html"
-        if reg.exists():
-            return reg
-        reg_fe = BASE_DIR / "frontend" / "register.html"
-        if reg_fe.exists():
-            return reg_fe
     return candidates[-1]
 
 @app.get("/")
@@ -81,13 +79,12 @@ def serve_login():
         return FileResponse(p, media_type="text/html")
     raise HTTPException(status_code=404, detail="login.html not found")
 
-@app.get("/register.html")
-def serve_register_redirect():
-    # If factory-setup exists, serve it or redirect
-    p = find_file("factory-setup.html")
+@app.get("/privacy-policy.html")
+def serve_privacy_policy():
+    p = find_file("privacy-policy.html")
     if p.exists():
         return FileResponse(p, media_type="text/html")
-    return RedirectResponse(url="/factory-setup.html")
+    raise HTTPException(status_code=404, detail="privacy-policy.html not found")
 
 @app.get("/factory-setup.html")
 def serve_factory_setup():
