@@ -1,0 +1,11 @@
+const {readFileSync}=require('node:fs');
+const vm=require('node:vm');
+const assert=require('node:assert/strict');
+const storage=()=>{const m=new Map();return {getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k),clear:()=>m.clear()}};
+const context={localStorage:storage(),sessionStorage:storage(),window:{location:{},addEventListener(){}},document:{},console};
+vm.createContext(context);vm.runInContext(readFileSync('api.js','utf8'),context);
+context.localStorage.setItem('carbonScenario','private C scenario');context.sessionStorage.setItem('selectedScenario:10','1');
+context.clearBrowserSession();assert.equal(context.localStorage.getItem('carbonScenario'),null);assert.equal(context.sessionStorage.getItem('selectedScenario:10'),null);
+context.localStorage.setItem('carbonScenario','stale');context.setAuthToken('B');assert.equal(context.localStorage.getItem('carbonScenario'),null);
+assert(!readFileSync('roadmap.html','utf8').includes('carbonScenario'));assert(!readFileSync('simulator.html','utf8').includes('carbonScenario'));
+console.log('B01: 5 browser-state assertions passed (VM; browser replay pending)');

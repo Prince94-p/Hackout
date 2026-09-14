@@ -1,7 +1,8 @@
 import json
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.database import get_db
 from app.models.user import User
 from app.models.factory import Factory
@@ -15,11 +16,18 @@ router = APIRouter(prefix="/api/factories", tags=["Factories"])
 def create_factory(
     payload: FactoryCreate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    idempotency_key: str | None = Header(None, max_length=64)
 ):
+    db.query(User).filter(User.id == current_user.id).with_for_update().first()
+    if idempotency_key:
+        existing = db.query(Factory).filter(Factory.user_id == current_user.id, Factory.request_key == idempotency_key).first()
+        if existing:
+            return existing
     selected_proc_str = json.dumps(payload.selected_processes) if payload.selected_processes else "[]"
     factory = Factory(
         user_id=current_user.id,
+        request_key=idempotency_key,
         name=payload.name.strip(),
         industry=payload.industry.strip(),
         location=payload.location.strip(),
@@ -30,7 +38,15 @@ def create_factory(
         is_demo=False
     )
     db.add(factory)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        if idempotency_key:
+            existing = db.query(Factory).filter(Factory.request_key == idempotency_key).first()
+            if existing:
+                return existing
+        raise
     db.refresh(factory)
     return factory
 

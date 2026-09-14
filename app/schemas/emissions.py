@@ -36,6 +36,7 @@ class EmissionSummaryResponse(BaseModel):
     has_calculation: bool
     factory_name: str
     baseline: float
+    total_carbon_tco2e: Optional[float] = None
     energy_tco2e: float
     material_tco2e: float
     waste_tco2e: float

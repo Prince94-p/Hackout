@@ -2498,6 +2498,7 @@
 
   function simulateSelected() {
     const rec = activeSolutions.find(r => r.code === selectedSolutionCode) || activeSolutions[0];
+    if (rec && rec.carbon_saving_tco2e <= 0) { alert("This action has no quantified positive saving. Verify material factors before simulation."); return; }
     if (rec) {
       localStorage.setItem("selectedRecommendationId", rec.id);
       localStorage.setItem("selectedSolution", rec.code);

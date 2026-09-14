@@ -25,6 +25,7 @@ def get_roadmap(
     roadmap = db.query(Roadmap).filter(Roadmap.factory_id == factory.id).first()
     if not roadmap:
         result = generate_factory_roadmap(factory, db)
+        db.commit()
         return result
 
     # Format response from saved DB records
@@ -83,4 +84,5 @@ def create_or_regenerate_roadmap(
     factory = verify_factory_access(id, current_user, db)
     pref_id = payload.preferred_scenario_id if payload else None
     result = generate_factory_roadmap(factory, db, preferred_scenario_id=pref_id)
+    db.commit()
     return result

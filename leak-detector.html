@@ -1627,7 +1627,7 @@
     </header>
 
 
-    <div class="content">
+    <div class="content" style="visibility:hidden">
 
       <!-- HEADER -->
 
@@ -2300,6 +2300,10 @@
   }
 
   function selectProcess(code){
+    const category = {waste:'Waste', materials:'Materials', material:'Materials', energy:'Energy'}[code];
+    const match = activeHotspots.find(h => h.code === code) || activeHotspots.find(h => h.category === category);
+    if (!match) { renderEmptyState(document.querySelector('.content'), 'No matching hotspot', 'No activity exists for this source.'); return; }
+    code = match.code;
     selectedCode = code;
     localStorage.setItem("selectedHotspotId", code);
 
@@ -2307,16 +2311,25 @@
       card.classList.toggle("active", card.dataset.process === code);
     });
 
-    const hotspot = activeHotspots.find(h => h.code === code) || activeHotspots[0];
+    const hotspot = match;
     if (!hotspot) return;
 
     const details = hotspot.details || {};
+    document.querySelectorAll('.loss-content').forEach((el, i) => {
+      const rows = [[hotspot.title, details.activity_basis || details.energy_str], ['Calculated footprint', `${hotspot.carbon_tco2e} tCO₂e/year`], ['Reported signal', hotspot.signal_value], ['Next investigation', details.intervention_text]];
+      el.querySelector('strong').textContent = rows[i]?.[0] || '';
+      el.querySelector('p').textContent = rows[i]?.[1] || '';
+    });
+    const impact = document.querySelector('.impact-number');
+    if (impact) impact.textContent = 'Not quantified';
+    document.querySelectorAll('.impact-mini strong').forEach(el => el.textContent = 'Requires assessment');
 
-    if (document.getElementById("processTitle")) {
-      document.getElementById("processTitle").textContent = hotspot.title;
+
+    if (document.getElementById("detailTitle")) {
+      document.getElementById("detailTitle").textContent = hotspot.title;
     }
-    if (document.getElementById("processDescription")) {
-      document.getElementById("processDescription").textContent = details.reason || "Process flagged for energy and carbon optimization.";
+    if (document.getElementById("detailDescription")) {
+      document.getElementById("detailDescription").textContent = details.reason || "Process flagged for energy and carbon optimization.";
     }
     if (document.getElementById("detailEnergy")) {
       document.getElementById("detailEnergy").textContent = details.energy_str || "Measured Load";
@@ -2344,10 +2357,10 @@
     }
 
     if (document.getElementById("evidenceActivity")) {
-      document.getElementById("evidenceActivity").textContent = details.energy_str || "Operational Stream";
+      document.getElementById("evidenceActivity").textContent = details.activity_basis || details.energy_str || "Not available";
     }
     if (document.getElementById("evidenceFactor")) {
-      document.getElementById("evidenceFactor").textContent = "0.48 kgCO₂e/kWh";
+      document.getElementById("evidenceFactor").textContent = details.factor_str || "Not available";
     }
     if (document.getElementById("evidenceCarbon")) {
       document.getElementById("evidenceCarbon").textContent = `${Math.round(hotspot.carbon_tco2e)} tCO₂e`;
@@ -2378,6 +2391,7 @@
       activeHotspots = hotspots || [];
 
       if (activeHotspots.length === 0) {
+        renderEmptyState(document.querySelector(".content"));
         return;
       }
 
@@ -2408,8 +2422,8 @@
       selectProcess(reqHotspot);
 
     } catch (err) {
-      console.error("Leak detector load error:", err);
-    }
+      renderErrorState(document.querySelector(".content"), err.message);
+    } finally { document.querySelector(".content").style.visibility = "visible"; }
   }
 
   window.addEventListener("DOMContentLoaded", loadLeakDetectorData);

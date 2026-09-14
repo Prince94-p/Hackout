@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
+from app.models.factory import Factory
 from app.models.activity import EnergySource, MaterialInput, Process, WasteStream
 from app.schemas.activity import ActivityDataPayload, ActivityDataResponse
 from app.auth import get_current_user, verify_factory_access
@@ -74,6 +75,9 @@ def save_factory_data(
 ):
     factory = verify_factory_access(id, current_user, db)
 
+    # Serialize writes per factory to prevent race conditions on concurrent/double clicks (B02)
+    db.query(Factory).filter(Factory.id == factory.id).with_for_update().first()
+
     # Replace existing streams cleanly
     db.query(EnergySource).filter(EnergySource.factory_id == factory.id).delete()
     db.query(MaterialInput).filter(MaterialInput.factory_id == factory.id).delete()
@@ -127,6 +131,20 @@ def save_factory_data(
         )
         db.add(ws)
 
-    db.commit()
+    from app.models.hotspot import Hotspot
+    from app.models.recommendation import Recommendation
+    from app.models.roadmap import Roadmap, RoadmapAction
+    from datetime import datetime
+    db.query(Recommendation).filter(Recommendation.factory_id == factory.id).update({Recommendation.hotspot_id: None, Recommendation.created_at: datetime(1970, 1, 1)})
+    db.query(Hotspot).filter(Hotspot.factory_id == factory.id).delete()
+    roadmap_ids = [r.id for r in db.query(Roadmap).filter(Roadmap.factory_id == factory.id)]
+    if roadmap_ids:
+        db.query(RoadmapAction).filter(RoadmapAction.roadmap_id.in_(roadmap_ids)).delete()
+        db.query(Roadmap).filter(Roadmap.id.in_(roadmap_ids)).delete()
+    db.flush()
+    db.expire(factory)
+    # Replace activity and its derived baseline in one locked transaction.
+    from app.services.carbon_engine import calculate_factory_emissions
+    calculate_factory_emissions(factory, db)
     db.refresh(factory)
     return get_factory_data(id, current_user, db)

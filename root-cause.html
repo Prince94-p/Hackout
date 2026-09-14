@@ -1620,7 +1620,7 @@
     </header>
 
 
-    <div class="content">
+    <div class="content" style="visibility:hidden">
 
       <!-- PAGE HEADER -->
 
@@ -1652,7 +1652,7 @@
             Selected Process
           </span>
 
-          <strong id="summaryProcess">
+          <strong id="summaryCarbon">
             162
           </strong>
 
@@ -2121,7 +2121,7 @@
                   Emission Factor
                 </span>
 
-                <strong>
+                <strong id="calcFactor">
                   0.48 kgCO₂e/kWh
                 </strong>
 
@@ -2259,6 +2259,22 @@
     try {
       const data = await apiFetch(`/api/factories/${factoryId}/root-cause?hotspot_code=${encodeURIComponent(codeParam)}`);
 
+      document.querySelectorAll('.driver').forEach((el, i) => {
+        const point = data.evidence_points[i];
+        el.hidden = !point;
+        if (point) {
+          el.querySelector('.driver-main strong').textContent = 'Reported evidence';
+          el.querySelector('.driver-main p').textContent = point;
+          el.querySelector('.driver-score strong').textContent = '—';
+        }
+      });
+      const source = document.querySelector('.chain-node.source');
+      if (source) { source.querySelector('strong').textContent = data.process_name; source.querySelector('small').textContent = data.carbon_str; }
+      document.querySelectorAll('.cause-tag').forEach(el => el.textContent = 'Based on entered data');
+      const labels = ['Reported signal', 'Activity / loss estimate', 'Operating condition', 'Next assessment', 'Confidence'];
+      document.querySelectorAll('.fact-row > span').forEach((el,i) => el.textContent = labels[i] || '');
+      const confidence = document.querySelector('.fact-row:last-child strong');
+      if (confidence) confidence.textContent = `${data.confidence_pct}%`;
       if (document.getElementById("summaryCarbon")) {
         document.getElementById("summaryCarbon").textContent = Math.round(data.summary_carbon).toLocaleString("en-IN");
       }
@@ -2305,14 +2321,17 @@
         document.getElementById("reasonText").textContent = data.diagnostic_reason;
       }
       if (document.getElementById("calcActivity")) {
-        document.getElementById("calcActivity").textContent = data.wasted_metric;
+        document.getElementById("calcActivity").textContent = data.equation_activity || "Not available";
+      }
+      if (document.getElementById("calcFactor")) {
+        document.getElementById("calcFactor").textContent = data.factor_str || "Not available";
       }
       if (document.getElementById("calcCarbon")) {
-        document.getElementById("calcCarbon").textContent = data.carbon_str;
+        document.getElementById("calcCarbon").textContent = data.equation_carbon || data.carbon_str;
       }
     } catch (err) {
-      console.error("Root cause load error:", err);
-    }
+      renderErrorState(document.querySelector(".content"), err.message);
+    } finally { document.querySelector(".content").style.visibility = "visible"; }
   }
 
   function viewSolutions(){

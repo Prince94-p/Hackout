@@ -36,3 +36,6 @@ class RootCauseResponse(BaseModel):
     evidence_points: List[str]
     assumptions: List[str]
     confidence_pct: float
+    factor_str: Optional[str] = "0.48 kgCO₂e/kWh"
+    equation_activity: Optional[str] = None
+    equation_carbon: Optional[str] = None

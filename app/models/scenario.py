@@ -7,6 +7,7 @@ class Scenario(Base):
     __tablename__ = "scenarios"
 
     id = Column(Integer, primary_key=True, index=True)
+    request_key = Column(String(64), nullable=True, unique=True)
     factory_id = Column(Integer, ForeignKey("factories.id"), nullable=False, index=True)
     recommendation_id = Column(Integer, ForeignKey("recommendations.id"), nullable=True)
     title = Column(String(200), nullable=False)

@@ -1810,7 +1810,7 @@
     </header>
 
 
-    <div class="content">
+    <div class="content" style="visibility:hidden">
 
       <!-- HEADER -->
 
@@ -1942,171 +1942,114 @@
             </p>
 
 
-            <div class="stream">
-
-              <div class="stream-head">
-
-                <div class="stream-title">
-
-                  <div class="stream-icon orange">
-                    E
+            <div id="energyStreamsContainer">
+              <div class="stream energy-stream-row">
+                <div class="stream-head">
+                  <div class="stream-title">
+                    <div class="stream-icon orange">
+                      E
+                    </div>
+                    <div>
+                      <strong class="stream-title-text">
+                        Grid Electricity
+                      </strong>
+                      <span>
+                        Purchased electricity
+                      </span>
+                    </div>
                   </div>
-
-                  <div>
-
-                    <strong>
-                      Grid Electricity
-                    </strong>
-
-                    <span>
-                      Purchased electricity
-                    </span>
-
-                  </div>
-
                 </div>
 
-              </div>
+                <div class="form-grid">
+                  <div class="field">
+                    <label>
+                      Energy Source
+                    </label>
+                    <select class="energy-source-select" onchange="updateEnergyStreamTitle(this)">
+                      <option value="Grid Electricity">Grid Electricity</option>
+                      <option value="Solar Electricity">Solar Electricity</option>
+                      <option value="Natural Gas">Natural Gas</option>
+                      <option value="Diesel">Diesel</option>
+                      <option value="LPG">LPG</option>
+                    </select>
+                  </div>
 
+                  <div class="field">
+                    <label>
+                      Annual Consumption
+                    </label>
+                    <div class="unit-field">
+                      <input
+                        type="number"
+                        class="energy-amount-input"
+                        id="energyAmount"
+                        value="1250000"
+                        oninput="calculatePreview()"
+                      />
+                      <select>
+                        <option>
+                          kWh/year
+                        </option>
+                      </select>
+                    </div>
+                  </div>
 
-              <div class="form-grid">
-
-                <div class="field">
-
-                  <label>
-                    Energy Source
-                  </label>
-
-                  <select>
-
-                    <option>
-                      Grid Electricity
-                    </option>
-
-                    <option>
-                      Solar Electricity
-                    </option>
-
-                    <option>
-                      Natural Gas
-                    </option>
-
-                    <option>
-                      Diesel
-                    </option>
-
-                    <option>
-                      LPG
-                    </option>
-
-                  </select>
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Annual Consumption
-                  </label>
-
-                  <div class="unit-field">
-
+                  <div class="field">
+                    <label>
+                      Emission Factor
+                    </label>
                     <input
                       type="number"
-                      id="energyAmount"
-                      value="1250000"
+                      class="energy-factor-input"
+                      id="energyFactor"
+                      value="0.48"
+                      step="0.01"
                       oninput="calculatePreview()"
                     />
+                    <div class="factor-note">
+                      kgCO₂e per kWh
+                    </div>
+                  </div>
 
-                    <select>
-
-                      <option>
-                        kWh/year
+                  <div class="field">
+                    <label>
+                      Factor Source
+                    </label>
+                    <select class="energy-factor-source-select">
+                      <option value="Configured Grid Factor">
+                        Configured Grid Factor
                       </option>
-
+                      <option value="Government Dataset">
+                        Government Dataset
+                      </option>
+                      <option value="Company Specific Factor">
+                        Company Specific Factor
+                      </option>
                     </select>
-
                   </div>
-
                 </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Emission Factor
-                  </label>
-
-                  <input
-                    type="number"
-                    id="energyFactor"
-                    value="0.48"
-                    step="0.01"
-                    oninput="calculatePreview()"
-                  />
-
-                  <div class="factor-note">
-                    kgCO₂e per kWh
-                  </div>
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Factor Source
-                  </label>
-
-                  <select>
-
-                    <option>
-                      Configured Grid Factor
-                    </option>
-
-                    <option>
-                      Government Dataset
-                    </option>
-
-                    <option>
-                      Company Specific Factor
-                    </option>
-
-                  </select>
-
-                </div>
-
               </div>
-
             </div>
 
-
-            <button class="add-stream">
+            <button type="button" class="add-stream" onclick="addEnergyStream()">
               + Add another energy source
             </button>
 
-
             <div class="panel-footer">
-
-              <button class="secondary-btn">
-                Save Draft
+              <button type="button" class="secondary-btn" disabled title="Draft saving is unavailable">
+                Save Draft (Unavailable)
               </button>
-
               <button
                 class="primary-btn"
                 onclick="goToPanel(1)"
               >
                 Continue to Materials →
               </button>
-
             </div>
 
           </div>
 
-
           <!-- MATERIALS -->
-
           <div class="panel">
 
             <div class="panel-label">
@@ -2123,158 +2066,123 @@
               substitution opportunities.
             </p>
 
-
-            <div class="stream">
-
-              <div class="stream-head">
-
-                <div class="stream-title">
-
-                  <div class="stream-icon">
-                    M
+            <div id="materialStreamsContainer">
+              <div class="stream material-stream-row">
+                <div class="stream-head">
+                  <div class="stream-title">
+                    <div class="stream-icon">
+                      M
+                    </div>
+                    <div>
+                      <strong class="material-title-text">
+                        Aluminium Alloy 6061
+                      </strong>
+                      <span>
+                        Primary production material
+                      </span>
+                    </div>
                   </div>
-
-                  <div>
-
-                    <strong>
-                      Aluminium Alloy 6061
-                    </strong>
-
-                    <span>
-                      Primary production material
-                    </span>
-
-                  </div>
-
                 </div>
 
-              </div>
+                <div class="form-grid">
+                  <div class="field">
+                    <label>
+                      Material Name
+                    </label>
+                    <input
+                      type="text"
+                      class="material-name-input"
+                      value="Virgin Aluminium Alloy 6061"
+                      oninput="updateMaterialStreamTitle(this)"
+                    />
+                  </div>
 
+                  <div class="field">
+                    <label>
+                      Annual Quantity
+                    </label>
+                    <div class="unit-field">
+                      <input
+                        type="number"
+                        class="material-amount-input"
+                        id="materialAmount"
+                        value="50000"
+                        oninput="calculatePreview()"
+                      />
+                      <select>
+                        <option>
+                          kg/year
+                        </option>
+                      </select>
+                    </div>
+                  </div>
 
-              <div class="form-grid">
+                  <div class="field">
+                    <label>
+                      Recycled Content
+                    </label>
+                    <div class="unit-field">
+                      <input
+                        type="number"
+                        class="material-recycled-input"
+                        id="materialRecycled"
+                        value="20"
+                        min="0"
+                        max="100"
+                      />
+                      <select>
+                        <option>
+                          %
+                        </option>
+                      </select>
+                    </div>
+                  </div>
 
-                <div class="field">
-
-                  <label>
-                    Material Name
-                  </label>
-
-                  <input
-                    type="text"
-                    value="Virgin Aluminium Alloy 6061"
-                  />
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Annual Quantity
-                  </label>
-
-                  <div class="unit-field">
-
+                  <div class="field">
+                    <label>
+                      Emission Factor
+                    </label>
                     <input
                       type="number"
-                      id="materialAmount"
-                      value="50000"
+                      class="material-factor-input"
+                      id="materialFactor"
+                      value="8"
+                      step="0.1"
                       oninput="calculatePreview()"
                     />
-
-                    <select>
-
-                      <option>
-                        kg/year
-                      </option>
-
-                    </select>
-
+                    <div class="factor-note">
+                      kgCO₂e per kg material
+                    </div>
                   </div>
-
                 </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Recycled Content
-                  </label>
-
-                  <div class="unit-field">
-
-                    <input
-                      type="number"
-                      id="materialRecycled"
-                      value="20"
-                    />
-
-                    <select>
-
-                      <option>
-                        %
-                      </option>
-
-                    </select>
-
-                  </div>
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Emission Factor
-                  </label>
-
-                  <input
-                    type="number"
-                    id="materialFactor"
-                    value="8"
-                    step="0.1"
-                    oninput="calculatePreview()"
-                  />
-
-                  <div class="factor-note">
-                    kgCO₂e per kg material
-                  </div>
-
-                </div>
-
               </div>
-
             </div>
 
-
-            <button class="add-stream">
+            <button type="button" class="add-stream" onclick="addMaterialStream()">
               + Add another material
             </button>
 
-
             <div class="panel-footer">
-
               <button
                 class="secondary-btn"
                 onclick="goToPanel(0)"
               >
                 ← Energy
               </button>
-
+              <button type="button" class="secondary-btn" disabled title="Draft saving is unavailable">
+                Save Draft (Unavailable)
+              </button>
               <button
                 class="primary-btn"
                 onclick="goToPanel(2)"
               >
                 Continue to Processes →
               </button>
-
             </div>
 
           </div>
 
-
           <!-- PROCESSES -->
-
           <div class="panel">
 
             <div class="panel-label">
@@ -2291,272 +2199,221 @@
               investigate leak points.
             </p>
 
-
-            <div class="stream">
-
-              <div class="stream-head">
-
-                <div class="stream-title">
-
-                  <div class="stream-icon purple">
-                    P
+            <div id="processStreamsContainer">
+              <div class="stream process-stream-row">
+                <div class="stream-head">
+                  <div class="stream-title">
+                    <div class="stream-icon purple">
+                      P
+                    </div>
+                    <div>
+                      <strong class="process-title-text">
+                        CNC Machining & Turning
+                      </strong>
+                      <span>
+                        Production process
+                      </span>
+                    </div>
                   </div>
-
-                  <div>
-
-                    <strong>
-                      CNC Machining & Turning
-                    </strong>
-
-                    <span>
-                      Production process
-                    </span>
-
-                  </div>
-
                 </div>
 
-              </div>
-
-
-              <div class="form-grid">
-
-                <div class="field">
-
-                  <label>
-                    Process Name
-                  </label>
-
-                  <input
-                    type="text"
-                    value="CNC Machining & Turning"
-                  />
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Equipment
-                  </label>
-
-                  <input
-                    type="text"
-                    value="8 × VMC 5-Axis Spindles"
-                  />
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Operating Hours
-                  </label>
-
-                  <div class="unit-field">
-
+                <div class="form-grid">
+                  <div class="field">
+                    <label>
+                      Process Name
+                    </label>
                     <input
-                      type="number"
-                      value="6200"
+                      type="text"
+                      class="process-name-input"
+                      value="CNC Machining & Turning"
+                      oninput="updateProcessStreamTitle(this)"
                     />
-
-                    <select>
-
-                      <option>
-                        hours/year
-                      </option>
-
-                    </select>
-
                   </div>
 
+                  <div class="field">
+                    <label>
+                      Equipment
+                    </label>
+                    <input
+                      type="text"
+                      class="process-equipment-input"
+                      value="8 × VMC 5-Axis Spindles"
+                    />
+                  </div>
+
+                  <div class="field">
+                    <label>
+                      Operating Hours
+                    </label>
+                    <div class="unit-field">
+                      <input
+                        type="number"
+                        class="process-hours-input"
+                        value="6200"
+                      />
+                      <select>
+                        <option>
+                          hours/year
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label>
+                      Primary Energy Source
+                    </label>
+                    <select class="process-energy-select">
+                      <option value="Grid Electricity">
+                        Grid Electricity
+                      </option>
+                      <option value="Natural Gas">
+                        Natural Gas
+                      </option>
+                      <option value="Diesel">
+                        Diesel
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="field full">
+                    <label>
+                      Operational Notes
+                    </label>
+                    <textarea class="process-notes-input">High spindle idle runtime observed during tool changes and batch transition.</textarea>
+                  </div>
                 </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Primary Energy Source
-                  </label>
-
-                  <select>
-
-                    <option>
-                      Grid Electricity
-                    </option>
-
-                    <option>
-                      Natural Gas
-                    </option>
-
-                    <option>
-                      Diesel
-                    </option>
-
-                  </select>
-
-                </div>
-
-
-                <div class="field full">
-
-                  <label>
-                    Operational Notes
-                  </label>
-
-                  <textarea>High spindle idle runtime observed during tool changes and batch transition.</textarea>
-
-                </div>
-
               </div>
 
+              <div class="stream process-stream-row">
+                <div class="stream-head">
+                  <div class="stream-title">
+                    <div class="stream-icon orange">
+                      !
+                    </div>
+                    <div>
+                      <strong class="process-title-text">
+                        Compressed Air System
+                      </strong>
+                      <span>
+                        Utility process
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <div class="field">
+                    <label>
+                      Process Name
+                    </label>
+                    <input
+                      type="text"
+                      class="process-name-input"
+                      value="Compressed Air System"
+                      oninput="updateProcessStreamTitle(this)"
+                    />
+                  </div>
+
+                  <div class="field">
+                    <label>
+                      Equipment
+                    </label>
+                    <input
+                      type="text"
+                      class="process-equipment-input"
+                      value="Rotary Screw Compressors"
+                    />
+                  </div>
+
+                  <div class="field">
+                    <label>
+                      Operating Pressure
+                    </label>
+                    <div class="unit-field">
+                      <input
+                        type="number"
+                        class="process-pressure-input"
+                        id="airPressure"
+                        value="7.5"
+                        step="0.1"
+                      />
+                      <select>
+                        <option>
+                          bar
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label>
+                      Estimated Leakage
+                    </label>
+                    <div class="unit-field">
+                      <input
+                        type="number"
+                        class="process-leakage-input"
+                        id="airLeakage"
+                        value="28"
+                        min="0"
+                        max="100"
+                      />
+                      <select>
+                        <option>
+                          %
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label>
+                      Annual Energy Use
+                    </label>
+                    <div class="unit-field">
+                      <input
+                        type="number"
+                        class="process-energy-input"
+                        id="airEnergy"
+                        value="337500"
+                      />
+                      <select>
+                        <option>
+                          kWh/year
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-
-            <div class="stream">
-
-              <div class="stream-head">
-
-                <div class="stream-title">
-
-                  <div class="stream-icon orange">
-                    !
-                  </div>
-
-                  <div>
-
-                    <strong>
-                      Compressed Air System
-                    </strong>
-
-                    <span>
-                      Utility process
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              <div class="form-grid">
-
-                <div class="field">
-
-                  <label>
-                    Operating Pressure
-                  </label>
-
-                  <div class="unit-field">
-
-                    <input
-                      type="number"
-                      id="airPressure"
-                      value="7.5"
-                    />
-
-                    <select>
-
-                      <option>
-                        bar
-                      </option>
-
-                    </select>
-
-                  </div>
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Estimated Leakage
-                  </label>
-
-                  <div class="unit-field">
-
-                    <input
-                      type="number"
-                      id="airLeakage"
-                      value="28"
-                    />
-
-                    <select>
-
-                      <option>
-                        %
-                      </option>
-
-                    </select>
-
-                  </div>
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Annual Energy Use
-                  </label>
-
-                  <div class="unit-field">
-
-                    <input
-                      type="number"
-                      id="airEnergy"
-                      value="337500"
-                    />
-
-                    <select>
-
-                      <option>
-                        kWh/year
-                      </option>
-
-                    </select>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <button class="add-stream">
+            <button type="button" class="add-stream" onclick="addProcessStream()">
               + Add another process
             </button>
 
-
             <div class="panel-footer">
-
               <button
                 class="secondary-btn"
                 onclick="goToPanel(1)"
               >
                 ← Materials
               </button>
-
+              <button type="button" class="secondary-btn" disabled title="Draft saving is unavailable">
+                Save Draft (Unavailable)
+              </button>
               <button
                 class="primary-btn"
                 onclick="goToPanel(3)"
               >
                 Continue to Waste →
               </button>
-
             </div>
 
           </div>
 
-
           <!-- WASTE -->
-
           <div class="panel">
 
             <div class="panel-label">
@@ -2573,153 +2430,117 @@
               recovery opportunities.
             </p>
 
-
-            <div class="stream">
-
-              <div class="stream-head">
-
-                <div class="stream-title">
-
-                  <div class="stream-icon blue">
-                    W
+            <div id="wasteStreamsContainer">
+              <div class="stream waste-stream-row">
+                <div class="stream-head">
+                  <div class="stream-title">
+                    <div class="stream-icon blue">
+                      W
+                    </div>
+                    <div>
+                      <strong class="waste-title-text">
+                        Aluminium Machining Swarf
+                      </strong>
+                      <span>
+                        Metal waste stream
+                      </span>
+                    </div>
                   </div>
-
-                  <div>
-
-                    <strong>
-                      Aluminium Machining Swarf
-                    </strong>
-
-                    <span>
-                      Metal waste stream
-                    </span>
-
-                  </div>
-
                 </div>
 
-              </div>
+                <div class="form-grid">
+                  <div class="field">
+                    <label>
+                      Waste Type
+                    </label>
+                    <input
+                      type="text"
+                      class="waste-type-input"
+                      value="Aluminium Machining Swarf"
+                      oninput="updateWasteStreamTitle(this)"
+                    />
+                  </div>
 
+                  <div class="field">
+                    <label>
+                      Annual Quantity
+                    </label>
+                    <div class="unit-field">
+                      <input
+                        type="number"
+                        class="waste-amount-input"
+                        id="wasteAmount"
+                        value="75000"
+                        oninput="calculatePreview()"
+                      />
+                      <select>
+                        <option>
+                          kg/year
+                        </option>
+                      </select>
+                    </div>
+                  </div>
 
-              <div class="form-grid">
+                  <div class="field">
+                    <label>
+                      Treatment Method
+                    </label>
+                    <select class="waste-treatment-select">
+                      <option value="Landfill / Disposal">
+                        Landfill / Disposal
+                      </option>
+                      <option value="External Recycling">
+                        External Recycling
+                      </option>
+                      <option value="Internal Reuse">
+                        Internal Reuse
+                      </option>
+                      <option value="Incineration">
+                        Incineration
+                      </option>
+                    </select>
+                  </div>
 
-                <div class="field">
-
-                  <label>
-                    Waste Type
-                  </label>
-
-                  <input
-                    type="text"
-                    value="Aluminium Machining Swarf"
-                  />
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Annual Quantity
-                  </label>
-
-                  <div class="unit-field">
-
+                  <div class="field">
+                    <label>
+                      Emission Factor
+                    </label>
                     <input
                       type="number"
-                      id="wasteAmount"
-                      value="75000"
+                      class="waste-factor-input"
+                      id="wasteFactor"
+                      value="2"
+                      step="0.1"
                       oninput="calculatePreview()"
                     />
-
-                    <select>
-
-                      <option>
-                        kg/year
-                      </option>
-
-                    </select>
-
+                    <div class="factor-note">
+                      kgCO₂e per kg waste
+                    </div>
                   </div>
-
                 </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Treatment Method
-                  </label>
-
-                  <select>
-
-                    <option>
-                      Landfill / Disposal
-                    </option>
-
-                    <option>
-                      External Recycling
-                    </option>
-
-                    <option>
-                      Internal Reuse
-                    </option>
-
-                    <option>
-                      Incineration
-                    </option>
-
-                  </select>
-
-                </div>
-
-
-                <div class="field">
-
-                  <label>
-                    Emission Factor
-                  </label>
-
-                  <input
-                    type="number"
-                    id="wasteFactor"
-                    value="2"
-                    step="0.1"
-                    oninput="calculatePreview()"
-                  />
-
-                  <div class="factor-note">
-                    kgCO₂e per kg waste
-                  </div>
-
-                </div>
-
               </div>
-
             </div>
 
-
-            <button class="add-stream">
+            <button type="button" class="add-stream" onclick="addWasteStream()">
               + Add another waste stream
             </button>
 
-
             <div class="panel-footer">
-
               <button
                 class="secondary-btn"
                 onclick="goToPanel(2)"
               >
                 ← Processes
               </button>
-
+              <button type="button" class="secondary-btn" disabled title="Draft saving is unavailable">
+                Save Draft (Unavailable)
+              </button>
               <button
                 class="primary-btn"
                 onclick="goToPanel(4)"
               >
                 Review Baseline →
               </button>
-
             </div>
 
           </div>
@@ -3121,6 +2942,9 @@
   ========================= */
 
   function goToPanel(index){
+    if (index === 4) {
+      try { collectFormData(); } catch (error) { alert(error.message); return; }
+    }
 
     currentPanel = index;
 
@@ -3198,217 +3022,451 @@
 
 
   /* =========================
+     STREAM DOM GENERATION (B10, B03)
+  ========================= */
+
+  function updateEnergyStreamTitle(selectElem) {
+    const title = selectElem.closest('.stream')?.querySelector('.stream-title-text');
+    if (title) title.textContent = selectElem.value || 'Energy Source';
+  }
+
+  function updateMaterialStreamTitle(inputElem) {
+    const title = inputElem.closest('.stream')?.querySelector('.material-title-text');
+    if (title) title.textContent = inputElem.value.trim() || 'Material';
+  }
+
+  function updateProcessStreamTitle(inputElem) {
+    const title = inputElem.closest('.stream')?.querySelector('.process-title-text');
+    if (title) title.textContent = inputElem.value.trim() || 'Process Operation';
+  }
+
+  function updateWasteStreamTitle(inputElem) {
+    const title = inputElem.closest('.stream')?.querySelector('.waste-title-text');
+    if (title) title.textContent = inputElem.value.trim() || 'Waste Stream';
+  }
+
+  function removeStream(btn) {
+    const stream = btn.closest('.stream');
+    if (stream) {
+      stream.remove();
+      calculatePreview();
+    }
+  }
+
+  function addEnergyStream(data = {}, canRemove = true) {
+    const rawData = data;
+    data = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, typeof value === "string" ? escapeHtml(value) : value]));
+    const container = document.getElementById("energyStreamsContainer");
+    if (!container) return;
+    const row = document.createElement("div");
+    row.className = "stream energy-stream-row";
+    row.innerHTML = `
+      <div class="stream-head">
+        <div class="stream-title">
+          <div class="stream-icon orange">E</div>
+          <div>
+            <strong class="stream-title-text">${data.source_type || "Energy Source"}</strong>
+            <span>Purchased electricity / fuel</span>
+          </div>
+        </div>
+        ${canRemove ? `<button type="button" class="remove-stream-btn" style="background:none;border:1px solid #fed7d7;color:#e53e3e;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;" onclick="removeStream(this)">Remove</button>` : ""}
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Energy Source</label>
+          <select class="energy-source-select" onchange="updateEnergyStreamTitle(this)">
+            <option value="Grid Electricity" ${data.source_type === "Grid Electricity" ? "selected" : ""}>Grid Electricity</option>
+            <option value="Solar Electricity" ${data.source_type === "Solar Electricity" ? "selected" : ""}>Solar Electricity</option>
+            <option value="Natural Gas" ${data.source_type === "Natural Gas" ? "selected" : ""}>Natural Gas</option>
+            <option value="Diesel" ${data.source_type === "Diesel" ? "selected" : ""}>Diesel</option>
+            <option value="LPG" ${data.source_type === "LPG" ? "selected" : ""}>LPG</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Annual Consumption</label>
+          <div class="unit-field">
+            <input type="number" class="energy-amount-input" value="${data.annual_consumption ?? ""}" oninput="calculatePreview()" placeholder="e.g. 100000" />
+            <select><option>kWh/year</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Emission Factor</label>
+          <input type="number" class="energy-factor-input" value="${data.emission_factor ?? "0.48"}" step="0.01" oninput="calculatePreview()" />
+          <div class="factor-note">kgCO₂e per kWh</div>
+        </div>
+        <div class="field">
+          <label>Factor Source</label>
+          <select class="energy-factor-source-select">
+            <option value="Configured Grid Factor" ${data.factor_source === "Configured Grid Factor" ? "selected" : ""}>Configured Grid Factor</option>
+            <option value="Government Dataset" ${data.factor_source === "Government Dataset" ? "selected" : ""}>Government Dataset</option>
+            <option value="Company Specific Factor" ${data.factor_source === "Company Specific Factor" ? "selected" : ""}>Company Specific Factor</option>
+          </select>
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+    const selections = {'energy-source-select':'source_type', 'energy-factor-source-select':'factor_source', 'process-energy-select':'primary_energy_source', 'waste-treatment-select':'treatment_method'};
+    Object.entries(selections).forEach(([cls, key]) => {
+      const select = row.querySelector('.' + cls);
+      if (select && rawData[key] != null) {
+        const value = String(rawData[key]);
+        if (!Array.from(select.options).some(o => o.value === value)) select.add(new Option(value, value));
+        select.value = value;
+      }
+    });
+    calculatePreview();
+  }
+
+  function addMaterialStream(data = {}, canRemove = true) {
+    const rawData = data;
+    data = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, typeof value === "string" ? escapeHtml(value) : value]));
+    const container = document.getElementById("materialStreamsContainer");
+    if (!container) return;
+    const row = document.createElement("div");
+    row.className = "stream material-stream-row";
+    row.innerHTML = `
+      <div class="stream-head">
+        <div class="stream-title">
+          <div class="stream-icon">M</div>
+          <div>
+            <strong class="material-title-text">${data.material_type || "Material"}</strong>
+            <span>Production material input</span>
+          </div>
+        </div>
+        ${canRemove ? `<button type="button" class="remove-stream-btn" style="background:none;border:1px solid #fed7d7;color:#e53e3e;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;" onclick="removeStream(this)">Remove</button>` : ""}
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Material Name</label>
+          <input type="text" class="material-name-input" value="${data.material_type || ""}" oninput="updateMaterialStreamTitle(this)" placeholder="e.g. Aluminium Alloy 6061" />
+        </div>
+        <div class="field">
+          <label>Annual Quantity</label>
+          <div class="unit-field">
+            <input type="number" class="material-amount-input" value="${data.annual_quantity ?? ""}" oninput="calculatePreview()" placeholder="e.g. 50000" />
+            <select><option>kg/year</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Recycled Content</label>
+          <div class="unit-field">
+            <input type="number" class="material-recycled-input" value="${data.recycled_content_percent ?? "0"}" min="0" max="100" />
+            <select><option>%</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Emission Factor</label>
+          <input type="number" class="material-factor-input" value="${data.emission_factor ?? "8.0"}" step="0.1" oninput="calculatePreview()" />
+          <div class="factor-note">kgCO₂e per kg material</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+    const selections = {'energy-source-select':'source_type', 'energy-factor-source-select':'factor_source', 'process-energy-select':'primary_energy_source', 'waste-treatment-select':'treatment_method'};
+    Object.entries(selections).forEach(([cls, key]) => {
+      const select = row.querySelector('.' + cls);
+      if (select && rawData[key] != null) {
+        const value = String(rawData[key]);
+        if (!Array.from(select.options).some(o => o.value === value)) select.add(new Option(value, value));
+        select.value = value;
+      }
+    });
+    calculatePreview();
+  }
+
+  function addProcessStream(data = {}, canRemove = true) {
+    const rawData = data;
+    data = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, typeof value === "string" ? escapeHtml(value) : value]));
+    const container = document.getElementById("processStreamsContainer");
+    if (!container) return;
+    const row = document.createElement("div");
+    row.className = "stream process-stream-row";
+    row.innerHTML = `
+      <div class="stream-head">
+        <div class="stream-title">
+          <div class="stream-icon purple">P</div>
+          <div>
+            <strong class="process-title-text">${data.name || "Process Operation"}</strong>
+            <span>Production / utility process</span>
+          </div>
+        </div>
+        ${canRemove ? `<button type="button" class="remove-stream-btn" style="background:none;border:1px solid #fed7d7;color:#e53e3e;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;" onclick="removeStream(this)">Remove</button>` : ""}
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Process Name</label>
+          <input type="text" class="process-name-input" value="${data.name || ""}" oninput="updateProcessStreamTitle(this)" placeholder="e.g. CNC Machining & Turning" />
+        </div>
+        <div class="field">
+          <label>Equipment</label>
+          <input type="text" class="process-equipment-input" value="${data.equipment || ""}" placeholder="e.g. 8 × VMC 5-Axis Spindles" />
+        </div>
+        <div class="field">
+          <label>Operating Hours</label>
+          <div class="unit-field">
+            <input type="number" class="process-hours-input" value="${data.operating_hours ?? ""}" placeholder="6200" />
+            <select><option>hours/year</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Primary Energy Source</label>
+          <select class="process-energy-select">
+            <option value="Grid Electricity" ${data.primary_energy_source === "Grid Electricity" ? "selected" : ""}>Grid Electricity</option>
+            <option value="Natural Gas" ${data.primary_energy_source === "Natural Gas" ? "selected" : ""}>Natural Gas</option>
+            <option value="Diesel" ${data.primary_energy_source === "Diesel" ? "selected" : ""}>Diesel</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Operating Pressure</label>
+          <div class="unit-field">
+            <input type="number" class="process-pressure-input" value="${data.operating_pressure_bar ?? "0"}" step="0.1" />
+            <select><option>bar</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Estimated Leakage</label>
+          <div class="unit-field">
+            <input type="number" class="process-leakage-input" value="${data.estimated_leakage_percent ?? "0"}" min="0" max="100" />
+            <select><option>%</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Annual Energy Use</label>
+          <div class="unit-field">
+            <input type="number" class="process-energy-input" value="${data.annual_energy_kwh ?? ""}" placeholder="kWh/year" />
+            <select><option>kWh/year</option></select>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Operational Notes</label>
+          <textarea class="process-notes-input">${data.notes || ""}</textarea>
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+    const selections = {'energy-source-select':'source_type', 'energy-factor-source-select':'factor_source', 'process-energy-select':'primary_energy_source', 'waste-treatment-select':'treatment_method'};
+    Object.entries(selections).forEach(([cls, key]) => {
+      const select = row.querySelector('.' + cls);
+      if (select && rawData[key] != null) {
+        const value = String(rawData[key]);
+        if (!Array.from(select.options).some(o => o.value === value)) select.add(new Option(value, value));
+        select.value = value;
+      }
+    });
+  }
+
+  function addWasteStream(data = {}, canRemove = true) {
+    const rawData = data;
+    data = Object.fromEntries(Object.entries(data).map(([key, value]) => [key, typeof value === "string" ? escapeHtml(value) : value]));
+    const container = document.getElementById("wasteStreamsContainer");
+    if (!container) return;
+    const row = document.createElement("div");
+    row.className = "stream waste-stream-row";
+    row.innerHTML = `
+      <div class="stream-head">
+        <div class="stream-title">
+          <div class="stream-icon blue">W</div>
+          <div>
+            <strong class="waste-title-text">${data.waste_type || "Waste Stream"}</strong>
+            <span>Disposal / circular recovery</span>
+          </div>
+        </div>
+        ${canRemove ? `<button type="button" class="remove-stream-btn" style="background:none;border:1px solid #fed7d7;color:#e53e3e;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;" onclick="removeStream(this)">Remove</button>` : ""}
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Waste Type</label>
+          <input type="text" class="waste-type-input" value="${data.waste_type || ""}" oninput="updateWasteStreamTitle(this)" placeholder="e.g. Aluminium Machining Swarf" />
+        </div>
+        <div class="field">
+          <label>Annual Quantity</label>
+          <div class="unit-field">
+            <input type="number" class="waste-amount-input" value="${data.annual_quantity ?? ""}" oninput="calculatePreview()" placeholder="e.g. 75000" />
+            <select><option>kg/year</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Treatment Method</label>
+          <select class="waste-treatment-select">
+            <option value="Landfill / Disposal" ${data.treatment_method === "Landfill / Disposal" ? "selected" : ""}>Landfill / Disposal</option>
+            <option value="External Recycling" ${data.treatment_method === "External Recycling" ? "selected" : ""}>External Recycling</option>
+            <option value="Internal Reuse" ${data.treatment_method === "Internal Reuse" ? "selected" : ""}>Internal Reuse</option>
+            <option value="Incineration" ${data.treatment_method === "Incineration" ? "selected" : ""}>Incineration</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Emission Factor</label>
+          <input type="number" class="waste-factor-input" value="${data.emission_factor ?? "2.0"}" step="0.1" oninput="calculatePreview()" />
+          <div class="factor-note">kgCO₂e per kg waste</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(row);
+    const selections = {'energy-source-select':'source_type', 'energy-factor-source-select':'factor_source', 'process-energy-select':'primary_energy_source', 'waste-treatment-select':'treatment_method'};
+    Object.entries(selections).forEach(([cls, key]) => {
+      const select = row.querySelector('.' + cls);
+      if (select && rawData[key] != null) {
+        const value = String(rawData[key]);
+        if (!Array.from(select.options).some(o => o.value === value)) select.add(new Option(value, value));
+        select.value = value;
+      }
+    });
+    calculatePreview();
+  }
+
+  /* =========================
      PREVIEW CALCULATION
   ========================= */
 
   function calculatePreview(){
+    let energy = 0;
+    const energyRows = document.querySelectorAll(".energy-stream-row");
+    if (energyRows.length > 0) {
+      energyRows.forEach(row => {
+        const amt = parseFloat(row.querySelector(".energy-amount-input")?.value) || 0;
+        const ef = parseFloat(row.querySelector(".energy-factor-input")?.value) || 0;
+        if (amt > 0 && ef > 0) energy += (amt * ef) / 1000;
+      });
+    } else {
+      energy = (getNumber("energyAmount") * getNumber("energyFactor")) / 1000;
+    }
 
-    const energy =
-      (
-        getNumber("energyAmount") *
-        getNumber("energyFactor")
-      ) / 1000;
+    let material = 0;
+    const matRows = document.querySelectorAll(".material-stream-row");
+    if (matRows.length > 0) {
+      matRows.forEach(row => {
+        const amt = parseFloat(row.querySelector(".material-amount-input")?.value) || 0;
+        const ef = parseFloat(row.querySelector(".material-factor-input")?.value) || 0;
+        if (amt > 0 && ef > 0) material += (amt * ef) / 1000;
+      });
+    } else {
+      material = (getNumber("materialAmount") * getNumber("materialFactor")) / 1000;
+    }
 
+    let waste = 0;
+    const wasteRows = document.querySelectorAll(".waste-stream-row");
+    if (wasteRows.length > 0) {
+      wasteRows.forEach(row => {
+        const amt = parseFloat(row.querySelector(".waste-amount-input")?.value) || 0;
+        const ef = parseFloat(row.querySelector(".waste-factor-input")?.value) || 0;
+        if (amt > 0 && ef > 0) waste += (amt * ef) / 1000;
+      });
+    } else {
+      waste = (getNumber("wasteAmount") * getNumber("wasteFactor")) / 1000;
+    }
 
-    const material =
-      (
-        getNumber("materialAmount") *
-        getNumber("materialFactor")
-      ) / 1000;
+    const total = energy + material + waste;
 
+    document.getElementById("totalCarbon").textContent =
+      Math.round(total).toLocaleString("en-IN");
 
-    const waste =
-      (
-        getNumber("wasteAmount") *
-        getNumber("wasteFactor")
-      ) / 1000;
-
-
-    const total =
-      energy +
-      material +
-      waste;
-
-
-    document.getElementById(
-      "totalCarbon"
-    ).textContent =
-      Math.round(total)
-        .toLocaleString("en-IN");
-
-
-    document.getElementById(
-      "energyPreview"
-    ).textContent =
+    document.getElementById("energyPreview").textContent =
       `${Math.round(energy).toLocaleString("en-IN")} t`;
 
-
-    document.getElementById(
-      "materialPreview"
-    ).textContent =
+    document.getElementById("materialPreview").textContent =
       `${Math.round(material).toLocaleString("en-IN")} t`;
 
-
-    document.getElementById(
-      "wastePreview"
-    ).textContent =
+    document.getElementById("wastePreview").textContent =
       `${Math.round(waste).toLocaleString("en-IN")} t`;
 
+    const maximum = Math.max(energy, material, waste, 1);
 
-    const maximum =
-      Math.max(
-        energy,
-        material,
-        waste,
-        1
-      );
+    setBar("energyBar", energy, maximum);
+    setBar("materialBar", material, maximum);
+    setBar("wasteBar", waste, maximum);
 
-
-    setBar(
-      "energyBar",
-      energy,
-      maximum
-    );
-
-    setBar(
-      "materialBar",
-      material,
-      maximum
-    );
-
-    setBar(
-      "wasteBar",
-      waste,
-      maximum
-    );
-
-
-    updateReview(
-      energy,
-      material,
-      waste,
-      total
-    );
-
+    updateReview(energy, material, waste, total);
   }
 
-
-  function setBar(
-    id,
-    value,
-    maximum
-  ){
-
-    const percentage =
-      Math.min(
-        100,
-        (value / maximum) * 100
-      );
-
-
-    document.getElementById(
-      id
-    ).style.width =
-      `${percentage}%`;
-
+  function setBar(id, value, maximum){
+    const percentage = Math.min(100, (value / maximum) * 100);
+    const elem = document.getElementById(id);
+    if (elem) elem.style.width = `${percentage}%`;
   }
-
 
   /* =========================
      REVIEW
   ========================= */
 
-  function updateReview(
-    energyValue,
-    materialValue,
-    wasteValue,
-    totalValue
-  ){
+  function updateReview(energyValue, materialValue, wasteValue, totalValue){
+    const energy = energyValue ?? 0;
+    const material = materialValue ?? 0;
+    const waste = wasteValue ?? 0;
+    const total = totalValue ?? (energy + material + waste);
 
-    const energy =
-      energyValue ??
-      (
-        getNumber("energyAmount") *
-        getNumber("energyFactor")
-      ) / 1000;
+    const bElem = document.getElementById("reviewBaseline");
+    if (bElem) bElem.textContent = `${Math.round(total).toLocaleString("en-IN")} tCO₂e`;
 
+    const eElem = document.getElementById("reviewEnergy");
+    if (eElem) eElem.textContent = `${Math.round(energy).toLocaleString("en-IN")} tCO₂e/year`;
 
-    const material =
-      materialValue ??
-      (
-        getNumber("materialAmount") *
-        getNumber("materialFactor")
-      ) / 1000;
+    const mElem = document.getElementById("reviewMaterial");
+    if (mElem) mElem.textContent = `${Math.round(material).toLocaleString("en-IN")} tCO₂e/year`;
 
+    const wElem = document.getElementById("reviewWaste");
+    if (wElem) wElem.textContent = `${Math.round(waste).toLocaleString("en-IN")} tCO₂e/year`;
 
-    const waste =
-      wasteValue ??
-      (
-        getNumber("wasteAmount") *
-        getNumber("wasteFactor")
-      ) / 1000;
+    const values = { Energy: energy, Materials: material, Waste: waste };
+    const largest = Object.entries(values).sort((a,b) => b[1] - a[1])[0][0];
 
-
-    const total =
-      totalValue ??
-      (
-        energy +
-        material +
-        waste
-      );
-
-
-    document.getElementById(
-      "reviewBaseline"
-    ).textContent =
-      `${Math.round(total).toLocaleString("en-IN")} tCO₂e`;
-
-
-    document.getElementById(
-      "reviewEnergy"
-    ).textContent =
-      `${Math.round(energy).toLocaleString("en-IN")} tCO₂e/year`;
-
-
-    document.getElementById(
-      "reviewMaterial"
-    ).textContent =
-      `${Math.round(material).toLocaleString("en-IN")} tCO₂e/year`;
-
-
-    document.getElementById(
-      "reviewWaste"
-    ).textContent =
-      `${Math.round(waste).toLocaleString("en-IN")} tCO₂e/year`;
-
-
-    const values = {
-      Energy:energy,
-      Materials:material,
-      Waste:waste
-    };
-
-
-    const largest =
-      Object.entries(values)
-        .sort(
-          (a,b)=>b[1]-a[1]
-        )[0][0];
-
-
-    document.getElementById(
-      "reviewLargest"
-    ).textContent =
-      largest;
-
+    const lElem = document.getElementById("reviewLargest");
+    if (lElem) lElem.textContent = largest;
   }
 
-
   /* =========================
-     CALCULATE BASELINE
+     COLLECT FORM DATA (B03, B10, B12)
   ========================= */
 
+  function collectFormData() {
+    const text = (row, cls) => row.querySelector('.' + cls)?.value.trim() || '';
+    const number = (row, cls, required = true, max = Infinity) => {
+      const input = row.querySelector('.' + cls);
+      const value = input?.value.trim() || '';
+      if (input?.validity.badInput || (required && value === '')) throw new Error('Complete the quantity and emission factor for each entered row.');
+      const n = value === '' ? 0 : Number(value);
+      if (!Number.isFinite(n) || n < 0 || n > max) throw new Error('Quantities must be nonnegative and percentages must be between 0 and 100.');
+      return n;
+    };
+    const rows = (cls, read) => Array.from(document.querySelectorAll('.' + cls)).map(read).filter(Boolean);
+    const energy_sources = rows('energy-stream-row', row => {
+      if (!text(row, 'energy-amount-input') && !row.querySelector('.energy-amount-input').validity.badInput) return null;
+      return {source_type: text(row, 'energy-source-select'), annual_consumption: number(row, 'energy-amount-input'), emission_factor: number(row, 'energy-factor-input'), factor_source: text(row, 'energy-factor-source-select'), unit: 'kWh/year'};
+    });
+    const material_inputs = rows('material-stream-row', row => {
+      const name = text(row, 'material-name-input');
+      if (!name && !text(row, 'material-amount-input')) return null;
+      if (!name) throw new Error('Enter a material name.');
+      return {material_type: name, annual_quantity: number(row, 'material-amount-input'), emission_factor: number(row, 'material-factor-input'), recycled_content_percent: number(row, 'material-recycled-input', false, 100), unit: 'kg/year'};
+    });
+    const processes = rows('process-stream-row', row => {
+      const name = text(row, 'process-name-input');
+      if (!name && !text(row, 'process-energy-input') && !text(row, 'process-equipment-input') && !text(row, 'process-notes-input') && !text(row, 'process-hours-input')) return null;
+      if (!name) throw new Error('Enter a process name.');
+      return {name, equipment: text(row, 'process-equipment-input'), operating_hours: number(row, 'process-hours-input', false), primary_energy_source: text(row, 'process-energy-select'), operating_pressure_bar: number(row, 'process-pressure-input', false), estimated_leakage_percent: number(row, 'process-leakage-input', false, 100), annual_energy_kwh: number(row, 'process-energy-input', false), notes: text(row, 'process-notes-input')};
+    });
+    const waste_streams = rows('waste-stream-row', row => {
+      const name = text(row, 'waste-type-input');
+      if (!name && !text(row, 'waste-amount-input')) return null;
+      if (!name) throw new Error('Enter a waste name.');
+      return {waste_type: name, annual_quantity: number(row, 'waste-amount-input'), emission_factor: number(row, 'waste-factor-input'), treatment_method: text(row, 'waste-treatment-select'), unit: 'kg/year'};
+    });
+    if (![...energy_sources.map(e => e.annual_consumption), ...material_inputs.map(m => m.annual_quantity), ...waste_streams.map(w => w.annual_quantity)].some(q => q > 0)) throw new Error('Enter at least one positive activity quantity before calculating.');
+    for (const source of new Set(processes.map(p => p.primary_energy_source))) {
+      const allocated = processes.filter(p => p.primary_energy_source === source).reduce((sum,p) => sum + p.annual_energy_kwh, 0);
+      const available = energy_sources.filter(e => e.source_type === source).reduce((sum,e) => sum + e.annual_consumption, 0);
+      if (allocated > available + 0.000001) throw new Error(`Process energy allocated to ${source} exceeds its entered consumption.`);
+    }
+    return { energy_sources, material_inputs, processes, waste_streams };
+  }
+
+  /* =========================
+     CALCULATE BASELINE (B02, B12)
+  ========================= */
+
+  let isCalculating = false;
+
   async function calculateBaseline(){
+    if (isCalculating) return;
 
     const factoryId = getActiveFactoryId();
     if(!factoryId){
@@ -3416,89 +3474,34 @@
       return;
     }
 
-    const energyAmount = getNumber("energyAmount");
-    const energyFactor = getNumber("energyFactor");
-    const materialAmount = getNumber("materialAmount");
-    const materialFactor = getNumber("materialFactor");
-    const materialRecycled = document.getElementById("materialRecycled") ? parseFloat(document.getElementById("materialRecycled").value) || 0 : 0;
-    const wasteAmount = getNumber("wasteAmount");
-    const wasteFactor = getNumber("wasteFactor");
-
-    const airPressure = document.getElementById("airPressure") ? parseFloat(document.getElementById("airPressure").value) || 0 : 0;
-    const airLeakage = document.getElementById("airLeakage") ? parseFloat(document.getElementById("airLeakage").value) || 0 : 0;
-    const airEnergy = document.getElementById("airEnergy") ? parseFloat(document.getElementById("airEnergy").value) || 0 : 0;
-
-    const payload = {
-      energy_sources: [
-        {
-          source_type: "Grid Electricity",
-          annual_consumption: energyAmount,
-          unit: "kWh/year",
-          emission_factor: energyFactor,
-          factor_source: "Configured Grid Factor"
-        }
-      ],
-      material_inputs: [
-        {
-          material_type: "Production Material",
-          annual_quantity: materialAmount,
-          unit: "kg/year",
-          recycled_content_percent: materialRecycled,
-          emission_factor: materialFactor
-        }
-      ],
-      processes: [
-        {
-          name: "CNC Machining & Turning",
-          equipment: "8 × VMC 5-Axis Spindles",
-          operating_hours: 6200,
-          primary_energy_source: "Grid Electricity",
-          operating_pressure_bar: 0,
-          estimated_leakage_percent: 0,
-          annual_energy_kwh: energyAmount > airEnergy ? (energyAmount - airEnergy) * 0.58 : 0,
-          notes: "Production process"
-        },
-        {
-          name: "Compressed Air System",
-          equipment: "Rotary Screw Compressors",
-          operating_hours: 7200,
-          primary_energy_source: "Grid Electricity",
-          operating_pressure_bar: airPressure,
-          estimated_leakage_percent: airLeakage,
-          annual_energy_kwh: airEnergy,
-          notes: "Utility air network"
-        }
-      ],
-      waste_streams: [
-        {
-          waste_type: "Production Waste",
-          annual_quantity: wasteAmount,
-          unit: "kg/year",
-          treatment_method: "Landfill / Disposal",
-          emission_factor: wasteFactor
-        }
-      ]
-    };
+    const btn = document.querySelector(".calculate-btn");
+    isCalculating = true;
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Calculating Baseline...";
+    }
 
     try {
+      const payload = collectFormData();
+
       await apiFetch(`/api/factories/${factoryId}/data`, {
         method: "POST",
         body: JSON.stringify(payload)
       });
 
-      const calc = await apiFetch(`/api/factories/${factoryId}/calculate`, {
-        method: "POST"
-      });
-
       window.location.href = "dashboard.html";
     } catch (err) {
       alert("Error saving data and calculating baseline: " + (err.message || "Failed"));
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Calculate Carbon Baseline →";
+      }
+    } finally {
+      isCalculating = false;
     }
-
   }
 
-
-  // Load existing factory data or reset defaults if fresh real factory
+  // Load existing factory data or reset defaults if fresh real factory (B03)
   window.addEventListener("DOMContentLoaded", async () => {
     const factoryId = getActiveFactoryId();
     if(!factoryId){
@@ -3510,47 +3513,21 @@
       const factory = await apiFetch(`/api/factories/${factoryId}`);
       const data = await apiFetch(`/api/factories/${factoryId}/data`);
 
-      if(!factory.is_demo && (!data.energy_sources || data.energy_sources.length === 0)){
-        document.getElementById("energyAmount").value = "";
-        document.getElementById("materialAmount").value = "";
-        if(document.getElementById("materialRecycled")) document.getElementById("materialRecycled").value = "0";
-        document.getElementById("wasteAmount").value = "";
-        if(document.getElementById("airLeakage")) document.getElementById("airLeakage").value = "";
-        if(document.getElementById("airPressure")) document.getElementById("airPressure").value = "";
-        if(document.getElementById("airEnergy")) document.getElementById("airEnergy").value = "";
-      } else if(data.energy_sources && data.energy_sources.length > 0){
-        const es = data.energy_sources[0];
-        document.getElementById("energyAmount").value = es.annual_consumption || "";
-        document.getElementById("energyFactor").value = es.emission_factor || "0.48";
-
-        if(data.material_inputs && data.material_inputs.length > 0){
-          const mi = data.material_inputs[0];
-          document.getElementById("materialAmount").value = mi.annual_quantity || "";
-          document.getElementById("materialFactor").value = mi.emission_factor || "8.0";
-          if(document.getElementById("materialRecycled")){
-            document.getElementById("materialRecycled").value = mi.recycled_content_percent || "0";
-          }
-        }
-
-        if(data.waste_streams && data.waste_streams.length > 0){
-          const ws = data.waste_streams[0];
-          document.getElementById("wasteAmount").value = ws.annual_quantity || "";
-          document.getElementById("wasteFactor").value = ws.emission_factor || "2.0";
-        }
-
-        const air = (data.processes || []).find(p => p.name && (p.name.toLowerCase().includes("air") || p.name.toLowerCase().includes("compress")));
-        if(air){
-          if(document.getElementById("airPressure")) document.getElementById("airPressure").value = air.operating_pressure_bar || "";
-          if(document.getElementById("airLeakage")) document.getElementById("airLeakage").value = air.estimated_leakage_percent || "";
-          if(document.getElementById("airEnergy")) document.getElementById("airEnergy").value = air.annual_energy_kwh || "";
-        }
-      }
+      const collections = [
+        ['energyStreamsContainer', data.energy_sources, addEnergyStream],
+        ['materialStreamsContainer', data.material_inputs, addMaterialStream],
+        ['processStreamsContainer', data.processes, addProcessStream],
+        ['wasteStreamsContainer', data.waste_streams, addWasteStream]
+      ];
+      collections.forEach(([id, rows, add]) => {
+        document.getElementById(id).replaceChildren();
+        (rows.length ? rows : [{}]).forEach(row => add(row, true));
+      });
 
       calculatePreview();
     } catch(err){
-      console.error("Failed to load factory data:", err);
-      calculatePreview();
-    }
+      renderErrorState(document.querySelector(".content"), err.message);
+    } finally { document.querySelector(".content").style.visibility = "visible"; }
 
     // Update sidebar factory name
     loadSidebarFactory();

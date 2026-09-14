@@ -2054,6 +2054,31 @@
         document.getElementById("summaryConfidence").textContent = `${Math.round(summary.confidence)}%`;
       }
 
+      // B19: Dynamically move "Primary Hotspot" pill to the correct branch card
+      const hotspotPill = document.querySelector(".hotspot-pill");
+      if (hotspotPill) {
+        hotspotPill.remove();
+      }
+      const largestSource = (summary.largest_source || "").toLowerCase();
+      let targetBranchSpan = null;
+      if (largestSource.includes("material")) {
+        const matDiv = document.querySelector('.branch[onclick*="materials"] .branch-info div:not(.branch-icon)');
+        targetBranchSpan = matDiv;
+      } else if (largestSource.includes("waste")) {
+        const wasteDiv = document.querySelector('.branch[onclick*="waste"] .branch-info div:not(.branch-icon)');
+        targetBranchSpan = wasteDiv;
+      } else {
+        // Default: energy
+        const energyDiv = document.querySelector('.branch[onclick*="energy"] .branch-info div:not(.branch-icon)');
+        targetBranchSpan = energyDiv;
+      }
+      if (targetBranchSpan) {
+        const pill = document.createElement("span");
+        pill.className = "hotspot-pill";
+        pill.textContent = "Primary Hotspot";
+        targetBranchSpan.appendChild(pill);
+      }
+
       if (document.getElementById("energyBranchVal")) {
         document.getElementById("energyBranchVal").textContent = Math.round(summary.energy_tco2e).toLocaleString("en-IN");
       }

@@ -2,6 +2,7 @@ import json
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
 from app.models.factory import Factory
+from datetime import datetime, timezone
 from app.models.recommendation import Recommendation
 from app.models.emissions import EmissionRecord
 
@@ -331,11 +332,31 @@ INTERVENTIONS_CATALOG = [
 def generate_factory_recommendations(factory: Factory, db: Session) -> List[Recommendation]:
     grid_factor = factory.energy_sources[0].emission_factor if factory.energy_sources else 0.48
     rec = db.query(EmissionRecord).filter(EmissionRecord.factory_id == factory.id).order_by(EmissionRecord.calculation_date.desc()).first()
-    baseline = rec.total_tco2e if rec else 1150.0
+    baseline = rec.total_tco2e if rec else 0.0
+    if baseline <= 0:
+        return []
 
-    # Clear prior recommendations
-    db.query(Recommendation).filter(Recommendation.factory_id == factory.id).delete()
-    db.commit()
+    # Keep referenced recommendation IDs stable when activity is recalculated.
+    db.query(Factory).filter(Factory.id == factory.id).with_for_update().first()
+    existing = {r.code: r for r in db.query(Recommendation).filter(Recommendation.factory_id == factory.id).all()}
+    def persist(recommendation):
+        old = existing.pop(recommendation.code, None)
+        if old:
+            for column in Recommendation.__table__.columns:
+                if column.name not in ('id', 'created_at') and getattr(recommendation, column.name) is not None:
+                    setattr(old, column.name, getattr(recommendation, column.name))
+            recommendation = old
+        recommendation.created_at = datetime.now(timezone.utc)
+        db.add(recommendation)
+        recommendations.append(recommendation)
+    def finish():
+        for old in existing.values():
+            old.carbon_saving_tco2e = old.reduction_pct = 0
+            old.estimated_cost_inr_lakhs = old.payback_months = 0
+            old.description = 'Not applicable to the current factory activity. Enter updated data to reassess.'
+            old.created_at = datetime.now(timezone.utc)
+        db.commit()
+        return recommendations
 
     recommendations: List[Recommendation] = []
 
@@ -436,11 +457,9 @@ def generate_factory_recommendations(factory: Factory, db: Session) -> List[Reco
                 derivation_type=s["derivation"],
                 justification=s["justification"]
             )
-            db.add(r)
-            recommendations.append(r)
+            persist(r)
 
-        db.commit()
-        return recommendations
+        return finish()
 
     # Normal factory: calculate deterministically from actual factory data
     total_base = baseline if baseline > 0 else 1.0
@@ -448,13 +467,13 @@ def generate_factory_recommendations(factory: Factory, db: Session) -> List[Reco
     # 1. Process / Compressed Air
     air = next((p for p in factory.processes if "air" in p.name.lower() or "compress" in p.name.lower()), None)
     if air:
-        leak = air.estimated_leakage_percent or 20.0
-        press = air.operating_pressure_bar or 7.0
-        kwh = air.annual_energy_kwh or 200000.0
+        leak = air.estimated_leakage_percent or 0.0
+        press = air.operating_pressure_bar or 0.0
+        kwh = air.annual_energy_kwh or 0.0
         # Leak reduction to 10% + pressure drop of (press - 6.2) * 7%
         leak_saving_kwh = kwh * (max(0.0, leak - 10.0) / 100.0)
         press_saving_kwh = kwh * (max(0.0, press - 6.2) * 0.07)
-        tot_kwh = (leak_saving_kwh + press_saving_kwh) * 0.9
+        tot_kwh = min(kwh, (leak_saving_kwh + press_saving_kwh) * 0.9)
         saving = round((tot_kwh * grid_factor) / 1000.0, 1)
         cost = round(1.2 + (saving * 0.012), 1)
         payback = round((cost * 100000.0) / max(1000.0, (tot_kwh * 8.5) / 12.0), 1)
@@ -479,8 +498,7 @@ def generate_factory_recommendations(factory: Factory, db: Session) -> List[Reco
             derivation_type="calculated",
             justification="Targets immediate avoidable electrical leakage with fast capital payback."
         )
-        db.add(r)
-        recommendations.append(r)
+        persist(r)
 
     # 2. Material Recycled Content
     if factory.material_inputs:
@@ -488,16 +506,24 @@ def generate_factory_recommendations(factory: Factory, db: Session) -> List[Reco
         cur_rec = mat.recycled_content_percent or 0.0
         target_rec = min(80.0, cur_rec + 30.0)
         delta_pct = (target_rec - cur_rec) / 100.0
-        mat_saving = round((mat.annual_quantity * (mat.emission_factor - 0.5) * delta_pct) / 1000.0, 1)
-        mat_cost = round(2.0 + (mat_saving * 0.02), 1)
-        mat_payback = round((mat_cost * 100000.0) / max(1000.0, (mat_saving * 12000.0) / 12.0), 1)
-        mat_red = round((mat_saving / total_base) * 100.0, 1)
+        # A recycled-material factor is only configured for aluminium.
+        # Unknown materials remain explicitly unquantified, never forced positive.
+        known_factor = "alum" in mat.material_type.lower()
+        recycled_ef = 0.5 if known_factor else mat.emission_factor
+        ef_delta = max(0.0, mat.emission_factor - recycled_ef)
+        delta_pct = max(0.0, delta_pct)
+        mat_saving = max(0.0, round((mat.annual_quantity * ef_delta * delta_pct) / 1000.0, 1))
+        mat_cost = round(max(0.5, 2.0 + (mat_saving * 0.02)), 1)
+        mat_payback = round(max(1.0, (mat_cost * 100000.0) / max(1000.0, (mat_saving * 12000.0) / 12.0)), 1)
+        mat_red = round((mat_saving / max(0.001, total_base)) * 100.0, 1)
+        if mat_saving <= 0:
+            mat_cost = mat_payback = 0.0
 
         r = Recommendation(
             factory_id=factory.id,
             code="material_recycled",
             title=f"Increase Recycled {mat.material_type} Share",
-            description=f"Qualify suppliers to increase certified recycled blend from {int(cur_rec)}% to {int(target_rec)}%.",
+            description=(f"Qualify suppliers to increase certified recycled blend from {int(cur_rec)}% to {int(target_rec)}%. Estimates require supplier verification." if mat_saving > 0 else "Not quantified: a beneficial recycled-material factor and supplier cost are not established. Simulation is unavailable."),
             category="Circular Materials",
             target_process=mat.material_type,
             root_cause=f"High Virgin Share ({int(100 - cur_rec)}%)",
@@ -509,11 +535,10 @@ def generate_factory_recommendations(factory: Factory, db: Session) -> List[Reco
             confidence_pct=82.0,
             disruption_level="Low",
             assumption_reference=f"Material Lifecycle Study: {int(delta_pct * 100)}% recycled content increment on {int(mat.annual_quantity):,} kg feedstock.",
-            derivation_type="calculated",
-            justification="Abates embodied upstream Scope 3 carbon through certified recycled billets."
+            derivation_type="benchmark-based",
+            justification="Validate the material-specific recycled factor and supplier cost before implementation."
         )
-        db.add(r)
-        recommendations.append(r)
+        persist(r)
 
     # 3. Energy / Renewable solar
     if factory.energy_sources:
@@ -543,13 +568,12 @@ def generate_factory_recommendations(factory: Factory, db: Session) -> List[Reco
             derivation_type="calculated",
             justification="Provides reliable Scope 2 abatement with guaranteed asset life exceeding 20 years."
         )
-        db.add(r)
-        recommendations.append(r)
+        persist(r)
 
     # 4. Production CNC / Idle Shutdown
     cnc = next((p for p in factory.processes if "cnc" in p.name.lower() or "machin" in p.name.lower()), None)
     if cnc:
-        kwh = cnc.annual_energy_kwh or 150000.0
+        kwh = cnc.annual_energy_kwh or 0.0
         idle_saving_kwh = kwh * 0.22
         cnc_saving = round((idle_saving_kwh * grid_factor) / 1000.0, 1)
         cnc_cost = round(1.5 + (cnc_saving * 0.015), 1)
@@ -575,8 +599,7 @@ def generate_factory_recommendations(factory: Factory, db: Session) -> List[Reco
             derivation_type="calculated",
             justification="Cuts parasitic non-cutting energy with minimal control firmware modification."
         )
-        db.add(r)
-        recommendations.append(r)
+        persist(r)
 
     if not recommendations and baseline > 0:
         gen_saving = round(baseline * 0.08, 1)
@@ -599,8 +622,6 @@ def generate_factory_recommendations(factory: Factory, db: Session) -> List[Reco
             derivation_type="benchmark-based",
             justification="Provides visibility into unmonitored circuits to enable systematic load trimming."
         )
-        db.add(r)
-        recommendations.append(r)
+        persist(r)
 
-    db.commit()
-    return recommendations
+    return finish()

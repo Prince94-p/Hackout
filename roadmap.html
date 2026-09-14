@@ -1624,7 +1624,7 @@
     </header>
 
 
-    <div class="content">
+    <div class="content" style="visibility:hidden">
 
       <div id="roadmapEmptyState" style="display:none;"></div>
 
@@ -1654,7 +1654,7 @@
 
         <div class="target-summary">
 
-          <span>
+          <span id="targetHorizonLabel">
             12-Month Target
           </span>
 
@@ -2229,7 +2229,7 @@
 
           <div class="target-head">
 
-            <div class="target-label">
+            <div class="target-label" id="targetOutcomeLabel">
               12-Month Outcome
             </div>
 
@@ -2505,21 +2505,8 @@
     const targetInvestment = document.getElementById("targetInvestment");
     if (targetInvestment) targetInvestment.textContent = "₹" + data.total_cost_inr_lakhs.toFixed(2) + "L";
 
-    // Scenario strip - populate from first action if no localStorage scenario
-    const rawScenario = localStorage.getItem("carbonScenario");
-    if (rawScenario) {
-      try {
-        const scenario = JSON.parse(rawScenario);
-        const savedName = document.getElementById("savedScenarioName");
-        if (savedName) savedName.textContent = scenario.title || "Selected Scenario";
-        const savedSaving = document.getElementById("savedScenarioSaving");
-        if (savedSaving) savedSaving.textContent = (scenario.saving ?? 0).toLocaleString("en-IN") + " tCO₂e";
-        const savedCost = document.getElementById("savedScenarioCost");
-        if (savedCost) savedCost.textContent = "₹" + Number(scenario.cost ?? 0).toFixed(2) + "L";
-        const savedFuture = document.getElementById("savedScenarioFuture");
-        if (savedFuture) savedFuture.textContent = (scenario.future ?? data.target_footprint_tco2e).toLocaleString("en-IN") + " tCO₂e";
-      } catch(e) {}
-    } else if (data.actions && data.actions.length > 0) {
+    // Only display actions returned by the factory-authorized server endpoint.
+    if (data.actions && data.actions.length > 0) {
       const first = data.actions[0];
       const savedName = document.getElementById("savedScenarioName");
       if (savedName) savedName.textContent = first.action_title;
@@ -2542,6 +2529,35 @@
       if (firstCost) firstCost.textContent = "₹" + first.cost_inr_lakhs + "L";
     }
 
+    // Dynamic horizon labels (B20)
+    let maxMonths = 0;
+    if (data.timeline_steps && Array.isArray(data.timeline_steps)) {
+      data.timeline_steps.forEach(t => {
+        const m = (t.month || "").match(/\d+/);
+        if (m) {
+          const num = parseInt(m[0], 10);
+          if (num > maxMonths) maxMonths = num;
+        }
+      });
+    } else if (data.actions && Array.isArray(data.actions)) {
+      data.actions.forEach(a => {
+        const m = (a.phase_label || "").match(/(\d+)\s*Months?/i);
+        if (m) {
+          const num = parseInt(m[1], 10);
+          if (num > maxMonths) maxMonths = num;
+        }
+      });
+    }
+    const horizonText = `${maxMonths}-Month`;
+    const targetTime = document.querySelector('.timeline-item.target .when strong');
+    if (targetTime) targetTime.textContent = `${maxMonths} Months`;
+    const targetNarrative = document.querySelector('.timeline-item.target .action-info p');
+    if (targetNarrative) targetNarrative.textContent = `Expected footprint after ${(data.actions || []).length} prioritized interventions over ${maxMonths} months.`;
+    const targetHorizonLabel = document.getElementById("targetHorizonLabel");
+    if (targetHorizonLabel) targetHorizonLabel.textContent = `${horizonText} Target`;
+    const targetOutcomeLabel = document.getElementById("targetOutcomeLabel");
+    if (targetOutcomeLabel) targetOutcomeLabel.textContent = `${horizonText} Outcome`;
+
     // Render dynamic timeline actions (skip first which is hardcoded, or render all)
     renderTimelineActions(data.actions);
     renderPriorityList(data.actions);
@@ -2561,18 +2577,7 @@
     }
 
     try {
-      // First try to get stored scenario for preferred_scenario_id
-      const rawScenario = localStorage.getItem("carbonScenario");
-      let scenarioId = null;
-      if (rawScenario) {
-        try {
-          const sc = JSON.parse(rawScenario);
-          scenarioId = sc.recommendation_id || null;
-        } catch(e) {}
-      }
-
-      // Try stored scenario ID
-      const storedScenarioId = localStorage.getItem("selectedScenarioId");
+      const storedScenarioId = sessionStorage.getItem(`selectedScenario:${factoryId}`);
 
       let data;
       if (storedScenarioId) {
@@ -2587,7 +2592,7 @@
       }
 
       if (!data || data.baseline_tco2e <= 0) {
-        renderEmptyState("roadmapEmptyState",
+        renderEmptyState(document.querySelector(".content"),
           "No roadmap available yet.",
           "Complete your factory data entry and baseline calculation to generate your decarbonization roadmap.",
           "factory-data.html",
@@ -2603,35 +2608,10 @@
 
     } catch (err) {
       console.error("Roadmap load error:", err);
-      // Fallback: try to render from localStorage
-      const rawScenario = localStorage.getItem("carbonScenario");
-      if (rawScenario) {
-        try {
-          const sc = JSON.parse(rawScenario);
-          const bl = Number(sc.baseline || 1150);
-          const sv = Number(sc.saving || 74);
-          populateRoadmap({
-            baseline_tco2e: bl,
-            planned_saving_tco2e: sv,
-            target_footprint_tco2e: bl - sv,
-            reduction_percent: bl > 0 ? (sv / bl * 100) : 0,
-            total_cost_inr_lakhs: Number(sc.cost || 1.6),
-            actions: [{
-              order_index: 1,
-              action_title: sc.title || "Simulated Scenario",
-              phase_label: "Phase 1: 0–3 Months (Quick Wins)",
-              carbon_saving_tco2e: sv,
-              cost_inr_lakhs: Number(sc.cost || 1.6),
-              effort_level: "Low",
-              confidence_pct: sc.confidence || 85,
-              status: "Ready to Deploy"
-            }]
-          });
-        } catch(e2) {
-          console.error("Fallback render failed:", e2);
-        }
-      }
-    }
+      renderErrorState(document.querySelector(".content"), err.message || "Failed to load roadmap. Please verify factory data entry.", "loadRoadmap");
+      const empty = document.getElementById("roadmapEmptyState");
+      if (empty) empty.style.display = "block";
+    } finally { document.querySelector(".content").style.visibility = "visible"; }
   }
 
   document.addEventListener("DOMContentLoaded", loadRoadmap);

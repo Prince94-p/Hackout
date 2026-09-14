@@ -11,6 +11,7 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
 
     # 1. Process candidate evaluation
     for p in processes:
+        grid_factor = next((e.emission_factor for e in factory.energy_sources if e.source_type == p.primary_energy_source), 0.0)
         p_kwh = p.annual_energy_kwh or 0.0
         p_carbon = (p_kwh * grid_factor) / 1000.0
         leak = p.estimated_leakage_percent or 0.0
@@ -31,6 +32,8 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
                 "confidence_pct": 88.0,
                 "details": {
                     "energy_str": f"{int(p_kwh):,} kWh",
+                    "activity_basis": f"{int(p_kwh):,} kWh/year",
+                    "factor_str": f"{grid_factor} kgCO₂e/kWh",
                     "reason": "High distribution leakage combined with elevated header pressure indicates electricity is being consumed without useful production work.",
                     "intervention": "Compressor Optimization + Leak Remediation",
                     "intervention_text": "Repair leakage points, reduce line pressure to 6.2 bar, and optimize compressor sequencing."
@@ -50,6 +53,8 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
                 "confidence_pct": 81.0,
                 "details": {
                     "energy_str": f"{int(p_kwh):,} kWh",
+                    "activity_basis": f"{int(p_kwh):,} kWh/year",
+                    "factor_str": f"{grid_factor} kgCO₂e/kWh",
                     "reason": "Spindle cooling and hydraulic circuits remain energized during tool changes, setups, and batch transitions, creating avoidable non-productive power demand.",
                     "intervention": "Idle Energy Control & FEMS",
                     "intervention_text": "Introduce automated sleep timers, machine-level power monitoring, and production cycle synchronization."
@@ -69,6 +74,8 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
                 "confidence_pct": 76.0,
                 "details": {
                     "energy_str": f"{int(p_kwh):,} kWh",
+                    "activity_basis": f"{int(p_kwh):,} kWh/year",
+                    "factor_str": f"{grid_factor} kgCO₂e/kWh",
                     "reason": "Repeated heating cycles and convective heat loss through exhaust flues increase overall thermal electricity demand.",
                     "intervention": "Waste Heat Recovery",
                     "intervention_text": "Capture flue gas thermal energy for preheating and install ceramic radiation insulation."
@@ -88,6 +95,8 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
                 "confidence_pct": 75.0,
                 "details": {
                     "energy_str": f"{int(p_kwh):,} kWh",
+                    "activity_basis": f"{int(p_kwh):,} kWh/year",
+                    "factor_str": f"{grid_factor} kgCO₂e/kWh",
                     "reason": "Continuous electrical loading without variable speed control.",
                     "intervention": "Motor & Drive Efficiency Upgrade",
                     "intervention_text": "Upgrade to IE4 motors with variable frequency drives."
@@ -100,7 +109,7 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
         m_carbon = (m.annual_quantity * m.emission_factor) / 1000.0
         recycled = m.recycled_content_percent or 0.0
         candidates.append({
-            "code": "aluminium" if "alum" in m.material_type.lower() else f"material-{m.id}",
+            "code": "aluminium" if "alum" in m.material_type.lower() else ("material" if len(factory.material_inputs) == 1 else f"material-{m.id}"),
             "title": m.material_type,
             "category": "Materials",
             "branch_path": f"Materials → Feedstock → {m.material_type}",
@@ -111,9 +120,11 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
             "confidence_pct": 82.0,
             "details": {
                 "energy_str": f"{int(m.annual_quantity):,} kg",
-                "reason": f"Feedstock contains {int(100 - recycled)}% virgin material. Virgin smelting creates high embodied emissions compared to secondary remelting.",
+                "activity_basis": f"{int(m.annual_quantity):,} kg/year",
+                "factor_str": f"{m.emission_factor} kgCO₂e/kg",
+                "reason": f"Feedstock contains {int(100 - recycled)}% virgin material. Virgin processing creates high embodied emissions compared to secondary/recycled streams.",
                 "intervention": "Increase Recycled Feedstock Blend",
-                "intervention_text": f"Qualify secondary alloys with suppliers to increase recycled content to ≥60%."
+                "intervention_text": f"Qualify secondary materials with suppliers to increase recycled content to ≥60%."
             },
             "severity_score": m_carbon * (1.0 + (100.0 - recycled) / 100.0)
         })
@@ -122,7 +133,7 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
     for w in factory.waste_streams:
         w_carbon = (w.annual_quantity * w.emission_factor) / 1000.0
         candidates.append({
-            "code": f"waste-{w.id}",
+            "code": "waste" if len(factory.waste_streams) == 1 else f"waste-{w.id}",
             "title": w.waste_type,
             "category": "Waste",
             "branch_path": f"Waste → Scrap → {w.waste_type}",
@@ -133,13 +144,21 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
             "confidence_pct": 78.0,
             "details": {
                 "energy_str": f"{int(w.annual_quantity):,} kg",
-                "reason": "Offsite disposal without closed-loop scrap briquetting results in material and embodied carbon loss.",
-                "intervention": "Closed-Loop Scrap Briquetting",
-                "intervention_text": "Briquette clean machining swarf onsite and reintroduce into secondary remelting."
+                "activity_basis": f"{int(w.annual_quantity):,} kg/year",
+                "factor_str": f"{w.emission_factor} kgCO₂e/kg",
+                "reason": "Offsite disposal without closed-loop scrap recovery results in material and embodied carbon loss.",
+                "intervention": "Closed-Loop Scrap Recovery",
+                "intervention_text": "Briquette clean production waste onsite and reintroduce into recovery or secondary cycles."
             },
             "severity_score": w_carbon * 1.2
         })
 
+    # Show submitted evidence, not unobserved equipment conditions.
+    if not factory.is_demo:
+        for item in candidates:
+            detail = item['details']
+            detail['reason'] = f"Entered activity {detail.get('activity_basis', '')} with factor {detail.get('factor_str', '')} produces {item['carbon_tco2e']} tCO₂e/year. Reported signal: {item['signal_value']}."
+            detail['intervention_text'] = 'Verify the reported signal and technical feasibility before selecting an intervention.'
     # Sort candidates by calculated severity
     candidates.sort(key=lambda x: x["severity_score"], reverse=True)
 
@@ -150,7 +169,7 @@ def evaluate_and_generate_hotspots(factory: Factory, db: Session) -> List[Hotspo
     db.query(Hotspot).filter(Hotspot.factory_id == factory.id).delete()
     hotspots: List[Hotspot] = []
 
-    for rank, item in enumerate(candidates[:5], start=1):
+    for rank, item in enumerate(candidates, start=1):
         share_pct = round((item["carbon_tco2e"] / total_carbon) * 100.0, 1)
         h = Hotspot(
             factory_id=factory.id,

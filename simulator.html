@@ -1591,7 +1591,7 @@
     </header>
 
 
-    <div class="content">
+    <div class="content" style="visibility:hidden">
 
       <!-- HEADER -->
 
@@ -2165,7 +2165,8 @@
 <script>
   let activeRecommendation = null;
   let allRecommendations = [];
-  let baseline = 1150;
+  let baseline = 0;
+  let previewSequence = 0;
   let scenarioChartInstance = null;
 
   function toggleSidebar(){
@@ -2222,7 +2223,7 @@
     });
   }
 
-  function updateScenario(){
+  async function updateScenario(){
     if (!activeRecommendation) return;
 
     const implementation = Number(document.getElementById("implementationRange").value);
@@ -2233,16 +2234,22 @@
     document.getElementById("performanceValue").textContent = performance + "%";
     document.getElementById("costVariationValue").textContent = (costVariation > 0 ? "+" : "") + costVariation + "%";
 
-    const savingFactor = (implementation / 100) * (performance / 100);
-    let saving = activeRecommendation.carbon_saving_tco2e * savingFactor;
-    saving = Math.min(saving, baseline);
-
-    const future = Math.max(0, baseline - saving);
-    const reduction = baseline > 0 ? (saving / baseline) * 100 : 0;
-    const cost = activeRecommendation.estimated_cost_inr_lakhs * (implementation / 100) * (1 + costVariation / 100);
-
-    const roundedSaving = Math.round(saving);
-    const roundedFuture = Math.round(future);
+    const sequence = ++previewSequence;
+    let preview;
+    try {
+      preview = await apiFetch(`/api/factories/${getActiveFactoryId()}/scenarios/preview`, {
+        method: 'POST', body: JSON.stringify({recommendation_id: activeRecommendation.id, implementation_percent: implementation, performance_percent: performance, cost_variation_percent: costVariation})
+      });
+    } catch (error) {
+      if (sequence === previewSequence) renderErrorState(document.querySelector('.content'), error.message);
+      return;
+    }
+    if (sequence !== previewSequence) return;
+    const roundedSaving = preview.effective_saving_tco2e;
+    const roundedFuture = preview.future_footprint_tco2e;
+    const future = roundedFuture;
+    const reduction = preview.reduction_percent;
+    const cost = preview.estimated_cost_inr_lakhs;
 
     // Flow displays
     const sd = document.getElementById("savingDisplay");
@@ -2283,30 +2290,26 @@
     // Chart
     updateScenarioChart(baseline, future);
 
-    // Save temporary state
-    const scenario = {
-      recommendation_id: activeRecommendation.id,
-      recommendation_code: activeRecommendation.code,
-      title: activeRecommendation.title,
-      baseline: Math.round(baseline),
-      saving: roundedSaving,
-      future: roundedFuture,
-      reduction: Number(reduction.toFixed(1)),
-      cost: Number(cost.toFixed(2)),
-      confidence: activeRecommendation.confidence_pct,
-      implementation: implementation,
-      performance: performance,
-      costVariation: costVariation
-    };
-    localStorage.setItem("carbonScenario", JSON.stringify(scenario));
+
   }
 
+  let isAddingToRoadmap = false;
+  const scenarioRequestKey = crypto.randomUUID();
+
   async function addToRoadmap(){
+    if (isAddingToRoadmap || !activeRecommendation) return;
     const token = getAuthToken();
     const factoryId = getActiveFactoryId();
     if (!token || !factoryId) {
       window.location.href = "roadmap.html";
       return;
+    }
+
+    const btn = document.getElementById("addToRoadmapBtn") || document.querySelector(".result-action .primary-btn");
+    isAddingToRoadmap = true;
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Adding Scenario...";
     }
 
     const implementation = Number(document.getElementById("implementationRange").value);
@@ -2316,6 +2319,7 @@
     try {
       const res = await apiFetch(`/api/factories/${factoryId}/scenarios`, {
         method: "POST",
+        headers: {"Idempotency-Key": scenarioRequestKey},
         body: JSON.stringify({
           recommendation_id: activeRecommendation ? activeRecommendation.id : null,
           recommendation_code: activeRecommendation ? activeRecommendation.code : null,
@@ -2327,10 +2331,13 @@
       });
 
       if (res && res.id) {
-        localStorage.setItem("selectedScenarioId", res.id);
+        sessionStorage.setItem(`selectedScenario:${factoryId}`, res.id);
       }
     } catch (e) {
-      console.warn("Could not persist scenario to database, proceeding with local scenario:", e);
+      alert("Could not save scenario: " + e.message);
+      isAddingToRoadmap = false;
+      if (btn) { btn.disabled = false; btn.textContent = "Add Scenario to Roadmap"; }
+      return;
     }
 
     window.location.href = "roadmap.html";
@@ -2350,21 +2357,23 @@
     }
 
     try {
-      // 1. Fetch summary to get authoritative baseline
+      // 1. Fetch summary to get authoritative baseline (B04)
       const summary = await apiFetch(`/api/factories/${factoryId}/emissions/summary`);
-      if (!summary.has_calculation) {
-        renderEmptyState(document.querySelector(".content"), "No carbon calculation available yet. Please complete data entry in Factory Data.");
+      const authoritativeBaseline = Number(summary.baseline ?? summary.total_carbon_tco2e ?? 0);
+
+      if (!summary.has_calculation || authoritativeBaseline <= 0) {
+        renderEmptyState(document.querySelector(".content"), "No carbon calculation available yet for this factory. Please complete data entry in Factory Data.", "Go to Factory Data", "factory-data.html");
         return;
       }
 
-      baseline = summary.total_carbon_tco2e || 1150.0;
+      baseline = authoritativeBaseline;
       document.getElementById("baselineDisplay").textContent = Math.round(baseline).toLocaleString("en-IN");
       document.getElementById("compareBaseline").textContent = Math.round(baseline).toLocaleString("en-IN") + " tCO₂e";
 
       // 2. Fetch recommendations
-      const recs = await apiFetch(`/api/factories/${factoryId}/recommendations`);
+      const recs = (await apiFetch(`/api/factories/${factoryId}/recommendations`)).filter(r => r.carbon_saving_tco2e > 0 && r.estimated_cost_inr_lakhs >= 0);
       if (!recs || recs.length === 0) {
-        renderEmptyState(document.querySelector(".content"), "No recommendations available to simulate. Please complete baseline calculation.");
+        renderEmptyState(document.querySelector(".content"), "No recommendations available to simulate. Please complete baseline calculation in Factory Data.", "Go to Factory Data", "factory-data.html");
         return;
       }
       allRecommendations = recs;
@@ -2389,11 +2398,11 @@
       document.getElementById("solutionDescription").textContent = activeRecommendation.description;
       document.getElementById("resultConfidence").textContent = activeRecommendation.confidence_pct + "%";
 
-      updateScenario();
+      await updateScenario();
     } catch (err) {
       console.error("Failed to initialize simulator:", err);
-      renderEmptyState(document.querySelector(".content"), "Failed to load simulation data. Please check connection.");
-    }
+      renderEmptyState(document.querySelector(".content"), "Failed to load simulation data. Please check connection.", "Go to Dashboard", "dashboard.html");
+    } finally { document.querySelector(".content").style.visibility = "visible"; }
   }
 
   document.addEventListener("DOMContentLoaded", initSimulator);

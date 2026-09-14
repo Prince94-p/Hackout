@@ -28,6 +28,10 @@ function getAuthToken() {
 
 function setAuthToken(token) {
   if (token) {
+    if (token !== getAuthToken()) {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
     localStorage.setItem("authToken", token);
   } else {
     localStorage.removeItem("authToken");
@@ -47,29 +51,88 @@ function setActiveFactoryId(id) {
   }
 }
 
-function clearAuthSession() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("activeFactoryId");
-  localStorage.removeItem("selectedHotspotId");
-  localStorage.removeItem("selectedRecommendationId");
-  localStorage.removeItem("selectedScenarioId");
+function clearBrowserSession() {
+  localStorage.clear();
+  sessionStorage.clear();
   window.location.href = "login.html";
 }
 
-// Shared sidebar factory name loader — call on DOMContentLoaded in all app pages
+async function clearAuthSession() {
+  const token = getAuthToken();
+  if (token) {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST", headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok && response.status !== 401) throw new Error("Logout failed");
+    } catch (err) {
+      alert("Could not end the server session. Please retry logout.");
+      return;
+    }
+  }
+  clearBrowserSession();
+}
+
+// Shared sidebar factory name and profile loader — call on DOMContentLoaded in all app pages
 async function loadSidebarFactory() {
   const factoryId = getActiveFactoryId();
+  document.querySelectorAll('.profile strong, .sidebar-factory-name').forEach(el => el.textContent = 'Loading…');
+  document.querySelectorAll('.profile span, .factory-meta').forEach(el => el.textContent = 'Loading…');
+  document.querySelectorAll('.profile .avatar, .top-right .avatar, .confidence-top strong').forEach(el => el.textContent = '—');
+  document.querySelectorAll('.confidence-fill').forEach(el => el.style.width = '0%');
+
+  // 1. Update user profile info from /api/auth/me
+  try {
+    const me = await apiFetch("/api/auth/me");
+    if (me && me.user) {
+      const userName = me.user.name || "Operator";
+      const org = me.user.organization || "Carbon Core Workspace";
+
+      // Update sidebar profile names
+      document.querySelectorAll(".sidebar-user-name, .profile strong").forEach(el => {
+        el.textContent = userName;
+      });
+      document.querySelectorAll(".sidebar-user-org, .profile span").forEach(el => {
+        el.textContent = org;
+      });
+
+      // Update avatar initials
+      const initials = userName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "U";
+      document.querySelectorAll(".profile .avatar, .top-right .avatar").forEach(el => {
+        el.textContent = initials;
+      });
+    }
+
+    if (factoryId && me && me.factories) {
+      const currentFac = me.factories.find(f => f.id === factoryId);
+      if (currentFac) {
+        document.querySelectorAll(".sidebar-factory-meta, #sidebarFactoryMeta, .factory-meta").forEach(el => {
+          el.textContent = `${currentFac.industry || "Manufacturing"} · ${currentFac.location || "Site"}`;
+        });
+      }
+    }
+  } catch (err) {
+    // Non-critical
+  }
+
   if (!factoryId) return;
 
-  // Update any sidebar factory name elements
+  // 2. Update factory name & confidence from summary
   const nameEls = document.querySelectorAll(".sidebar-factory-name, #sidebarFactoryName");
-  const metaEls = document.querySelectorAll(".sidebar-factory-meta, #sidebarFactoryMeta");
-
   try {
     const summary = await apiFetch(`/api/factories/${factoryId}/emissions/summary`);
     const name = summary.factory_name || "Your Factory";
     nameEls.forEach(el => { el.textContent = name; });
-    // Meta is optional
+
+    if (summary.confidence !== undefined) {
+      const confVal = Math.round(summary.confidence);
+      document.querySelectorAll(".confidence-top strong, #sidebarConfidenceVal").forEach(el => {
+        el.textContent = `${confVal}%`;
+      });
+      document.querySelectorAll(".confidence-fill, #sidebarConfidenceFill").forEach(el => {
+        el.style.width = `${confVal}%`;
+      });
+    }
   } catch (err) {
     // Silently fail — not critical
   }
@@ -93,8 +156,8 @@ async function apiFetch(endpoint, options = {}) {
       headers
     });
 
-    if (res.status === 401) {
-      clearAuthSession();
+    if (res.status === 401 && !endpoint.includes("/api/auth/login")) {
+      clearBrowserSession();
       throw new Error("Session expired. Please sign in again.");
     }
 
@@ -103,8 +166,8 @@ async function apiFetch(endpoint, options = {}) {
       try {
         const errJson = await res.json();
         if (errJson && errJson.detail) {
-          errorMsg = Array.isArray(errJson.detail) 
-            ? errJson.detail.map(d => d.msg).join(", ") 
+          errorMsg = Array.isArray(errJson.detail)
+            ? errJson.detail.map(d => d.msg).join(", ")
             : errJson.detail;
         }
       } catch (e) {}
@@ -119,8 +182,8 @@ async function apiFetch(endpoint, options = {}) {
 }
 
 // 3. UI State Helpers
-function renderLoadingState(elementId, message = "Loading carbon data...") {
-  const el = document.getElementById(elementId);
+function renderLoadingState(target, message = "Loading carbon data...") {
+  const el = typeof target === "string" ? document.getElementById(target) : target;
   if (!el) return;
   el.innerHTML = `
     <div style="padding: 2.5rem; text-align: center; color: var(--muted); font-family: 'DM Sans', sans-serif;">
@@ -133,8 +196,8 @@ function renderLoadingState(elementId, message = "Loading carbon data...") {
   `;
 }
 
-function renderEmptyState(elementId, title = "No carbon calculation available yet.", description = "Enter factory activity data to calculate your baseline.", actionUrl = "factory-data.html", actionText = "Enter Factory Data →") {
-  const el = document.getElementById(elementId);
+function renderEmptyState(target, title = "No carbon calculation available yet.", description = "Enter factory activity data to calculate your baseline.", actionUrl = "factory-data.html", actionText = "Enter Factory Data →") {
+  const el = typeof target === "string" ? document.getElementById(target) : target;
   if (!el) return;
   el.innerHTML = `
     <div style="padding: 3rem 1.5rem; text-align: center; background: #ffffff; border: 1px dashed var(--line); border-radius: 16px; margin: 1rem 0;">
@@ -146,13 +209,13 @@ function renderEmptyState(elementId, title = "No carbon calculation available ye
   `;
 }
 
-function renderErrorState(elementId, errorMessage = "Failed to load data.", retryFnName = null) {
-  const el = document.getElementById(elementId);
+function renderErrorState(target, errorMessage = "Failed to load data.", retryFnName = null) {
+  const el = typeof target === "string" ? document.getElementById(target) : target;
   if (!el) return;
   el.innerHTML = `
     <div style="padding: 2.5rem 1.5rem; text-align: center; background: #fff5f5; border: 1px solid #ffd0d0; border-radius: 14px; margin: 1rem 0;">
       <h4 style="color: #c92a2a; font-weight: 700; margin-bottom: 0.5rem;">Unable to load data</h4>
-      <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">${errorMessage}</p>
+      <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">${escapeHtml(errorMessage)}</p>
       ${retryFnName ? `<button onclick="${retryFnName}()" style="padding: 0.5rem 1rem; border-radius: 8px; background: #fff; border: 1px solid #c92a2a; color: #c92a2a; font-weight: 600; cursor: pointer;">Retry</button>` : ""}
     </div>
   `;
@@ -310,4 +373,19 @@ function renderLineChart(canvasId, labels, data, lineLabel = "Footprint (tCO₂e
       }
     }
   });
+}
+
+// Clear an old account view when another tab changes the shared session.
+window.addEventListener("storage", event => {
+  if (event.key === "authToken" || event.key === null) {
+    sessionStorage.clear();
+    window.location.reload();
+  }
+});
+window.addEventListener("pageshow", event => {
+  if (event.persisted) window.location.reload();
+});
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
 }

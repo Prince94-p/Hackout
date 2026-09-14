@@ -1,3 +1,9 @@
+import hashlib
+import jwt
+from datetime import datetime, timezone
+from app.config import SECRET_KEY, ALGORITHM
+from app.models.session import RevokedToken
+from app.auth import oauth2_scheme
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -76,6 +82,13 @@ def get_me(current_user: User = Depends(get_current_user), db: Session = Depends
     }
 
 @router.post("/logout")
-def logout():
-    return {"message": "Logged out successfully"}
-
+def logout(token: str = Depends(oauth2_scheme), current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    digest = hashlib.sha256(token.encode()).hexdigest()
+    expiry = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])["exp"]
+    # Lock the owner to serialize simultaneous logout requests.
+    db.query(User).filter(User.id == current_user.id).with_for_update().first()
+    if not db.get(RevokedToken, digest):
+        db.add(RevokedToken(token_hash=digest, expires_at=datetime.fromtimestamp(expiry, timezone.utc)))
+    db.query(RevokedToken).filter(RevokedToken.expires_at < datetime.now(timezone.utc)).delete()
+    db.commit()
+    return {"message": "Session ended."}

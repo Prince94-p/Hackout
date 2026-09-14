@@ -1137,6 +1137,7 @@
           <label>Other Process</label>
 
           <input
+            id="customProcess"
             type="text"
             placeholder="Add another manufacturing process"
           />
@@ -1198,14 +1199,16 @@
 
           <button
             class="input-choice"
-            onclick="selectMethod(this,'csv')"
+            style="opacity: 0.6; cursor: not-allowed;"
+            onclick="alert('CSV Import is coming soon. Please use Manual Entry.'); return false;"
+            title="CSV Import (Coming Soon)"
           >
             <div class="input-choice-icon">
               CSV
             </div>
 
             <strong>
-              Import CSV
+              Import CSV (Coming Soon)
             </strong>
 
             <span>
@@ -1463,12 +1466,29 @@
   }
 
 
+  let isCreatingFactory = false;
+  const factoryRequestKey = crypto.randomUUID();
+
   function nextStep(){
+    if(currentStep === 0){
+      const name = document.getElementById("factoryName").value.trim();
+      const industry = document.getElementById("industry").value;
+      const location = document.getElementById("location").value.trim();
+      const productionVal = document.getElementById("production").value;
+
+      if(!name || !industry || !location || !productionVal){
+        alert("Please fill in all required factory details (Factory Name, Industry, Location, and Annual Production) before continuing.");
+        return;
+      }
+      if(parseFloat(productionVal) < 0){
+        alert("Annual production cannot be negative.");
+        return;
+      }
+    }
 
     if(currentStep < 3){
       goToStep(currentStep + 1);
     }
-
   }
 
 
@@ -1626,6 +1646,7 @@
 
 
   async function createFactory(){
+    if (isCreatingFactory) return;
 
     const name =
       document.getElementById(
@@ -1642,18 +1663,32 @@
         "location"
       ).value.trim();
 
+    const productionVal =
+      document.getElementById(
+        "production"
+      ).value;
 
     if(
       selectedMethod !== "demo" &&
-      (!name || !industry || !location)
+      (!name || !industry || !location || !productionVal)
     ){
-
+      alert("Please complete the required factory profile fields (Name, Industry, Location, and Annual Production) before creating the workspace.");
       goToStep(0);
-
       return;
-
     }
 
+    if(selectedMethod !== "demo" && parseFloat(productionVal) < 0){
+      alert("Annual production cannot be negative.");
+      goToStep(0);
+      return;
+    }
+
+    isCreatingFactory = true;
+    const createBtn = document.querySelector(".create-btn");
+    if(createBtn){
+      createBtn.disabled = true;
+      createBtn.textContent = "Creating Factory...";
+    }
 
     /*
     ==========================================
@@ -1669,26 +1704,37 @@
         window.location.href = "dashboard.html";
         return;
       } catch (err) {
-        console.error("Demo failed:", err);
-        window.location.href = "dashboard.html";
+        alert("Could not create demo: " + err.message);
         return;
+      } finally {
+        isCreatingFactory = false;
+        if(createBtn){
+          createBtn.disabled = false;
+          createBtn.textContent = "Create Factory Workspace →";
+        }
       }
     }
 
     const selectedProcesses = [];
-    document.querySelectorAll(".chip.active").forEach(chip => {
+    document.querySelectorAll(".process-chip.active").forEach(chip => {
       selectedProcesses.push(chip.textContent.trim());
     });
+
+    const customProc = document.getElementById("customProcess");
+    if(customProc && customProc.value.trim()){
+      selectedProcesses.push(customProc.value.trim());
+    }
 
     try {
       const factory = await apiFetch("/api/factories", {
         method: "POST",
+        headers: {"Idempotency-Key": factoryRequestKey},
         body: JSON.stringify({
           name: name,
           industry: industry,
           location: location,
           reporting_period: document.getElementById("period").value,
-          annual_production: parseFloat(document.getElementById("production").value) || 0,
+          annual_production: parseFloat(productionVal) || 0,
           production_unit: document.getElementById("productionUnit").value,
           selected_processes: selectedProcesses
         })
@@ -1704,6 +1750,11 @@
       window.location.href = "factory-data.html?mode=manual";
     } catch (err) {
       alert("Failed to create factory: " + (err.message || "Unknown error"));
+      isCreatingFactory = false;
+      if(createBtn){
+        createBtn.disabled = false;
+        createBtn.textContent = "Create Factory Workspace →";
+      }
     }
 
   }

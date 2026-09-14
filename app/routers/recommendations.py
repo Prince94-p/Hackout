@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
+from app.models.emissions import EmissionRecord
 from app.models.recommendation import Recommendation
 from app.schemas.recommendations import RecommendationResponse
 from app.auth import get_current_user, verify_factory_access
@@ -19,7 +20,8 @@ def get_recommendations(
     factory = verify_factory_access(id, current_user, db)
     recs = db.query(Recommendation).filter(Recommendation.factory_id == factory.id).all()
 
-    if not recs or len(recs) == 0:
+    latest = db.query(EmissionRecord).filter(EmissionRecord.factory_id == factory.id).order_by(EmissionRecord.calculation_date.desc()).first()
+    if not recs or any(r.carbon_saving_tco2e < 0 or (latest and r.created_at < latest.calculation_date) for r in recs):
         recs = generate_factory_recommendations(factory, db)
 
     return [

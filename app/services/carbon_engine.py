@@ -54,7 +54,7 @@ def seed_default_factors_if_empty(db: Session):
         for f in DEFAULT_FACTORS:
             factor = EmissionFactor(**f)
             db.add(factor)
-        db.commit()
+        db.flush()
 
 def calculate_factory_emissions(factory: Factory, db: Session) -> EmissionRecord:
     seed_default_factors_if_empty(db)

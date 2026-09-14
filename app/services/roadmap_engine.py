@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from fastapi import HTTPException
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from app.models.factory import Factory
@@ -13,17 +14,19 @@ def generate_factory_roadmap(
     db: Session,
     preferred_scenario_id: Optional[int] = None
 ) -> Dict[str, Any]:
+    db.query(Factory).filter(Factory.id == factory.id).with_for_update().first()
     # 1. Authoritative Baseline
     rec = db.query(EmissionRecord).filter(
         EmissionRecord.factory_id == factory.id
     ).order_by(EmissionRecord.calculation_date.desc()).first()
 
-    baseline = rec.total_tco2e if rec else (1150.0 if factory.is_demo else 0.0)
+    baseline = rec.total_tco2e if rec else 0.0
 
     # 2. Existing Recommendations
     recs = db.query(Recommendation).filter(Recommendation.factory_id == factory.id).all()
-    if not recs:
+    if not recs or any(r.carbon_saving_tco2e < 0 or (rec and r.created_at < rec.calculation_date) for r in recs):
         recs = generate_factory_recommendations(factory, db)
+        db.query(Factory).filter(Factory.id == factory.id).with_for_update().first()
 
     # 3. Check for preferred or latest scenario
     scenario = None
@@ -32,14 +35,24 @@ def generate_factory_roadmap(
             Scenario.factory_id == factory.id,
             Scenario.id == preferred_scenario_id
         ).first()
+    if preferred_scenario_id and not scenario:
+        raise HTTPException(status_code=404, detail="Scenario not found for this factory")
     if not scenario:
         scenario = db.query(Scenario).filter(
             Scenario.factory_id == factory.id
         ).order_by(Scenario.created_at.desc()).first()
 
-    # Clear prior saved roadmap for clean regeneration
-    db.query(Roadmap).filter(Roadmap.factory_id == factory.id).delete()
-    db.commit()
+    if scenario and rec and scenario.created_at < rec.calculation_date:
+        if preferred_scenario_id:
+            raise HTTPException(status_code=409, detail="Factory data changed. Save a new scenario before regenerating this roadmap.")
+        scenario = None
+
+    # Clear prior saved roadmap and actions cleanly for regeneration
+    old_roadmaps = db.query(Roadmap).filter(Roadmap.factory_id == factory.id).all()
+    for old_rm in old_roadmaps:
+        db.query(RoadmapAction).filter(RoadmapAction.roadmap_id == old_rm.id).delete()
+        db.delete(old_rm)
+    db.flush()
 
     # If demo factory without custom scenario, yield verified demo target roadmap
     if factory.is_demo and not scenario:
@@ -91,7 +104,7 @@ def generate_factory_roadmap(
             created_at=datetime.now(timezone.utc)
         )
         db.add(roadmap)
-        db.commit()
+        db.flush()
         db.refresh(roadmap)
 
         actions_out = []
@@ -109,14 +122,14 @@ def generate_factory_roadmap(
             )
             db.add(action)
             actions_out.append(action)
-        db.commit()
+        db.flush()
 
         timeline = [
-            {"month": "Month 0", "label": "Baseline", "footprint_tco2e": 1150.0},
-            {"month": "Month 3", "label": "Post Phase 1", "footprint_tco2e": 1076.0},
-            {"month": "Month 6", "label": "Post Phase 2", "footprint_tco2e": 971.0},
-            {"month": "Month 12", "label": "Post Phase 3", "footprint_tco2e": 909.0},
-            {"month": "Month 24", "label": "Target Footprint", "footprint_tco2e": 909.0}
+            {"month": "Month 0", "label": "Baseline", "footprint_tco2e": baseline},
+            {"month": "Month 3", "label": "Post Phase 1", "footprint_tco2e": max(0, baseline - 74)},
+            {"month": "Month 6", "label": "Post Phase 2", "footprint_tco2e": max(0, baseline - 179)},
+            {"month": "Month 12", "label": "Post Phase 3", "footprint_tco2e": target_footprint},
+            {"month": "Month 24", "label": "Target Footprint", "footprint_tco2e": target_footprint}
         ]
 
         return {
@@ -218,9 +231,13 @@ def generate_factory_roadmap(
         if len(selected_actions) >= 4:
             break
 
+    remaining = baseline
+    for action in selected_actions:
+        action["carbon_saving_tco2e"] = round(min(remaining, max(0, action["carbon_saving_tco2e"])), 1)
+        remaining = max(0, remaining - action["carbon_saving_tco2e"])
+
     # Sum savings & costs
     total_saving = round(sum(a["carbon_saving_tco2e"] for a in selected_actions), 1)
-    total_saving = min(total_saving, round(baseline * 0.85, 1))  # Cap realistic max saving
     target_footprint = max(0.0, round(baseline - total_saving, 1))
     red_pct = round((total_saving / baseline) * 100.0, 1) if baseline > 0 else 0.0
     total_cost = round(sum(a["cost_inr_lakhs"] for a in selected_actions), 2)
@@ -236,7 +253,7 @@ def generate_factory_roadmap(
         created_at=datetime.now(timezone.utc)
     )
     db.add(roadmap)
-    db.commit()
+    db.flush()
     db.refresh(roadmap)
 
     db_actions = []
@@ -254,7 +271,7 @@ def generate_factory_roadmap(
         )
         db.add(action)
         db_actions.append(action)
-    db.commit()
+    db.flush()
 
     # Calculate step-by-step trajectory
     current_fp = baseline

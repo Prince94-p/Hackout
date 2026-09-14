@@ -1198,9 +1198,8 @@
 
               </label>
 
-
-              <a href="#" class="forgot">
-                Forgot password?
+              <a href="#" class="forgot" onclick="alert('Password recovery is currently unavailable.'); return false;">
+                Forgot password? (Unavailable)
               </a>
 
             </div>
@@ -1461,8 +1460,8 @@
   <script src="api.js"></script>
   <script>
     // Ensure any previous session is cleared when opening the auth page
-    setAuthToken(null);
-    setActiveFactoryId(null);
+    localStorage.clear();
+    sessionStorage.clear();
 
     const stage =
       document.getElementById("authStage");

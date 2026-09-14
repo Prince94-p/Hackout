@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 class ScenarioPreviewRequest(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
     recommendation_id: Optional[int] = None
     recommendation_code: Optional[str] = None
-    implementation_percent: float = 100.0
-    performance_percent: float = 100.0
-    cost_variation_percent: float = 100.0
+    implementation_percent: float = Field(100.0, ge=0, le=100)
+    performance_percent: float = Field(100.0, ge=0, le=110)
+    cost_variation_percent: float = Field(0.0, ge=-100, le=100)
 
 class ScenarioPreviewResponse(BaseModel):
     baseline_tco2e: float
@@ -22,10 +23,10 @@ class ScenarioPreviewResponse(BaseModel):
     confidence_pct: float
 
 class ScenarioSaveRequest(ScenarioPreviewRequest):
-    title: Optional[str] = None
+    title: Optional[str] = Field(None, max_length=200)
 
 class ScenarioResponse(ScenarioPreviewResponse):
     id: int
     factory_id: int
-    title: Optional[str] = None
+    title: Optional[str] = Field(None, max_length=200)
     created_at: datetime

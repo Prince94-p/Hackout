@@ -29,7 +29,8 @@ def get_root_cause(
 
     if not h:
         all_h = evaluate_and_generate_hotspots(factory, db)
-        h = all_h[0] if all_h else None
+        category = {"waste": "Waste", "materials": "Materials", "material": "Materials", "energy": "Energy"}.get(hotspot_code)
+        h = next((item for item in all_h if item.code == hotspot_code or item.category == category), None) if hotspot_code else (all_h[0] if all_h else None)
 
     if not h:
         raise HTTPException(status_code=404, detail="No active hotspot found for root cause diagnosis")

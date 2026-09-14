@@ -22,3 +22,5 @@ __all__ = [
     "Roadmap",
     "RoadmapAction",
 ]
+
+from app.models.session import RevokedToken

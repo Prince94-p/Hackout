@@ -7,6 +7,7 @@ class Factory(Base):
     __tablename__ = "factories"
 
     id = Column(Integer, primary_key=True, index=True)
+    request_key = Column(String(64), nullable=True, unique=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     name = Column(String(255), nullable=False)
     industry = Column(String(255), nullable=False)

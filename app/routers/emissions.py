@@ -19,6 +19,7 @@ def calculate_emissions(
     db: Session = Depends(get_db)
 ):
     factory = verify_factory_access(id, current_user, db)
+    db.query(Factory).filter(Factory.id == factory.id).with_for_update().first()
     record = calculate_factory_emissions(factory, db)
 
     breakdown = json.loads(record.confidence_breakdown) if record.confidence_breakdown else {}
@@ -56,6 +57,7 @@ def get_emissions_summary(
             has_calculation=False,
             factory_name=factory.name,
             baseline=0.0,
+            total_carbon_tco2e=0.0,
             energy_tco2e=0.0,
             material_tco2e=0.0,
             waste_tco2e=0.0,
@@ -189,6 +191,7 @@ def get_emissions_summary(
         has_calculation=True,
         factory_name=factory.name,
         baseline=record.total_tco2e,
+        total_carbon_tco2e=record.total_tco2e,
         energy_tco2e=record.energy_tco2e,
         material_tco2e=record.material_tco2e,
         waste_tco2e=record.waste_tco2e,
